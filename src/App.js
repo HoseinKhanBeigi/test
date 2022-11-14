@@ -1,17 +1,14 @@
-import logo from './logo.svg';
-import './App.css';
-// or
-import { FormGroup ,Checkbox, FormControlLabel } from '@mui/material';
-
+import { Routes, Route } from "react-router-dom";
+import { Layout } from "./components/layout";
+import { Home } from "./pages/home";
 
 function App() {
   return (
-    <div className="App">
-      <FormGroup>
-        <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-        <FormControlLabel disabled control={<Checkbox />} label="Disabled" />
-      </FormGroup>
-    </div>
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route path="home" element={<Home />} />
+      </Route>
+    </Routes>
   );
 }
 
