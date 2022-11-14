@@ -5,21 +5,51 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+
+import React, { useEffect } from "react";
 import "./index.css";
-import { Dlogo, Hlogo,ReLogo } from "../icons";
+import {
+  Dlogo,
+  Hlogo,
+  ReLogo,
+  Users,
+  Clients,
+  InteractionsLogo,
+  InstructionsLogo,
+  NotesLogo,
+  AdminLogo,
+  Checkouts,
+  ProfileLogo,
+} from "../icons";
 export const Layout = () => {
+  const path = useLocation();
+  const params = useParams();
+  const history = useNavigate();
   const navigationMenu = [
     { name: "home", logo: <Dlogo stroke={"#ffffff"} /> },
-    { name: "Report", logo: <Hlogo stroke={"#ffffff"} /> },
-    { name: "Marketers", logo: <ReLogo stroke={"#ffffff"} /> },
-    { name: "Customers", url: "/icons/home.svg" },
-    { name: "Interactions", url: "/icons/home.svg" },
-    { name: "Instructions", url: "/icons/home.svg" },
-    { name: "Notes", url: "/icons/home.svg" },
-    { name: "control panel", url: "/icons/home.svg" },
-    { name: "Queries", url: "/icons/home.svg" },
-    { name: "profile", url: "/icons/home.svg" },
+    { name: "home", logo: <Hlogo stroke={"#ffffff"} /> },
+    { name: "reports", logo: <ReLogo stroke={"#ffffff"} /> },
+    { name: "users", logo: <Users stroke={"#ffffff"} /> },
+    { name: "clients", logo: <Clients stroke={"#ffffff"} /> },
+    { name: "interactions", logo: <InteractionsLogo stroke={"#ffffff"} /> },
+
+    { name: "instructions", logo: <InstructionsLogo stroke={"#ffffff"} /> },
+    { name: "notes", logo: <NotesLogo stroke={"#ffffff"} /> },
+    { name: "admin", logo: <AdminLogo stroke={"#ffffff"} /> },
+    { name: "checkouts", logo: <Checkouts stroke={"#ffffff"} /> },
+    { name: "profile", logo: <ProfileLogo stroke={"#ffffff"} /> },
   ];
+
+  const  handleClick = ()=>{
+
+  }
+
+  useEffect(() => {
+    if (path.pathname === "/") {
+      history(`/home`);
+    }
+  }, [path.pathname]);
+
   return (
     <>
       <div className="parent">
@@ -29,7 +59,7 @@ export const Layout = () => {
               {navigationMenu.map((el, i) => {
                 return (
                   <li className="sideBar_item" key={i}>
-                    {el.logo}
+                    <Link to={el.name} onClick={(e) => handleClick(e)}>{el.logo}</Link>
                   </li>
                 );
               })}
