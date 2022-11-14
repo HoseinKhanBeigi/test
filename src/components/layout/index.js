@@ -6,7 +6,7 @@ import {
   useParams,
 } from "react-router-dom";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./index.css";
 import {
   Dlogo,
@@ -25,29 +25,27 @@ export const Layout = () => {
   const path = useLocation();
   const params = useParams();
   const history = useNavigate();
-  const navigationMenu = [
-    { name: "home", logo: <Dlogo stroke={"#ffffff"} /> },
-    { name: "home", logo: <Hlogo stroke={"#ffffff"} /> },
-    { name: "reports", logo: <ReLogo stroke={"#ffffff"} /> },
-    { name: "users", logo: <Users stroke={"#ffffff"} /> },
-    { name: "clients", logo: <Clients stroke={"#ffffff"} /> },
-    { name: "interactions", logo: <InteractionsLogo stroke={"#ffffff"} /> },
-
-    { name: "instructions", logo: <InstructionsLogo stroke={"#ffffff"} /> },
-    { name: "notes", logo: <NotesLogo stroke={"#ffffff"} /> },
-    { name: "admin", logo: <AdminLogo stroke={"#ffffff"} /> },
-    { name: "checkouts", logo: <Checkouts stroke={"#ffffff"} /> },
-    { name: "profile", logo: <ProfileLogo stroke={"#ffffff"} /> },
-  ];
-
-  const  handleClick = ()=>{
-
-  }
+  const root = useRef();
+  const handleClick = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    [...root.current.querySelectorAll(".sideBar_item")].forEach((e) => {
+      e.classList.remove("sideBar_current");
+    });
+    event.currentTarget.classList.add("sideBar_current");
+    [...root.current.querySelectorAll(".sideBar_item")][0].classList.remove(
+      "sideBar_current"
+    );
+  };
 
   useEffect(() => {
     if (path.pathname === "/") {
       history(`/home`);
     }
+
+    [...root.current.querySelectorAll(".sideBar_item")].forEach((e) => {
+     console.log(e);
+    });
   }, [path.pathname]);
 
   return (
@@ -55,14 +53,62 @@ export const Layout = () => {
       <div className="parent">
         <div className="sideBar">
           <nav>
-            <ul className="sideBar_list">
-              {navigationMenu.map((el, i) => {
-                return (
-                  <li className="sideBar_item" key={i}>
-                    <Link to={el.name} onClick={(e) => handleClick(e)}>{el.logo}</Link>
-                  </li>
-                );
-              })}
+            <ul className="sideBar_list" ref={root}>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="home">
+                  <Dlogo stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="home">
+                  <Hlogo stroke={"#ffffff"} />{" "}
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="reports">
+                  <ReLogo stroke={"#ffffff"} />{" "}
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="users">
+                  <Users stroke={"#ffffff"} />{" "}
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="clients">
+                  <Clients stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="interactions">
+                  <InteractionsLogo stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="instructions">
+                  <InstructionsLogo stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="notes">
+                  <NotesLogo stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="admin">
+                  <AdminLogo stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="checkouts">
+                  <Checkouts stroke={"#ffffff"} />
+                </Link>
+              </li>
+              <li className="sideBar_item" onClick={handleClick}>
+                <Link to="profile">
+                  <ProfileLogo stroke={"#ffffff"} />
+                </Link>
+              </li>
             </ul>
           </nav>
           <div className="page">
