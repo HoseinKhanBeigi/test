@@ -164,9 +164,9 @@ function makeSeries(i, dataType, datums, useR) {
     data: [...new Array(length)].map((_, i) => {
       let x;
 
-      if (dataType === "ordinal") {
-        x = `Ordinal Group ${start + i}`;
-      }
+     if (dataType === "time") {
+        x = new Date(startDate.getTime() + 60 * 1000 * 60 * 24 * i);
+      } 
 
       const distribution = 1.1;
 
