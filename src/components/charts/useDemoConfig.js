@@ -139,6 +139,13 @@ export default function useChartConfig({
 }
 
 function makeDataFrom(dataType, series, datums, useR) {
+
+  const s = [
+    ...new Array(series || Math.max(Math.round(Math.random() * 5), 1)),
+  ].map((d, i) => makeSeries(i, dataType, datums, useR));
+
+
+
   return [
     ...new Array(series || Math.max(Math.round(Math.random() * 5), 1)),
   ].map((d, i) => makeSeries(i, dataType, datums, useR));
