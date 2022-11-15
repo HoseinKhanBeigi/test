@@ -427,3 +427,117 @@ export const ProfileLogo = () => {
     </svg>
   );
 };
+
+export const Curve = () => {
+  return (
+    <svg
+      width="105"
+      height="111"
+      viewBox="0 0 105 111"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M1 97.2273C29.8772 62.25 26.7387 1.5 38.2476 1.5C49.5472 1.5 48.9194 64.0909 66.4969 64.0909C84.0744 64.0909 81.1448 109.5 105 109.5"
+        stroke="url(#paint0_linear_727_469)"
+        strokeWidth="2"
+      />
+      <defs>
+        <linearGradient
+          id="paint0_linear_727_469"
+          x1="3.30166"
+          y1="86.1818"
+          x2="93.3574"
+          y2="95.5288"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#662D91" stopOpacity="0" />
+          <stop offset="0.339843" stopColor="#662D91" />
+          <stop offset="0.631943" stopColor="#662D91" />
+          <stop offset="1" stopColor="#662D91" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+    </svg>
+  );
+};
+
+export const Flash = () => {
+  return (
+    <svg
+      width="14"
+      height="9"
+      viewBox="0 0 14 9"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.3698 2.42432H8.61572V0.424316H12.6157H13.6157V1.42432V5.42432H11.6157V4.00687L8.31796 7.30462L7.61086 8.01173L6.90375 7.30462L4.79451 5.19539L1.41422 8.5757L0 7.16149L4.0874 3.07407L4.79451 2.36696L5.50162 3.07407L7.61086 5.1833L10.3698 2.42432Z"
+        fill="#017874"
+      />
+    </svg>
+  );
+};
+
+export const Frame1325 = () => {
+  return (
+    <svg
+      width="30"
+      height="23"
+      viewBox="0 0 30 23"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect y="9.02417" width="30" height="4" rx="2" fill="#F7541E" />
+    </svg>
+  );
+};
+export const Frame1326 = () => {
+  return (
+    <svg
+      width="30"
+      height="23"
+      viewBox="0 0 30 23"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect y="9.02417" width="30" height="4" rx="2" fill="#F7541E" />
+    </svg>
+  );
+};
+
+export const RectTangle1 = () => {
+  return (
+    <svg
+      width="486"
+      height="16"
+      viewBox="0 0 486 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        y="0.0241699"
+        width="486"
+        height="15"
+        rx="7.5"
+        fill="#FF7A00"
+        fill-opacity="0.35"
+      />
+    </svg>
+  );
+};
+
+export const RectTangle2 = () => {
+  return (
+    <svg
+      width="111"
+      height="16"
+      viewBox="0 0 111 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect y="0.0241699" width="111" height="15" rx="7.5" fill="#F7541E" />
+    </svg>
+  );
+};
