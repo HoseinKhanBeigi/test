@@ -541,3 +541,248 @@ export const RectTangle2 = () => {
     </svg>
   );
 };
+
+export const TrashIcone = () => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_595_13766)">
+        <path
+          d="M4.42139 7H20.4214"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M10.4214 11V17"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M14.4214 11V17"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M5.42139 7L6.42139 19C6.42139 19.5304 6.6321 20.0391 7.00717 20.4142C7.38225 20.7893 7.89095 21 8.42139 21H16.4214C16.9518 21 17.4605 20.7893 17.8356 20.4142C18.2107 20.0391 18.4214 19.5304 18.4214 19L19.4214 7"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9.42139 7V4C9.42139 3.73478 9.52674 3.48043 9.71428 3.29289C9.90182 3.10536 10.1562 3 10.4214 3H14.4214C14.6866 3 14.941 3.10536 15.1285 3.29289C15.316 3.48043 15.4214 3.73478 15.4214 4V7"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_595_13766">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+            transform="translate(0.421387)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const EditIcon = () => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_595_13761)">
+        <path
+          d="M7.42139 7H6.42139C5.89095 7 5.38225 7.21071 5.00717 7.58579C4.6321 7.96086 4.42139 8.46957 4.42139 9V18C4.42139 18.5304 4.6321 19.0391 5.00717 19.4142C5.38225 19.7893 5.89095 20 6.42139 20H15.4214C15.9518 20 16.4605 19.7893 16.8356 19.4142C17.2107 19.0391 17.4214 18.5304 17.4214 18V17"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M20.8064 6.58499C21.2002 6.19114 21.4215 5.65697 21.4215 5.09998C21.4215 4.543 21.2002 4.00883 20.8064 3.61498C20.4125 3.22114 19.8784 2.99988 19.3214 2.99988C18.7644 2.99988 18.2302 3.22114 17.8364 3.61498L9.42139 12V15H12.4214L20.8064 6.58499V6.58499Z"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M16.4214 5L19.4214 8"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_595_13761">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+            transform="translate(0.421387)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const OptionIcone = () => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M12.4214 8C13.5214 8 14.4214 7.1 14.4214 6C14.4214 4.9 13.5214 4 12.4214 4C11.3214 4 10.4214 4.9 10.4214 6C10.4214 7.1 11.3214 8 12.4214 8ZM12.4214 10C11.3214 10 10.4214 10.9 10.4214 12C10.4214 13.1 11.3214 14 12.4214 14C13.5214 14 14.4214 13.1 14.4214 12C14.4214 10.9 13.5214 10 12.4214 10ZM12.4214 16C11.3214 16 10.4214 16.9 10.4214 18C10.4214 19.1 11.3214 20 12.4214 20C13.5214 20 14.4214 19.1 14.4214 18C14.4214 16.9 13.5214 16 12.4214 16Z"
+        fill="black"
+      />
+    </svg>
+  );
+};
+export const UserIcon = () => {
+  return (
+    <svg
+      width="38"
+      height="38"
+      viewBox="0 0 38 38"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle cx="19" cy="19" r="18.5" fill="#D9D9D9" stroke="white" />
+      <path
+        d="M19.6281 14.1256C20.6148 14.1256 21.4143 14.9251 21.4143 15.9118C21.4143 16.8984 20.6148 17.6979 19.6281 17.6979C18.6415 17.6979 17.842 16.8984 17.842 15.9118C17.842 14.9251 18.6415 14.1256 19.6281 14.1256ZM19.6281 21.7806C22.1543 21.7806 24.8165 23.0224 24.8165 23.5667V24.5024H14.4398V23.5667C14.4398 23.0224 17.102 21.7806 19.6281 21.7806ZM19.6281 12.5096C17.7484 12.5096 16.2259 14.0321 16.2259 15.9118C16.2259 17.7915 17.7484 19.314 19.6281 19.314C21.5079 19.314 23.0303 17.7915 23.0303 15.9118C23.0303 14.0321 21.5079 12.5096 19.6281 12.5096ZM19.6281 20.1645C17.3572 20.1645 12.8237 21.3043 12.8237 23.5667V26.1184H26.4325V23.5667C26.4325 21.3043 21.8991 20.1645 19.6281 20.1645Z"
+        fill="#3B3B3B"
+      />
+    </svg>
+  );
+};
+
+export const Polygon1 = () => {
+  return (
+    <svg
+      width="299"
+      height="260"
+      viewBox="0 0 299 260"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M149.5 260L0 0L299 0L149.5 260Z" fill="#C0DDC0" />
+    </svg>
+  );
+};
+
+export const Polygon2 = () => {
+  return (
+    <svg
+      width="173"
+      height="150"
+      viewBox="0 0 173 150"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M86.5 150L0 0L173 0L86.5 150Z" fill="#017874" />
+    </svg>
+  );
+};
+
+export const Polygon3 = () => {
+  return (
+    <svg
+      width="104"
+      height="91"
+      viewBox="0 0 104 91"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M52 91H42.2804L0 0L104 0L62.2056 91L52 91Z" fill="#F7541E" />
+    </svg>
+  );
+};
+
+export const RectPoint = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="0.000488281"
+        y="0.000488281"
+        width="16"
+        height="16"
+        rx="2"
+        fill="#C0DDC0"
+      />
+    </svg>
+  );
+};
+
+export const RectPoint2 = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="0.000488281"
+        y="0.000488281"
+        width="16"
+        height="16"
+        rx="2"
+        fill="#017874"
+      />
+    </svg>
+  );
+};
+
+export const RectPoint3 = () => {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect
+        x="0.000488281"
+        y="0.000610352"
+        width="16"
+        height="16"
+        rx="2"
+        fill="#F7541E"
+      />
+    </svg>
+  );
+};

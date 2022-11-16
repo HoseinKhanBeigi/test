@@ -5,32 +5,22 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
-
-import { Stack } from "@mui/system";
+import Checkbox from "@mui/material/Checkbox";
 import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 
-function createData(fullName, countUser, placeAction, changing, phone) {
-  return { fullName, countUser, placeAction, changing, phone };
-}
-
-const rows = [
-  createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-  createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-  createData("Eclair", 262, 16.0, 24, 6.0),
-  createData("Cupcake", 305, 3.7, 67, 4.3),
-  createData("Gingerbread", 356, 16.0, 49, 3.9),
-];
-
-export const TableHoc = ({ header }) => {
+export const TableHoc = ({ header, children }) => {
   return (
     <Box sx={{ width: "100%" }}>
       <Paper sx={{ width: "100%", mb: 2 }}>
         <TableContainer component={Paper}>
-          <Table aria-label="simple table">
+          <Table aria-label="simple table" dir="rtl">
             <TableHead>
-              <TableRow>
+              <TableRow sx={{backgroundColor:"#EFF3F3"}}>
+                <TableCell align="right">
+                  <Checkbox color="primary" />
+                </TableCell>
                 {header.map((e, i) => (
                   <TableCell align="right" key={i}>
                     {e}
@@ -38,28 +28,17 @@ export const TableHoc = ({ header }) => {
                 ))}
               </TableRow>
             </TableHead>
-            <TableBody>
-              {rows.map((row, i) => (
-                <TableRow key={i}>
-                  <TableCell align="right">{row.fullName}</TableCell>
-                  <TableCell align="right">{row.countUser}</TableCell>
-                  <TableCell align="right">{row.placeAction}</TableCell>
-                  <TableCell align="right">{row.changing}</TableCell>
-                  <TableCell align="right">{row.phone}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+            {children}
           </Table>
           <Pagination
             count={10}
             color="secondary"
             sx={{
-
               "& > *": {
-                paddingTop:"72px !important",
-                paddingBottom:"12px !important",
-                justifyContent:"center",
-              }
+                paddingTop: "72px !important",
+                paddingBottom: "12px !important",
+                justifyContent: "center",
+              },
             }}
           />
         </TableContainer>
