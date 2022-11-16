@@ -87,7 +87,7 @@ export const Home = () => {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1 }} ml={28} mr={28} mt={8}>
+    <Box>
       <Grid container justifyContent="end" mb={8}>
         <Grid item>
           میز کار

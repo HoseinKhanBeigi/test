@@ -6,7 +6,9 @@
 }
 
 .parent{
-  max-width: 1900px;
+
+  display: flex;
+  flex-direction: row-reverse;
 }
 
 .page {

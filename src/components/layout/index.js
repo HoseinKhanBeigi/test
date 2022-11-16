@@ -6,6 +6,11 @@ import {
   useParams,
 } from "react-router-dom";
 
+import CssBaseline from "@mui/material/CssBaseline";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid"
+
 import React, { useEffect, useRef, useState } from "react";
 import "./index.css";
 import {
@@ -45,21 +50,19 @@ export const Layout = () => {
       e.classList.remove("sideBar_current");
     });
 
-
-    const newState = currentSelect.map((e)=>{
+    const newState = currentSelect.map((e) => {
       if (e.id === event.currentTarget.getAttribute("data-name")) {
         return {
           ...e,
-          color: e.color = "#017874"
-        }
-      }else{
+          color: (e.color = "#017874"),
+        };
+      } else {
         return {
           ...e,
-          color: e.color = "#ffffff"
-        }
+          color: (e.color = "#ffffff"),
+        };
       }
-    })
-
+    });
 
     setCurrentSelect(newState);
 
@@ -74,33 +77,31 @@ export const Layout = () => {
       history(`/home`);
     }
 
-    const newState = currentSelect.map((e)=>{
+    const newState = currentSelect.map((e) => {
       if (e.id === path.pathname.slice(1)) {
         return {
           ...e,
-          color: e.color = "#017874"
-        }
-      }else{
+          color: (e.color = "#017874"),
+        };
+      } else {
         return {
           ...e,
-          color: e.color = "#ffffff"
-        }
+          color: (e.color = "#ffffff"),
+        };
       }
-    })
-
+    });
 
     setCurrentSelect(newState);
     [...root.current.querySelectorAll(".sideBar_item")].forEach((e) => {
       if (e.getAttribute("data-name") === path.pathname.slice(1)) {
-        e.classList.add("sideBar_current")
+        e.classList.add("sideBar_current");
       }
     });
   }, [path.pathname]);
 
   return (
-    <>
-      <div className="parent">
-        <div className="sideBar">
+   <Grid container flexDirection={"row-reverse"} sx={{width:"1900px"}} justifyContent="center">
+     <div className="sideBar">
           <nav>
             <ul className="sideBar_list" ref={root}>
               <li
@@ -204,11 +205,15 @@ export const Layout = () => {
               </li>
             </ul>
           </nav>
-          <div className="page">
-            <Outlet />
-          </div>
         </div>
-      </div>
-    </>
+
+        <Container maxWidth="xl">
+          <Box paddingTop={12}>
+            <Outlet />
+          </Box>
+        </Container>
+   </Grid>
+       
+     
   );
 };
