@@ -31,8 +31,8 @@ export function AppDashboard({ title, subheader, chartLabels, chartData, ...othe
     <Card {...other}>
       <CardHeader title={title} subheader={subheader} />
 
-      <Box sx={{ p: 3, pb: 1 }} dir="ltr">
-        <ReactApexChart type="line" series={chartData} options={chartOptions} height={364} />
+      <Box dir="ltr">
+        <ReactApexChart type="line" series={chartData} options={chartOptions} height={282} />
       </Box>
     </Card>
   );

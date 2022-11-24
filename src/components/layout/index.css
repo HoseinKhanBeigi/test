@@ -1,14 +1,26 @@
 .sideBar {
   display: flex;
-  flex-direction: row-reverse;
-  background-color: #017874;
+  /* flex-direction: row-reverse; */
+
   /* border-radius: 24px; */
+  position: fixed;
 }
 
 .parent{
 
   display: flex;
   flex-direction: row-reverse;
+}
+
+.nav1{
+  display: flex;
+
+  height: 100vh;
+  background-color: #017874;
+  position: fixed;
+  overflow-y: auto;
+  z-index: 999;
+  top: 0;
 }
 
 .page {
@@ -30,9 +42,9 @@
   align-items: center;
   align-content: center;
   padding: 0;
-  min-height: 855px;
+  min-height: 655px;
   width: 90px;
-  margin-top: 59px;
+
 }
 .sideBar_item {
   padding: 10px;

@@ -87,7 +87,9 @@ input:checked + .slider
 }
 
 
+
 .spanClients{
+
     position: absolute;
     left: 30px;
     top: 26px;
@@ -98,6 +100,7 @@ input:checked + .slider
 
 
 .spanClients2{
+  font-family:'FontName';
   position: absolute;
   left: 130px;
   top: 26px;
