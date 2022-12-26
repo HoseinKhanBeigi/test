@@ -1,24 +1,53 @@
 import { Grid } from "@mui/material";
 
-import { styled } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
-import Grid from "@mui/material/Grid";
+import { Box, Card, Link, Typography } from "@mui/material";
+import { ArrowVector } from "../icons";
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: "center",
-    color: theme.palette.text.secondary,
-    // marginLeft:theme.spacing(8),
-    // marginRight:theme.spacing(8)
-  }));
-
-export const ClientCard = ()=>{
-    return(
-        <Grid>
-            <Item>asdasd</Item>
+export const ClientCard = ({
+  type,
+  national_identifier,
+  name,
+  totalPoint,
+  biPoint,
+}) => {
+  return (
+    <Card sx={{ width: "250px", height: "155px", padding: "16px" }}>
+      <Grid container justifyContent={"space-between"} mb={3}>
+        <Typography>{national_identifier}</Typography>
+        <Typography
+          color={"#fff"}
+          sx={{
+            borderRadius: "24px",
+            background: type !== "حقوقی" ? "#2563EB" : "#5041BC",
+            padding: "4px",
+          }}
+          fontSize={12}
+        >
+          {type}
+        </Typography>
+      </Grid>
+      <Grid container justifyContent={"center"} mb={3}>
+        <Typography color={"#017874"} fontSize={12}>
+          {name}
+        </Typography>
+      </Grid>
+      <Grid container justifyContent={"space-between"}>
+        <Grid item>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            item
+            alignItems={"center"}
+            sx={{ width: "40px" }}
+          >
+            <ArrowVector />
+            <Typography fontSize={14}>{"A+"}</Typography>
+          </Grid>
         </Grid>
-    )
-}
+        <Typography color={"#3B3B3B"} fontSize={12}>
+          {`رتبه کل: ${totalPoint}`}
+        </Typography>
+      </Grid>
+    </Card>
+  );
+};

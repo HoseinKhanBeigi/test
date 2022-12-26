@@ -1,0 +1,11 @@
+.imglogin{
+    /* width: 100%; */
+    height: auto;
+    block-size: auto;
+    aspect-ratio: 2/1;
+    object-fit: cover;
+    object-position: top center;
+    position: absolute;
+    top: 0;
+    left: 0;
+}

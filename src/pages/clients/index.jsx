@@ -1,188 +1,314 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
 import { useDispatch, useSelector } from "react-redux";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import Paper from "@mui/material/Paper";
-import {
-  UserIcon,
-  Polygon1,
-  Polygon2,
-  Polygon3,
-  PopupCity,
-  IconReportPhone,
-  DownloadIconInstruc,
-} from "../../components/icons";
-
-import { useNavigate } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
-
-import { Box, Card, Link, Typography, Stack } from "@mui/material";
-
-import Pagination from "@mui/material/Pagination";
-import { TableHoc } from "../../components/table";
-import { usersList } from "../../actions/users";
+import { convertDigits } from "persian-helpers";
+import Box from "@mui/material/Box";
+import { useReducer } from "react";
+import { PaginationTable } from "../../components/pagination";
+import { HeaderPage } from "../../components/headerPage";
+import { getQueryParams } from "../../utils";
+import { initialTabs, initialDrops } from "./filterItems";
+import { clientsList, deleteClient } from "../../actions/clients";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
+import { createSearchParams, useNavigate } from "react-router-dom";
+import CircularProgress from "@mui/material/CircularProgress";
+import { ClientCard } from "../../components/clientsCard";
+import { responseMessage } from "../../features/messageLog";
+import Notifier from "../../components/notify";
+import Skeleton from "@mui/material/Skeleton";
+import { Confirmation } from "../../components/confirmation";
 
 export const Clients = () => {
+  const { t, i18n } = useTranslation();
+  const [deleteState, setDeleteState] = React.useState(false);
   const header = [
-    "fullName",
-    "countUser",
-    "placeAction",
-    "changing",
-    "phone",
+    t("name"),
+    t("category"),
+    t("national_identity"),
+    t("Equipment_rating"),
+    t("Allocation_rank"),
+    t("Service_rating"),
+    t("cost_benefit"),
+    t("Total_rank"),
+    t("بازاریاب مستقیم"),
     "",
   ];
-  const handleClick = () => {
-    navigate("create");
-  };
 
   const navigate = useNavigate();
 
-  function createData(fullName, countUser, placeAction, changing, phone) {
-    return { fullName, countUser, placeAction, changing, phone };
-  }
-
-  const rows = [
-    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
-    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
-    createData("Eclair", 262, 16.0, 24, 6.0),
-    createData("Cupcake", 305, 3.7, 67, 4.3),
-    createData("Gingerbread", 356, 16.0, 49, 3.9),
-  ];
-
   const dispatch = useDispatch();
-  const { status, error } = useSelector((state) => state.userList);
-
-  const { t, i18n } = useTranslation();
+  const { statusClient, clietList, errorClient } = useSelector(
+    (state) => state.clientListSlice
+  );
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(usersList());
+    const params = { page: 1 };
+    navigate({
+      search: `?${createSearchParams(params)}`,
+    });
+    dispatch(clientsList({ params: { page: 1, ...getQueryParams() } }));
+  }, []);
+
+  const handleNavigate = (id) => {
+    navigate(`/clients/update/${id}`);
+  };
+
+  const handleDelete = (id) => {
+    dispatch(deleteClient({ id })).then((res) => {
+      if (res.payload.status === 200) {
+        setDeleteState(true);
+        setOpenConfirmation(false);
+        dispatch(responseMessage(res.payload.message));
+        dispatch(clientsList({ params: { ...getQueryParams() } }));
+      }
+    });
+  };
+
+  const [view, setView] = useState(false);
+
+  const handleChangeView = () => {
+    setView((state) => !state);
+  };
+
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [stateId, setStateId] = useState();
+
+  const handleClickConfirmation = (id) => {
+    setOpenConfirmation(true);
+    setStateId(id);
+  };
+
+  const initialReducer = useRef([]);
+
+  const handlePushItem = (item) => {
+    item.map((_, i) => {
+      initialReducer.current[i] = { checked: false, id: i };
+    });
+  };
+
+  const reducer = (state, action) => {
+    switch (action.type) {
+      case "SELECTALL":
+        return state.map((item) => {
+          return { ...item, checked: !item.checked };
+        });
+
+      case "SELECTITEM":
+        return state.map((item) => {
+          if (item.id === action.payload) {
+            return { ...item, checked: !item.checked };
+          } else {
+            return item;
+          }
+        });
+      default:
+        return state;
     }
-  }, [dispatch, status]);
+  };
+
+  const handleSelectAll = (item) => {
+    dispatchAction({ type: "SELECTALL" });
+  };
+
+  const handleSelect = (i) => {
+    dispatchAction({ type: "SELECTITEM", payload: i });
+  };
+
+  const [items, dispatchAction] = useReducer(reducer, initialReducer.current);
+
+  console.log(items);
+
   return (
     <>
-      <Grid
-        container
-        flexDirection={"column"}
-        justifyContent="end"
-        alignItems={"end"}
-      >
-        <Grid item mb={8}>
-          <Typography className="title">{t("instructions")}</Typography>
-        </Grid>
-      </Grid>
+      <HeaderPage
+        title={t("clientList")}
+        entities={clietList}
+        status={statusClient}
+        page="table"
+        tab={true}
+        action={clientsList}
+        initialTabs={initialTabs}
+        initialDrops={initialDrops}
+        changeview={handleChangeView}
+        defaultQuery={{ ...getQueryParams() }}
+      />
       <Grid container>
-        <Box sx={{ width: "100%" }}>
-          <Paper sx={{ width: "100%", mb: 2 }}>
-            <TableContainer component={Paper}>
-              <Table aria-label="simple table" dir="rtl">
-                <TableHead>
-                  <TableRow sx={{ backgroundColor: "#EFF3F3" }}>
-                    <TableCell padding="checkbox">
-                      <Checkbox color="primary" />
-                    </TableCell>
-                    {header.map((e, i) => (
-                      <TableCell align="right" key={i}>
-                        {e}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rows.map((row, i) => (
-                    <TableRow key={i} role="checkbox">
-                      <TableCell padding="checkbox">
-                        <Checkbox color="primary" />
-                      </TableCell>
-                      <TableCell align="right">{row.fullName}</TableCell>
-                      <TableCell align="right">{row.countUser}</TableCell>
-                      <TableCell align="right">{row.placeAction}</TableCell>
-                      <TableCell align="right">{row.changing}</TableCell>
-                      <TableCell align="right">{row.phone}</TableCell>
-                      <TableCell align="right">
-                        <IconButton
-                          sx={{ p: "10px" }}
-                          aria-label="menu"
-                          onClick={handleClick}
-                        >
-                          <TrashIcone />
-                        </IconButton>
-                        <IconButton
-                          sx={{ p: "10px" }}
-                          aria-label="menu"
-                          onClick={handleClick}
-                        >
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton
-                          sx={{ p: "10px" }}
-                          aria-label="menu"
-                          onClick={handleClick}
-                        >
-                          <OptionIcone />
-                        </IconButton>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-              <Pagination
-                count={10}
-                color="secondary"
-                sx={{
-                  "& > *": {
-                    paddingTop: "72px !important",
-                    paddingBottom: "12px !important",
-                    justifyContent: "center",
-                  },
-                }}
-              />
-            </TableContainer>
-          </Paper>
-        </Box>
-        <Grid container>
-          <Grid item>
-            <Card sx={{ padding: "12px", width: "210px", height: "175px" }}>
-              <Grid container mb={2} justifyContent={"space-between"} dir="rtl">
-                <Typography
-                  color={"#fff"}
-                  sx={{
-                    background: "#F6541E",
-                    padding: "4px",
-                    borderRadius: "24px",
-                  }}
-                >
-                  {t("real")}
-                </Typography>
-                <Typography>{"مس رفسنجان"}</Typography>
-              </Grid>
+        <>
+          {view ? (
+            <Grid container rowSpacing={2} alignItems={"center"} dir="rtl">
+              {statusClient === "succeeded" &&
+                clietList?.data?.data.map((row, i) => {
+                  return (
+                    <Grid item sm={3} key={i}>
+                      <ClientCard
+                        type={row.type}
+                        national_identifier={row.national_identifier}
+                        name={row.name}
+                        totalPoint={row.total_point}
+                        biPoint={row.bi_point}
+                      />
+                    </Grid>
+                  );
+                })}
+            </Grid>
+          ) : (
+            <Box
+              sx={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                height: "80vh",
+                justifyContent: "space-between",
+                background: "#fff",
+              }}
+            >
+              <Paper sx={{ width: "100%" }}>
+                <TableContainer component={Paper}>
+                  <Table aria-label="simple table" dir="rtl">
+                    <TableHead>
+                      <TableRow sx={{ backgroundColor: "#EFF3F3" }}>
+                        <TableCell padding="checkbox">
+                          <Checkbox color="primary" onClick={handleSelectAll}>
+                            {statusClient === "succeeded" &&
+                              handlePushItem(clietList?.data?.data)}
+                          </Checkbox>
+                        </TableCell>
+                        {header.map((e, i) => (
+                          <TableCell align="left" key={i}>
+                            {e}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    </TableHead>
 
-              <Grid container mb={2} justifyContent="center">
-                <Typography color="#017874">4001236589</Typography>
-              </Grid>
+                    {statusClient !== "succeeded" ? (
+                      <TableBody>
+                        <TableRow role="checkbox">
+                          <Box
+                            sx={{
+                              height: "max-content",
+                              width: "max-content",
+                            }}
+                          >
+                            {[...Array(10)].map((_, i) => (
+                              <Skeleton
+                                key={i}
+                                variant="rectangular"
+                                sx={{ my: 4, mx: 1 }}
+                              />
+                            ))}
+                          </Box>
+                        </TableRow>
+                      </TableBody>
+                    ) : (
+                      clietList?.data?.data.map((row, i) => {
+                        return (
+                          <TableBody key={i}>
+                            <TableRow role="checkbox">
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  color="primary"
+                                  checked={items[i].checked}
+                                  onClick={() => handleSelect(i)}
+                                />
+                              </TableCell>
+                              <TableCell align="left">{row?.name}</TableCell>
+                              <TableCell align="left">
+                                {row?.bi_point}
+                              </TableCell>
+                              <TableCell align="left">
+                                {convertDigits(row?.national_identifier) ||
+                                  convertDigits(row?.national_number)}
+                              </TableCell>
+                              <TableCell align="left">{""}</TableCell>
+                              <TableCell align="left">
+                                {row?.assignment_point}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row?.services_point}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row?.profit_loss}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row?.total_point}
+                              </TableCell>
+                              <TableCell align="left">{row?.user.name}</TableCell>
+                              <TableCell align="left">
+                                <Grid
+                                  sx={{ display: "flex", flexDirection: "row" }}
+                                >
+                                  <IconButton
+                              
+                                    aria-label="menu"
+                                    onClick={() =>
+                                      handleClickConfirmation(row?.id)
+                                    }
+                                  >
+                                    <TrashIcone />
+                                  </IconButton>
+                                  <IconButton
+                              
+                                    aria-label="menu"
+                                    onClick={() => handleNavigate(row?.id)}
+                                  >
+                                    <EditIcon />
+                                  </IconButton>
+                                  <IconButton
+                              
+                                    aria-label="menu"
+                                    // onClick={handleClick}
+                                  >
+                                    <OptionIcone />
+                                  </IconButton>
+                                </Grid>
+                              </TableCell>
+                            </TableRow>
+                          </TableBody>
+                        );
+                      })
+                    )}
+                  </Table>
+                </TableContainer>
+              </Paper>
+              <Paper sx={{ display: "flex", justifyContent: "center" }}>
+                {statusClient === "succeeded" &&
+                  (clietList?.data?.total === 0 ||
+                    clietList?.data?.dada?.length === 0) && (
+                    <Typography>{t("no data")}</Typography>
+                  )}
+              </Paper>
 
-              <Grid
-                container
-                justifyContent={"space-between"}
-                textAlign="center"
-                dir="rtl"
-              >
-                <Typography>{"امتیاز کل: 125"}</Typography>
-                <Typography>{"A+"}</Typography>
-              </Grid>
-            </Card>
-          </Grid>
-        </Grid>
+              <Paper>
+                <PaginationTable
+                  status={statusClient}
+                  entities={clietList}
+                  action={clientsList}
+                />
+              </Paper>
+            </Box>
+          )}
+        </>
+        <Confirmation
+          statusConfirmation={openConfirmation}
+          stateId={stateId}
+          setOpenConfirmation={setOpenConfirmation}
+          msg={"حذف مشتری"}
+          bodymsg={"آیا می خواهید مشتری را حذف کنید؟"}
+          handleExecution={handleDelete}
+        />
+        {deleteState && <Notifier />}
       </Grid>
     </>
   );

@@ -9,7 +9,7 @@ const initialState = {
   error: null,
 };
 
-const userListSlice = createSlice({
+export const userListSlice = createSlice({
   name: 'usersList',
   initialState,
   reducers: {},
@@ -21,14 +21,11 @@ const userListSlice = createSlice({
       })
       .addCase(usersList.fulfilled, (state, action) => {
         state.status = "succeeded";
-        console.log(action);
         state.entities = action.payload
       })
       .addCase(usersList.rejected, (state, action) => {
-        console.log(action);
         state.status = "failed";
-        state.error = action.payload.response;
+        state.error = action;
       });
   },
-});
-export default userListSlice.reducer
+}).reducer;

@@ -8,6 +8,9 @@ export default function Input(theme) {
           '&.Mui-disabled': {
             '& svg': { color: theme.palette.text.disabled },
           },
+          '&': {
+            borderRadius: "16px",
+          },
         },
         input: {
           '&::placeholder': {
@@ -52,7 +55,9 @@ export default function Input(theme) {
         root: {
           '& .MuiOutlinedInput-notchedOutline': {
             borderColor: theme.palette.grey[500_32],
+          
           },
+          
           '&.Mui-disabled': {
             '& .MuiOutlinedInput-notchedOutline': {
               borderColor: theme.palette.action.disabledBackground,

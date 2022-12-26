@@ -29,7 +29,7 @@ export function AppDashboard({ title, subheader, chartLabels, chartData, ...othe
 
   return (
     <Card {...other}>
-      <CardHeader title={title} subheader={subheader} />
+      <CardHeader sx={{color:"#017874"}} title={title} subheader={subheader} />
 
       <Box dir="ltr">
         <ReactApexChart type="line" series={chartData} options={chartOptions} height={282} />

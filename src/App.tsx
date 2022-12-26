@@ -1,4 +1,4 @@
-import React, {  Suspense } from "react";
+import React, { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Layout } from "./components/layout";
 import { Home } from "./pages/home";
@@ -11,6 +11,8 @@ import { Notes } from "./pages/notes";
 import { AdminPanel } from "./pages/adminpanel";
 import { Checkouts } from "./pages/checkouts";
 import { Profile } from "./pages/profile";
+import { Calls } from "./pages/calls";
+import { Meetings } from "./pages/meetings";
 // import { Login } from "./pages/login";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { CreateUserSingle } from "./pages/users/singlForm";
@@ -20,61 +22,78 @@ import { CreateClientSingle } from "./pages/clients/singleForm";
 import { CompareUser } from "./pages/users/compareUser";
 import { ReportDetail } from "./pages/reports/reportDetail";
 import LinearProgress from "@mui/material/LinearProgress";
-
+import { Accessiblities } from "./pages/accessibities";
+import { FormCall } from "./pages/calls/form";
+import { FormMeeting } from "./pages/meetings/form";
 
 const Login = React.lazy(() => import("./pages/login"));
 
-
-
 function App() {
   const [progress, setProgress] = React.useState(0);
-  React.useEffect(() => {
-    const timer = setInterval(() => {
-        setProgress((oldProgress) => {
-            const diff = Math.random() * 30;
-            return Math.min(oldProgress + diff, 100);
-        });
-    }, 500);
-  
-    return () => {
-        clearInterval(timer);
-    };
-  }, []);
+  React.useEffect(() => {}, []);
   return (
     <Suspense fallback={<>...</>}>
-    <Routes>
-    
-      <Route path="login" element={<Login />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<Layout />}>
-          <Route path="/home" element={<Home />} />
-          <Route path="/reports">
-            <Route index element={<Reports />} />
-            <Route path=":id" element={<ReportDetail />} />
-          </Route>
-          <Route path="/users">
-            <Route index element={<Users />} />
-            {/* <Route path=":id" element={<CreateUser />} /> */}
-            <Route path="compare" element={<CompareUser />} />
-            <Route path="createSingle" element={<CreateUserSingle />} />
-            <Route path="createCouple" element={<CreateUserCouple />} />
-          </Route>
+      <Routes>
+        <Route path="login" element={<Login />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" element={<Layout />}>
+            <Route path="/home" element={<Home />} />
+            <Route path="/reports">
+              <Route index element={<Reports />} />
+              <Route path=":id" element={<ReportDetail />} />
+            </Route>
+            <Route path="/users">
+              <Route index element={<Users />} />
+              {/* <Route path=":id" element={<CreateUser />} /> */}
+              <Route path="compare" element={<CompareUser />} />
+              <Route
+                path="create"
+                element={<CreateUserSingle typeForm={"create"} />}
+              />
+              <Route
+                path="update/:id"
+                element={<CreateUserSingle typeForm={"edit"} />}
+              />
+              <Route path="createCouple" element={<CreateUserCouple />} />
+            </Route>
 
-          <Route path="/clients">
-            <Route index element={<Clients />} />
-            <Route path="createSingle" element={<CreateClientSingle />} />
-            <Route path="createCouple" element={<CreateClientCouple />} />
+            <Route path="/clients">
+              <Route index element={<Clients />} />
+              <Route
+                path="create"
+                element={<CreateClientSingle typeForm={"create"} />}
+              />
+              <Route
+                path="update/:id"
+                element={<CreateClientSingle typeForm={"edit"} />}
+              />
+              <Route path="createCouple" element={<CreateClientCouple />} />
+            </Route>
+            <Route path="/interactions">
+              <Route index element={<Interactions />} />
+              <Route path="calls">
+                <Route index element={<Calls />} />
+                <Route path="create" element={<FormCall typeForm={"create"}/>} />
+                <Route path="update/:id" element={<FormCall typeForm={"edit"}/>} />
+              </Route>
+
+              <Route path="meetings">
+                <Route index element={<Meetings />} />
+                <Route path="create" element={<FormMeeting typeForm={"create"}/>} />
+                <Route path="update/:id" element={<FormMeeting typeForm={"edit"}/>} />
+              </Route>
+          
+            </Route>
+            <Route path="/instructions" element={<Instructions />} />
+            <Route path="/notes" element={<Notes />} />
+            <Route path="/admin" element={<AdminPanel />} />
+
+            <Route path="/checkouts" element={<Checkouts />} />
+            <Route path="/checkouts" element={<Checkouts />} />
+            <Route path="/profile" element={<Profile />} />
           </Route>
-          <Route path="/interactions" element={<Interactions />} />
-          <Route path="/instructions" element={<Instructions />} />
-          <Route path="/notes" element={<Notes />} />
-          <Route path="/admin" element={<AdminPanel />} />
-          <Route path="/checkouts" element={<Checkouts />} />
-          <Route path="/checkouts" element={<Checkouts />} />
-          <Route path="/profile" element={<Profile />} />
         </Route>
-      </Route>
-    </Routes>
+      </Routes>
     </Suspense>
   );
 }

@@ -93,6 +93,7 @@ input:checked + .slider
     position: absolute;
     left: 30px;
     top: 26px;
+    font-size: 1em;
     z-index: 1;
     color: #777;
     pointer-events: auto;
@@ -103,6 +104,7 @@ input:checked + .slider
   font-family:'FontName';
   position: absolute;
   left: 130px;
+  font-size: 1em;
   top: 26px;
   z-index: 1;
   color: #777;

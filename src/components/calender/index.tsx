@@ -335,14 +335,14 @@ export const Calendar = forwardRef<HTMLDivElement, ICalendarProps>(
         className="flex flex-col rounded-md shadow-lg font-vazirmatn max-w-[22rem] overflow-hidden"
         dir="rtl"
       >
-        <Header
+        {/* <Header
           activeDate={activeDate}
           selectedDate={selectedDate}
           onGoToToday={goToTodayHandler}
           showGoToToday={minDate ? compareMinDate() : showGoToToday}
           months={months}
           
-        />
+        /> */}
         <div
           style={{ backgroundColor: themeClasses.bodyBackgroundColor }}
         //   className={classNames("p-4 flex flex-col items-center space-y-6")}

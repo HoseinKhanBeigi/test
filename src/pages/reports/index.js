@@ -13,6 +13,7 @@ import {
   Polygon2,
   Polygon3,
   PopupCity,
+  Yazed
 } from "../../components/icons";
 import { useTranslation } from "react-i18next";
 import Paper from "@mui/material/Paper";
@@ -29,7 +30,6 @@ import picStr from "./picStr.png";
 // import AccountCircle from '@mui/icons-material/AccountCircle';
 import InputAdornment from "@mui/material/InputAdornment";
 import IranMap from "../../components/iranMap";
-import IranMap2 from "../../components/iranMap2";
 
 const style = {
   position: "absolute",
@@ -91,31 +91,8 @@ export const Reports = () => {
             <img src={maghadas} />
             <Typography padding={2}>{"مرتضی مقدسیان"}</Typography>
           </Grid>
-        </Grid>
-        <Grid item xs={12} md={6} lg={6}>
-          <div onClick={handleOpen}>
-            <IranMap />
-          </div>
-        </Grid>
-      </Grid>
-
-      <Modal
-        keepMounted
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="keep-mounted-modal-title"
-        aria-describedby="keep-mounted-modal-description"
-      >
-        <Box sx={style}>
-          <Grid container dir="rtl">
-            <Grid item xl={8}>
-              <IranMap2 />
-            </Grid>
-            <Grid item xl={4}>
-              {[1, 2, 3, 4, 5].map((e, i) => {
-                return (
-                  <Card
-                    key={i}
+          <Card
+                    
                     sx={{ border: "1px solid silver", marginBottom: "6px" }}
                   >
                     <Grid
@@ -184,12 +161,14 @@ export const Reports = () => {
                       </Grid>
                     </Grid>
                   </Card>
-                );
-              })}
-            </Grid>
-          </Grid>
-        </Box>
-      </Modal>
+        </Grid>
+
+        <Grid item xs={12} md={6} lg={6}>
+          <div>
+            <Yazed />
+          </div>
+        </Grid>
+      </Grid>
     </>
   );
 };

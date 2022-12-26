@@ -55,7 +55,6 @@ import {
     useClickOutside(() => setIsOpen(false), null, [calendarRef, inputRef]);
   
     const updateDateHandler = (newDate: Date) => {
-      console.log(moment(newDate).format('yyyy-MM-DD'));
       if (!controlledDate) setDate(newDate);
       onChange?.(newDate);
     };

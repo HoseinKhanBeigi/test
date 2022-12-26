@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 // form
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { userLogin } from "../../actions/userAction";
+import { userLogin } from "../../actions/login";
 import { NavLink, Outlet } from "react-router-dom";
+import Notifier from "../../components/notify";
+
 // @mui
 import {
   Link,
@@ -16,22 +18,25 @@ import {
   Card,
   Typography,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+import "./login.css";
 // components
 import Iconify from "../../components/iconify";
-import { LoginIcon, Karafaring } from "../../components/icons";
+import { LoginIcon, Karafaring, LogoKarafarin } from "../../components/icons";
 import {
   FormProvider,
   RHFTextField,
   RHFCheckbox,
 } from "../../components/hook-form";
 
+import backG from "./backG.png";
+
 // ----------------------------------------------------------------------
 
 export default function Login() {
-  const { loading, userInfo, error } = useSelector((state) => state.user)
-
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
@@ -51,19 +56,17 @@ export default function Login() {
     defaultValues,
   });
 
-  useEffect(() => {
-    if (userInfo) {
-      navigate('/')
-    }
-  }, [navigate, userInfo])
-
   const {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
 
   const onSubmit = (e) => {
-    dispatch(userLogin(e));
+    dispatch(userLogin(e)).then((res) => {
+      if (res.payload.status === 200) {
+        navigate("/");
+      }
+    });
   };
 
   return (
@@ -71,13 +74,28 @@ export default function Login() {
       container
       justifyContent={"center"}
       alignItems="center"
+      dir="rtl"
       sx={{
         background:
-          "linear-gradient(228.91deg, #5041BC 15.38%, #017874 89.32%)",
+          " linear-gradient(242.73deg, rgba(154, 65, 188, 0.55) 5.53%, rgba(1, 120, 116, 0.55) 95.02%);",
+        // backgroundImage:`url(${backG})`,
+        // backgroundRepeat: "no-repeat",
+        // backgroundSize: "cover",
+        // height:'auto',
+        // width:"100%"
       }}
     >
-      <Card sx={{ padding: "24px" }}>
-        <Grid item container alignItems="center" mb={2} flexDirection="column">
+      {/* <img src={backG} className="imglogin" /> */}
+      <Card
+        sx={{
+          padding: "24px",
+          backgroundColor: "rgb(255 255 255 / 60%)",
+          width: " 532px",
+          height: "742px",
+        }}
+      >
+        <Notifier />
+        <Grid item container alignItems="center" mb={8} flexDirection="column">
           <Grid item>
             <LoginIcon stroke={"#017874"} />
           </Grid>
@@ -85,22 +103,52 @@ export default function Login() {
             <Karafaring />
           </Grid>
           <Grid item>
+            <LogoKarafarin />
+          </Grid>
+          <Grid item mt={4}>
             <Typography>
-              {"به سامانه ی بازاریابی بانک کارآفرین خوش آمدید"}
+              {"به سامانه بازاریابی بانک کارآفرین خوش آمدید"}
             </Typography>
           </Grid>
         </Grid>
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-          <Stack spacing={3}>
-            <RHFTextField name="username" label="username" />
-
+          <Grid container mb={5} justifyContent="start">
+            <Typography
+              color={"#3B3B3B"}
+              mb={2}
+           
+            ></Typography>
             <RHFTextField
+              name="username"
+              label={t("username")}
+              placeholder={t("username")}
+              typeFrom="login"
+                 InputProps={{
+                sx: {
+                  "& input": {
+                    textAlign: "center",
+                  },
+                },
+              }}
+            />
+          </Grid>
+
+          <Grid container mb={5} justifyContent="start">
+            <RHFTextField
+              typeFrom="login"
               name="password"
-              label="Password"
+              style={{ textAlign: "center" }}
+              label={t("password")}
+              placeholder={t("password")}
               type={showPassword ? "text" : "password"}
               InputProps={{
+                sx: {
+                  "& input": {
+                    textAlign: "center",
+                  },
+                },
                 endAdornment: (
-                  <InputAdornment position="end">
+                  <InputAdornment position="start">
                     <IconButton
                       onClick={() => setShowPassword(!showPassword)}
                       edge="end"
@@ -115,29 +163,32 @@ export default function Login() {
                 ),
               }}
             />
-          </Stack>
+          </Grid>
 
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            sx={{ my: 2 }}
-          >
-            {/* <RHFCheckbox name="remember" label="Remember me" /> */}
-            <Link variant="subtitle2" underline="hover">
-              Forgot password?
-            </Link>
-          </Stack>
-
-          <LoadingButton
-            fullWidth
-            size="large"
-            type="submit"
-            variant="contained"
-            loading={isSubmitting}
-          >
-            Login
-          </LoadingButton>
+          <Grid container mb={5}>
+            <Stack
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              sx={{ my: 2 }}
+            >
+              {/* <RHFCheckbox name="remember" label="Remember me" /> */}
+              <Link variant="subtitle2" underline="hover">
+                {t("Forgot_password")}
+              </Link>
+            </Stack>
+          </Grid>
+          <Grid container>
+            <LoadingButton
+              fullWidth
+              size="large"
+              type="submit"
+              variant="contained"
+              loading={isSubmitting}
+            >
+              {t("login")}
+            </LoadingButton>
+          </Grid>
         </FormProvider>
       </Card>
     </Grid>

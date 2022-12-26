@@ -1,33 +1,31 @@
 // userSlice.js
 import { createSlice } from '@reduxjs/toolkit'
-import { profile } from '../../actions/profile'
+import { dashboardApp } from '../../actions/profile'
 
 
 const initialState = {
-  entities: null,
-  status: "idle",
+  entitiesDashboard: null,
+  statusDashboard: "idle",
   error: null,
 };
 
-const profileSlice = createSlice({
-  name: 'profile',
+export const dashboardAppSlice = createSlice({
+  name: 'dashboardApp',
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(profile.pending, (state, action) => {
-        state.status = "pending";
-        state.entities = null;
+      .addCase(dashboardApp.pending, (state, action) => {
+        state.statusDashboard = "pending";
+        state.entitiesDashboard = null;
       })
-      .addCase(profile.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.entities = action.payload
+      .addCase(dashboardApp.fulfilled, (state, action) => {
+        state.statusDashboard = "succeeded";
+        state.entitiesDashboard = action.payload
       })
-      .addCase(profile.rejected, (state, action) => {
-
-        state.status = "failed";
-        state.error = action.payload.response;
+      .addCase(dashboardApp.rejected, (state, action) => {
+        state.statusDashboard = "failed";
+        state.error = action.payload;
       });
   },
-});
-export default profileSlice.reducer
+}).reducer

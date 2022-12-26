@@ -38,8 +38,10 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
-
+import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useRef, useState } from "react";
+import { dashboardApp } from "../../actions/profile";
+import {removeState} from "../../features/detailUser"
 import "./index.css";
 import {
   Dlogo,
@@ -135,9 +137,7 @@ export const Layout = () => {
     });
   }, [path.pathname]);
 
-  const handleCreate = () => {
-    console.log("create");
-  };
+  const handleCreate = () => {};
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -160,14 +160,13 @@ export const Layout = () => {
     setOpen3(!open3);
   };
 
-  const handleTest = (e) => {
-    console.log(e.currentTarget);
-  };
+  const handleTest = (e) => {};
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const handleInsertUserSingle = () => {
-    navigate("users/createSingle");
+    navigate("users/create");
+    // dispatch(removeState())
     setAnchorEl(null);
   };
 
@@ -177,7 +176,7 @@ export const Layout = () => {
   };
 
   const handleInsertClientSingle = () => {
-    navigate("clients/createSingle");
+    navigate("clients/create");
     setAnchorEl(null);
   };
 
@@ -186,6 +185,30 @@ export const Layout = () => {
     setAnchorEl(null);
   };
 
+  const handleInsertCall = () => {
+    navigate("interactions/calls/create");
+    setAnchorEl(null);
+  };
+
+  const handleInsertMeeting = () => {
+    navigate("interactions/meetings/create");
+    setAnchorEl(null);
+  };
+
+  const dispatch = useDispatch();
+
+  const { statusDashboard, entitiesDashboard, error } = useSelector(
+    (state) => state.dashboardAppSlice
+  );
+
+  React.useEffect(() => {
+  
+      dispatch(dashboardApp({}));
+    
+  }, []);
+
+
+  // dashboardAppSlice
   return (
     <Box
       sx={{
@@ -197,108 +220,92 @@ export const Layout = () => {
 
       // justifyContent="center"
     >
-    
-        <nav className="nav1">
-          <ul className="sideBar_list" ref={root}>
-            <li className="sideBar_item" onClick={handleClick} data-name="logo">
-              <Link to="home">
-                <Dlogo stroke={currentSelect.color} />
-              </Link>
-            </li>
-            <li className="sideBar_item" onClick={handleClick} data-name="home">
-              <Link to="home">
-                <Hlogo stroke={currentSelect[1].color} />{" "}
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="reports"
-            >
-              <Link to="reports">
-                <ReLogo stroke={currentSelect[2].color} />{" "}
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="users"
-            >
-              <Link to="users">
-                <Users stroke={currentSelect[3].color} />{" "}
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="clients"
-            >
-              <Link to="clients">
-                <Clients stroke={currentSelect[4].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="interactions"
-            >
-              <Link to="interactions">
-                <InteractionsLogo stroke={currentSelect[5].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="instructions"
-            >
-              <Link to="instructions">
-                <InstructionsLogo stroke={currentSelect[6].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="notes"
-            >
-              <Link to="notes">
-                <NotesLogo stroke={currentSelect[7].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="admin"
-            >
-              <Link to="admin">
-                <AdminLogo stroke={currentSelect[8].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="checkouts"
-            >
-              <Link to="checkouts">
-                <Checkouts stroke={currentSelect[9].color} />
-              </Link>
-            </li>
-            <li
-              className="sideBar_item"
-              onClick={handleClick}
-              data-name="profile"
-            >
-              <Link to="profile">
-                <ProfileLogo stroke={currentSelect.color} />
-              </Link>
-            </li>
-          </ul>
-        </nav>
-   
+      <nav className="nav1">
+        <ul className="sideBar_list" ref={root}>
+          <li className="sideBar_item" onClick={handleClick} data-name="logo">
+            <Link to="home">
+              <Dlogo stroke={currentSelect.color} />
+            </Link>
+          </li>
+          <li className="sideBar_item" onClick={handleClick} data-name="home">
+            <Link to="home">
+              <Hlogo stroke={currentSelect[1].color} />{" "}
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="reports"
+          >
+            <Link to="reports">
+              <ReLogo stroke={currentSelect[2].color} />{" "}
+            </Link>
+          </li>
+          <li className="sideBar_item" onClick={handleClick} data-name="users">
+            <Link to="users">
+              <Users stroke={currentSelect[3].color} />{" "}
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="clients"
+          >
+            <Link to="clients">
+              <Clients stroke={currentSelect[4].color} />
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="interactions"
+          >
+            <Link to="interactions">
+              <InteractionsLogo stroke={currentSelect[5].color} />
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="instructions"
+          >
+            <Link to="instructions">
+              <InstructionsLogo stroke={currentSelect[6].color} />
+            </Link>
+          </li>
+          <li className="sideBar_item" onClick={handleClick} data-name="notes">
+            <Link to="notes">
+              <NotesLogo stroke={currentSelect[7].color} />
+            </Link>
+          </li>
+          <li className="sideBar_item" onClick={handleClick} data-name="admin">
+            <Link to="admin">
+              <AdminLogo stroke={currentSelect[8].color} />
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="checkouts"
+          >
+            <Link to="checkouts">
+              <Checkouts stroke={currentSelect[9].color} />
+            </Link>
+          </li>
+          <li
+            className="sideBar_item"
+            onClick={handleClick}
+            data-name="profile"
+          >
+            <Link to="profile">
+              <ProfileLogo stroke={currentSelect.color} />
+            </Link>
+          </li>
+        </ul>
+      </nav>
 
-      <Container maxWidth="xl">
+      <Container maxWidth="lg">
         <Grid
-          mt={2}
-          mb={2}
           container
           dir="rtl"
           justifyContent={"space-between"}
@@ -309,15 +316,19 @@ export const Layout = () => {
               container
               alignItems={"center"}
               sx={{
-                width: "182px",
+                width: "100%",
                 border: "1px solid #777777",
-                padding: "2px",
+                padding: "0.3rem",
                 borderRadius: "12px",
               }}
               justifyContent="space-between"
             >
               <UserIconTitle />
-              <Typography>مهدی سلف علی شاهی</Typography>
+              {statusDashboard === "succeeded" && (
+                <Typography
+                  paddingLeft={"7px"}
+                >{`${entitiesDashboard?.data?.user?.name} -${entitiesDashboard?.data?.user?.position}- ${entitiesDashboard?.data?.user?.level} `}</Typography>
+              )}
             </Grid>
           </Grid>
 
@@ -385,7 +396,7 @@ export const Layout = () => {
               display: "block",
               position: "absolute",
               top: 0,
-              right: 14,
+              left: 14,
               width: 10,
               height: 10,
               bgcolor: "background.paper",
@@ -414,10 +425,13 @@ export const Layout = () => {
             {t("enter type of data")}
           </Typography>
 
-          <MenuItem sx={{ justifyContent: "end" }}>
+          <MenuItem
+            sx={{ justifyContent: "end" }}
+            onClick={handleInsertMeeting}
+          >
             <Typography color={"#017874"}> {t("insert meeting")}</Typography>
           </MenuItem>
-          <MenuItem sx={{ justifyContent: "end" }}>
+          <MenuItem sx={{ justifyContent: "end" }} onClick={handleInsertCall}>
             <Typography color={"#017874"}>{t("insert call")}</Typography>
           </MenuItem>
           <ListItemButton
