@@ -1,6 +1,6 @@
 // userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { meetingsAction } from "../../actions/meetings";
+import { meetingsList } from "../../actions/meetings";
 
 const initialState = {
   entities: [],
@@ -14,15 +14,15 @@ export const meetingListSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(meetingsAction.pending, (state, action) => {
+      .addCase(meetingsList.pending, (state, action) => {
         state.status = "pending";
         state.entities = [];
       })
-      .addCase(meetingsAction.fulfilled, (state, action) => {
+      .addCase(meetingsList.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.entities = action.payload;
       })
-      .addCase(meetingsAction.rejected, (state, action) => {
+      .addCase(meetingsList.rejected, (state, action) => {
         state.status = "failed";
         state.error = action;
       });

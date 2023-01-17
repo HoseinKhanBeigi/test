@@ -14,12 +14,11 @@
 
 .nav1{
   display: flex;
-
+  width: 90px;
+  right: 0;
   height: 100vh;
-  background-color: #017874;
   position: fixed;
-  overflow-y: auto;
-  z-index: 999;
+  overflow-y: scroll;
   top: 0;
 }
 

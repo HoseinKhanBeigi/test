@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Grid } from "@mui/material";
 import { Box, Card, Link, Typography, Stack } from "@mui/material";
-import { AppDashboard } from "../../components/dashboard";
+import { AreaChart } from "../../components/areaChart";
 import TextField from "@mui/material/TextField";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
@@ -21,7 +21,7 @@ export const CompareUser = () => {
   return (
     <Grid container dir="rtl" spacing={2}>
       <Grid item xs={12} md={6} lg={8}>
-        <AppDashboard
+        <AreaChart
           title="Website Visits"
           subheader="(+43%) than last year"
           chartLabels={[

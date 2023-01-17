@@ -42,7 +42,7 @@ export const DialogComponent = ({ openDialog, setOpenDialog, userid }) => {
       dispatch(clientSearch({ params: params }));
     } else if (e.target.value === "") {
       removeParams("search", navigate);
-      dispatch(clientSearch({ params: { page: 1 } }));
+      dispatch(clientSearch({ page: 1 }));
     }
   };
   const debouncedResultsClients = useMemo(() => {
@@ -58,10 +58,6 @@ export const DialogComponent = ({ openDialog, setOpenDialog, userid }) => {
   const { statusClient, clietList, errorClient } = useSelector(
     (state) => state.clientSearchSlice
   );
-
-  useEffect(() => {
-    dispatch(clientSearch({ page: 1 }));
-  }, []);
 
   const handleExecution = () => {
     const result = {

@@ -1,17 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Grid } from "@mui/material";
-
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clientSchema } from "./schema";
 import { AddAgents } from "./agents";
-
 import { LoadingButton } from "@mui/lab";
-
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
-
 import { responseMessage } from "../../features/messageLog";
 import { HeaderPage } from "../../components/headerPage";
 import { clientForm } from "./clientForm";
@@ -20,45 +16,43 @@ import {
   clientOrganization,
   clientUpdate,
   clientDetail,
+  clientsList
 } from "../../actions/clients";
-
 import Notifier from "../../components/notify";
 import { switchInput } from "../../components/switchInputs";
 import "dayjs/locale/fa";
-
 import { FormProvider } from "../../components/hook-form";
-
 import moment from "moment";
 
 export const CreateClientSingle = ({ typeForm }) => {
   const { t } = useTranslation();
-  const nationalNumer = useRef();
+  const params = useParams();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [genderRadio, setGenderRadio] = React.useState("آقا");
   const [interstedName, setIntersted] = React.useState([]);
 
-  const dispatch = useDispatch();
-  const { status, entities, error } = useSelector(
+  const { status, entities } = useSelector(
     (state) => state.clientOrganizationType
   );
-
-  const params = useParams();
-  useEffect(() => {
-    const id = params.id;
-    if (typeForm === "edit") {
-      dispatch(clientDetail({ id }));
-    }
-  }, []);
-
-  const { statusDetail, clientDetails, errorDetial } = useSelector(
+  const { statusDetail, clientDetails } = useSelector(
     (state) => state.clientDetailShow
   );
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(clientOrganization({ page: 1 }));
+    if (statusDetail === "idle") {
+      dispatch(
+        clientDetail({
+          id: params.id,
+        })
+      ).then((e) => {
+        if (e.payload.status === 200) {
+          dispatch(clientOrganization({}));
+        }
+      });
     }
-  }, [dispatch, status]);
+  }, [statusDetail, dispatch]);
 
   const defaultValues = {
     name: clientDetails?.data?.client?.name,
@@ -66,7 +60,6 @@ export const CreateClientSingle = ({ typeForm }) => {
     email: clientDetails?.data?.client?.email,
     gender: clientDetails?.data?.client?.gender,
     national_number: clientDetails?.data?.client?.national_number,
-    national_identifier: clientDetails?.data?.client?.national_identifier,
     job: clientDetails?.data?.client?.job,
     phone: clientDetails?.data?.client?.phone,
     city: clientDetails?.data?.client?.city,
@@ -75,15 +68,12 @@ export const CreateClientSingle = ({ typeForm }) => {
     agents: clientDetails?.data?.client?.agents,
   };
 
-  const navigate = useNavigate();
+  const [valueRadio, setValueRadio] = React.useState(defaultValues.type);
 
   const methods = useForm({
     resolver: yupResolver(clientSchema(t)),
-    defaultValues:
-      typeForm === "edit" ? statusDetail === "succeeded" && defaultValues : {},
+    defaultValues: defaultValues,
   });
-
-  const [valueRadio, setValueRadio] = React.useState(defaultValues.type);
 
   useEffect(() => {
     if (statusDetail === "succeeded" && typeForm === "edit") {
@@ -98,7 +88,6 @@ export const CreateClientSingle = ({ typeForm }) => {
   const {
     handleSubmit,
     formState: { isSubmitting },
-    register,
   } = methods;
 
   const handleChangeDatePicker = (e) => {
@@ -106,12 +95,8 @@ export const CreateClientSingle = ({ typeForm }) => {
   };
 
   const handleChangeBussiness = (e) => {
-    methods.setValue("business", e.target.value);
+    methods.setValue("business", e.name);
   };
-
-  // const handleChangeAgentId = (e) => {
-  //   methods.setValue("agent_id", e.target.value);
-  // };
 
   const handleChangeUserId = (e) => {
     methods.setValue("user_id", e.target.value);
@@ -138,13 +123,9 @@ export const CreateClientSingle = ({ typeForm }) => {
   const onSubmit = (e) => {
     if (typeForm === "edit") {
       const rese = e;
-      if (rese.type === "حقوقی") {
-        delete rese.national_number;
-      } else if (rese.type === "حقیقی") {
-        delete rese.national_identifier;
-      }
       dispatch(clientUpdate({ id: params.id, res: rese })).then((result) => {
         if (result.payload.status === 200) {
+          dispatch(clientsList({}))
           dispatch(responseMessage(result.payload.message));
           navigate("/clients");
         }
@@ -157,14 +138,9 @@ export const CreateClientSingle = ({ typeForm }) => {
         }
         res = e;
       }
-      if (res.type === "حقوقی") {
-        delete res.national_number;
-      } else if (res.type === "حقیقی") {
-        delete res.national_identifier;
-      }
-
       dispatch(clientCreate(res)).then((result) => {
         if (result.payload.status === 200) {
+          dispatch(clientsList({}))
           dispatch(responseMessage(result.payload.message));
           navigate("/clients");
         }
@@ -173,7 +149,6 @@ export const CreateClientSingle = ({ typeForm }) => {
   };
 
   const onChangeAgents = useCallback((e) => {
-    console.log(e);
     const agents = e.map((k) => {
       return {
         name: k.agent_name || k?.name,
@@ -192,7 +167,6 @@ export const CreateClientSingle = ({ typeForm }) => {
         email: clientDetails?.data?.client?.email,
         gender: clientDetails?.data?.client?.gender,
         national_number: clientDetails?.data?.client?.national_number,
-        national_identifier: clientDetails?.data?.client?.national_identifier,
         phone: clientDetails?.data?.client?.phone,
         job: clientDetails?.data?.client?.job,
         city: clientDetails?.data?.client?.city,
@@ -211,7 +185,6 @@ export const CreateClientSingle = ({ typeForm }) => {
       email: "",
       gender: "",
       national_number: "",
-      national_identifier: "",
       phone: "",
       job: "",
       city: "",
@@ -236,7 +209,8 @@ export const CreateClientSingle = ({ typeForm }) => {
     status,
     statusDetail,
     entities,
-    interstedName
+    interstedName,
+    clientDetails
   );
 
   return (
@@ -248,13 +222,7 @@ export const CreateClientSingle = ({ typeForm }) => {
             <Grid container item spacing={2}>
               {structForm.map((element, idx) => (
                 <Grid item xl={6} md={6} sm={6} key={idx}>
-                  {switchInput(
-                    element,
-                    typeForm,
-                    status,
-                    statusDetail,
-                    t
-                  )}
+                  {switchInput(element, typeForm, status, statusDetail, t)}
                 </Grid>
               ))}
             </Grid>

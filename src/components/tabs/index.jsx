@@ -21,6 +21,7 @@ export const Tabs = ({
   keyss,
   onFilterTabs,
   actionFilter,
+  clientList
 }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -52,7 +53,6 @@ export const Tabs = ({
     });
   }
 
-  console.log(property);
 
   const handleChange = (item) => {
     if (item.name === "all") {
@@ -82,7 +82,7 @@ export const Tabs = ({
             background: e[status] ? e.background : "",
           }}
         >
-          {i === 1 ? (
+          {i === 1 && clientList? (
            <Typography
            color={e[status] ? e.color : "#3B3B3B"}
            sx={{ cursor: "pointer" }}

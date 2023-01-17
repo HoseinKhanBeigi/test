@@ -12,6 +12,10 @@ import { TextField } from "@mui/material";
 import Button from "@mui/material/Button";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 import { PlusIcon, TrashIcone, EditIcon } from "../../components/icons";
 import { useReducer } from "react";
 
@@ -32,11 +36,18 @@ export const AddAgents = ({
 }) => {
   const agent_name = useRef();
   const agent_phone = useRef();
-  const agent_position = useRef();
+  // const agent_position = useRef();
 
   const [error, seterror] = useState(false);
 
   const [isSave, setIsSave] = useState(false);
+
+  const [agent_position, setAge] = React.useState("");
+
+  const handleChangePosition = (event) => {
+    setAge(event.target.value);
+    // agent_position = event.target.value
+  };
 
   const createInitialState = useRef({
     agents: [],
@@ -51,22 +62,24 @@ export const AddAgents = ({
       agentsList.map((e) => {
         agent_name.current.value = e.name;
         agent_phone.current.value = e.phone;
-        agent_position.current.value = e.position;
+        // agent_position.current = e.position;
+        setAge(e.position);
       });
     } else {
       createInitialState.current.agents = [];
       createInitialState.current.counter = 0;
       agent_name.current.value = "";
       agent_phone.current.value = "";
-      agent_position.current.value = "";
+      setAge("");
+      // agent_position.current = "";
     }
   }, [statusDetail, typeForm]);
 
   const handleChange = (e) => {
     if (
       agent_name.current.value &&
-      agent_phone.current.value &&
-      agent_position.current.value
+      agent_phone.current.value
+
     ) {
       console.log("tesss");
       setIsSave(true);
@@ -80,7 +93,8 @@ export const AddAgents = ({
       case "added_todo": {
         agent_name.current.value = "";
         agent_phone.current.value = "";
-        agent_position.current.value = "";
+        // agent_position.current = "";
+        setAge("");
 
         if (
           action.agent_name !== "" &&
@@ -115,7 +129,9 @@ export const AddAgents = ({
       case "edit": {
         agent_name.current.value = action.agent_name;
         agent_phone.current.value = action.agent_phone;
-        agent_position.current.value = action.agent_position;
+        // agent_position.current = action.agent_position;
+        console.log(action.agent_position);
+        setAge(action.agent_position);
 
         const idx = state.agents.findIndex((t) => t.id === action.id);
         const agent = Object.assign({}, state.agents[idx]);
@@ -131,8 +147,11 @@ export const AddAgents = ({
         const idx = state.agents.findIndex((t) => t.id === action.id);
         agent_name.current.value = "";
         agent_phone.current.value = "";
-        agent_position.current.value = "";
+        // agent_position.current = "";
+        setAge("");
         const agent = Object.assign({}, state.agents[idx]);
+
+        console.log(action.agent_position);
         agent.agent_name = action.agent_name;
         agent.agent_phone = action.agent_phone;
         agent.agent_position = action.agent_position;
@@ -148,7 +167,8 @@ export const AddAgents = ({
       case "cancel": {
         agent_name.current.value = "";
         agent_phone.current.value = "";
-        agent_position.current.value = "";
+        // agent_position = "";
+        setAge("");
         const idx = state.agents.findIndex((t) => t.id === action.id);
         const agent = Object.assign({}, state.agents[idx]);
         agent.mode = "edit";
@@ -213,7 +233,7 @@ export const AddAgents = ({
                       type: "added_todo",
                       agent_name: agent_name.current.value,
                       agent_phone: agent_phone.current.value,
-                      agent_position: agent_position.current.value,
+                      agent_position: agent_position,
                     });
                   }}
                 >
@@ -244,14 +264,36 @@ export const AddAgents = ({
           />
         </Grid>
         <Grid item>
-          <TextField
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">
+              {t("position")}
+            </InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={agent_position}
+              label={t("position")}
+              name="position_agent"
+              in
+              // inputRef={agent_position}
+              onChange={handleChangePosition}
+            >
+              <MenuItem value={"مدیر عامل"}>{"مدیر عامل"}</MenuItem>
+              <MenuItem value={"مدیر مالی"}>{"مدیر مالی"}</MenuItem>
+              <MenuItem value={"حسابدار"}>{"حسابدار"}</MenuItem>
+              <MenuItem value={"وکیل"}>{"وکیل"}</MenuItem>
+              <MenuItem value={"نماینده قانونی"}>{"نماینده قانونی"}</MenuItem>
+              <MenuItem value={"معاون"}>{"معاون"}</MenuItem>
+            </Select>
+          </FormControl>
+          {/* <TextField
             fullWidth
             error={error}
             name="position_agent"
             inputRef={agent_position}
             label={t("position")}
             onChange={handleChange}
-          />
+          /> */}
         </Grid>
       </Grid>
       <Grid container item sm={6} mt={2}>
@@ -283,7 +325,7 @@ export const AddAgents = ({
                               agent_phone:
                                 agent_phone.current.value || e?.phone,
                               agent_position:
-                                agent_position.current.value || e?.position,
+                                agent_position.current || e?.position,
                               id: e.id,
                             })
                           }

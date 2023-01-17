@@ -3,30 +3,38 @@ import Autocomplete from "@mui/material/Autocomplete";
 import TextField from "@mui/material/TextField";
 import styles from "./CssModulesSlider.module.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function RHAuto({ name, children, ...other }) {
   const { control } = useFormContext();
   const [iniSingleValue, setInitialSingleValue] = useState(() => {
-    if (other.typeForm !== "create" && !other.multiple) {
-      return other.defaultValue;
+    if (other.typeForm === "create" && !other.multiple) {
+      return "";
     }
   });
-  const [changeState, setChangeState] = useState();
+
+  const changeState = useRef();
 
   const [multipleValue, setMultipleValue] = useState([]);
 
   useEffect(() => {
-    if (!other.multiple && other.typeForm !== "create" && !changeState) {
+    if (!other.multiple && other.typeForm === "edit" && !changeState.current) {
       setInitialSingleValue(other.defaultValue);
     }
-  }, [other.loadingEdit, other.typeForm, changeState]);
+  }, [other.loadingEdit, other.typeForm, changeState.current]);
+
+  
+  useEffect(() => {
+  if (other.typeForm === "create" && !other.multiple) {
+      setInitialSingleValue("");
+    }
+  }, [other.typeForm]);
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, ref }, fieldState: { error } }) => {
+      render={({ field, fieldState: { error } }) => {
         const selectChange = (e, value, reason, details) => {
           if (other.multiple) {
             const exist =
@@ -45,12 +53,13 @@ export default function RHAuto({ name, children, ...other }) {
               setMultipleValue((state) => [...value]);
             }
           } else {
-            setChangeState(value);
             other.handleChange(value);
+
             setInitialSingleValue(value);
-            //
+            changeState.current = value;
           }
         };
+
         return (
           <Autocomplete
             dir="rtl"
@@ -59,9 +68,7 @@ export default function RHAuto({ name, children, ...other }) {
             }}
             multiple={other.multiple}
             id={other.multiple ? "multiple-limit-tags" : "combo-box-demo"}
-            options={
-              other.loadingEdit || other.loadingCreate ? other.value : []
-            }
+            options={other.value}
             onChange={selectChange}
             getOptionLabel={(option) =>
               other.loadingEdit || other.loadingCreate
@@ -71,13 +78,13 @@ export default function RHAuto({ name, children, ...other }) {
                 : ""
             }
             value={
-              other.typeForm !== "create"
+              other.typeForm === "edit"
                 ? other.multiple
-                  ? other.loadingEdit && other.defaultValue
+                  ? other.loadingEdit && other?.defaultValue
                   : other.loadingEdit && iniSingleValue
                 : other.multiple
                 ? multipleValue
-                : undefined
+                : iniSingleValue
             }
             loading={!other.loadingEdit}
             renderInput={(params) => (

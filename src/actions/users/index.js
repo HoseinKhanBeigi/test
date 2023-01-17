@@ -10,6 +10,6 @@ export const userCreate = createAsyncAction("/users", "user/create", "post");
 export const userDetail = createAsyncAction("/users", "userDetailslice", "get");
 export const userOrganization = createAsyncAction(
   "/users/create",
-  "userOrganization",
+  "userOrganizationType",
   "post"
 );

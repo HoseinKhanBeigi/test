@@ -7,26 +7,10 @@ export const userForm = (
   statusDetail,
   status,
   entities,
-  interstedName,
-  userDetails
+  interests,
+  userDetails,
+  organizationValue
 ) => {
-  const organizationIds = (data) => {
-    let value = "";
-    if (data?.organization === "شعبه" || data?.organization === "سایر") {
-      value = data?.branch_id;
-    }
-    if (data?.organization === "ستاد") {
-      value = data?.head_quarter_department_id;
-    }
-    if (data?.organization === "شرکت های فرعی") {
-      value = data?.company_id;
-    }
-    if (data?.organization === "نمایندگان") {
-      value = data?.agency_id;
-    }
-    return value;
-  };
-
   return [
     {
       name: "name",
@@ -34,6 +18,7 @@ export const userForm = (
       type: "text",
       typeInput: "RHFTextField",
       loading: statusDetail === "succeeded",
+      farsi: true,
     },
     {
       name: "mobile",
@@ -67,7 +52,7 @@ export const userForm = (
         { name: "سایر" },
       ],
       async: false,
-      value: statusDetail === "succeeded" && {
+      value: {
         name: userDetails?.data?.user?.organization,
       },
     },
@@ -82,15 +67,10 @@ export const userForm = (
       multiple: false,
       loadingCreate: status === "succeeded",
       loadingEdit: statusDetail === "succeeded" && status === "succeeded",
-      values: status === "succeeded" && entities?.data?.organizations,
-      value:
-        userDetails &&
-        statusDetail === "succeeded" &&
-        status === "succeeded" &&
-        entities?.data?.organizations.find(
-          (e) =>
-            e.id === organizationIds(userDetails?.data?.user) 
-        ),
+      values: entities?.data?.organizations ?? [],
+      value: entities?.data?.organizations?.find(
+        (e) => e.id === organizationValue
+      ),
       async: true,
     },
     {
@@ -105,13 +85,12 @@ export const userForm = (
       label: "intersted",
       typeInput: "RHAuto",
       change: handleChangeIntersted,
-      loadingEdit: statusDetail === "succeeded",
-      onInputChange: undefined,
-      values: status === "succeeded" && entities?.data?.interests,
+      loadingEdit: statusDetail === "succeeded" && status === "succeeded",
       loadingCreate: status === "succeeded",
       multiple: true,
       async: true,
-      value: interstedName,
+      values: entities?.data?.interests ?? [],
+      value: interests ?? [],
       propValue: "id",
       propTitle: "title",
     },
@@ -144,7 +123,7 @@ export const userForm = (
         { name: "RM1" },
       ],
       async: false,
-      value: statusDetail === "succeeded" && {
+      value: {
         name: userDetails?.data?.user?.level,
       },
     },
@@ -157,16 +136,13 @@ export const userForm = (
       loadingCreate: status === "succeeded",
       loadingEdit: statusDetail === "succeeded" && status === "succeeded",
       onInputChange: undefined,
-      values: entities?.data?.users,
+      values: entities?.data?.users ?? [],
       typeInput: "RHAuto",
       multiple: false,
       async: true,
-      value:
-        statusDetail === "succeeded" &&
-        status === "succeeded" &&
-        entities?.data?.users.find(
-          (e) => e.id === userDetails?.data?.user?.parent_id
-        ),
+      value: entities?.data?.users?.find(
+        (e) => e.id === userDetails?.data?.user?.parent_id
+      ),
     },
   ];
 };

@@ -1,6 +1,6 @@
 // userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
-import { callsAction } from "../../actions/calls";
+import { callsList } from "../../actions/calls";
 
 const initialState = {
   entities: [],
@@ -14,15 +14,15 @@ export const callListSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-      .addCase(callsAction.pending, (state, action) => {
+      .addCase(callsList.pending, (state, action) => {
         state.status = "pending";
         state.entities = [];
       })
-      .addCase(callsAction.fulfilled, (state, action) => {
+      .addCase(callsList.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.entities = action.payload;
       })
-      .addCase(callsAction.rejected, (state, action) => {
+      .addCase(callsList.rejected, (state, action) => {
         state.status = "failed";
         state.error = action;
       });

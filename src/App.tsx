@@ -20,7 +20,7 @@ import { CreateUserCouple } from "./pages/users/coupleForm";
 import { CreateClientCouple } from "./pages/clients/coupleForm";
 import { CreateClientSingle } from "./pages/clients/singleForm";
 import { CompareUser } from "./pages/users/compareUser";
-import { ReportDetail } from "./pages/reports/reportDetail";
+import { DetailReports } from "./pages/reports/reportDetail";
 import LinearProgress from "@mui/material/LinearProgress";
 import { Accessiblities } from "./pages/accessibities";
 import { FormCall } from "./pages/calls/form";
@@ -40,7 +40,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/reports">
               <Route index element={<Reports />} />
-              <Route path=":id" element={<ReportDetail />} />
+              <Route path=":id" element={<DetailReports/>} />
             </Route>
             <Route path="/users">
               <Route index element={<Users />} />

@@ -14,24 +14,45 @@ import { Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { convertDigits } from "persian-helpers";
 import Box from "@mui/material/Box";
-import { useReducer } from "react";
 import { PaginationTable } from "../../components/pagination";
 import { HeaderPage } from "../../components/headerPage";
 import { getQueryParams } from "../../utils";
 import { initialTabs, initialDrops } from "./filterItems";
-import { clientsList, deleteClient } from "../../actions/clients";
+import {
+  clientsList,
+  deleteClient,
+  clientDetail,
+  clientOrganization,
+} from "../../actions/clients";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
-import { createSearchParams, useNavigate } from "react-router-dom";
-import CircularProgress from "@mui/material/CircularProgress";
+import { useNavigate } from "react-router-dom";
 import { ClientCard } from "../../components/clientsCard";
 import { responseMessage } from "../../features/messageLog";
 import Notifier from "../../components/notify";
 import Skeleton from "@mui/material/Skeleton";
 import { Confirmation } from "../../components/confirmation";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
+import { useCheckBox } from "../../hooks/useCheckBox";
+import {
+  dropDownAction,
+  CheckBoxAction,
+  filterList,
+} from "../../features/filter";
 
 export const Clients = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [view, setView] = useState(false);
+  const [stateId, setStateId] = useState();
   const [deleteState, setDeleteState] = React.useState(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+
+  const { statusClient, clietList, errorClient } = useSelector(
+    (state) => state.clientListSlice
+  );
+  useDispatchAction(clientsList, statusClient);
+  const useCheckBoxSelector = useCheckBox(statusClient, clietList);
   const header = [
     t("name"),
     t("category"),
@@ -45,23 +66,10 @@ export const Clients = () => {
     "",
   ];
 
-  const navigate = useNavigate();
-
-  const dispatch = useDispatch();
-  const { statusClient, clietList, errorClient } = useSelector(
-    (state) => state.clientListSlice
-  );
-
-  useEffect(() => {
-    const params = { page: 1 };
-    navigate({
-      search: `?${createSearchParams(params)}`,
-    });
-    dispatch(clientsList({ params: { page: 1, ...getQueryParams() } }));
-  }, []);
-
   const handleNavigate = (id) => {
     navigate(`/clients/update/${id}`);
+    dispatch(clientDetail({ id }));
+    dispatch(clientOrganization({}));
   };
 
   const handleDelete = (id) => {
@@ -75,59 +83,32 @@ export const Clients = () => {
     });
   };
 
-  const [view, setView] = useState(false);
-
   const handleChangeView = () => {
     setView((state) => !state);
   };
-
-  const [openConfirmation, setOpenConfirmation] = useState(false);
-  const [stateId, setStateId] = useState();
 
   const handleClickConfirmation = (id) => {
     setOpenConfirmation(true);
     setStateId(id);
   };
 
-  const initialReducer = useRef([]);
-
-  const handlePushItem = (item) => {
-    item.map((_, i) => {
-      initialReducer.current[i] = { checked: false, id: i };
-    });
-  };
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "SELECTALL":
-        return state.map((item) => {
-          return { ...item, checked: !item.checked };
-        });
-
-      case "SELECTITEM":
-        return state.map((item) => {
-          if (item.id === action.payload) {
-            return { ...item, checked: !item.checked };
-          } else {
-            return item;
-          }
-        });
-      default:
-        return state;
-    }
-  };
-
   const handleSelectAll = (item) => {
-    dispatchAction({ type: "SELECTALL" });
+    useCheckBoxSelector.dispatchAction({ type: "SELECTALL" });
   };
-
   const handleSelect = (i) => {
-    dispatchAction({ type: "SELECTITEM", payload: i });
+    useCheckBoxSelector.dispatchAction({ type: "SELECTITEM", id: i });
   };
 
-  const [items, dispatchAction] = useReducer(reducer, initialReducer.current);
-
-  console.log(items);
+  const { initialDropsClient } = useSelector((state) => state.filterSlice);
+  const handleChange = (item) => {
+    dispatch(
+      dropDownAction({
+        type: `DROPDOWN`,
+        title: item.title,
+        name: "initialDropsClient",
+      })
+    );
+  };
 
   return (
     <>
@@ -136,12 +117,17 @@ export const Clients = () => {
         entities={clietList}
         status={statusClient}
         page="table"
+        filterPage
+        download
+        searchPage
         tab={true}
         action={clientsList}
         initialTabs={initialTabs}
-        initialDrops={initialDrops}
+        initialDrops={initialDropsClient}
+        handleChange={handleChange}
         changeview={handleChangeView}
         defaultQuery={{ ...getQueryParams() }}
+        clientList
       />
       <Grid container>
         <>
@@ -171,18 +157,20 @@ export const Clients = () => {
                 height: "80vh",
                 justifyContent: "space-between",
                 background: "#fff",
+                overflowX: "scroll",
               }}
             >
-              <Paper sx={{ width: "100%" }}>
+              <Paper
+                sx={{
+                  overflowX: "scroll",
+                }}
+              >
                 <TableContainer component={Paper}>
                   <Table aria-label="simple table" dir="rtl">
                     <TableHead>
                       <TableRow sx={{ backgroundColor: "#EFF3F3" }}>
                         <TableCell padding="checkbox">
-                          <Checkbox color="primary" onClick={handleSelectAll}>
-                            {statusClient === "succeeded" &&
-                              handlePushItem(clietList?.data?.data)}
-                          </Checkbox>
+                          <Checkbox color="primary" onClick={handleSelectAll} />
                         </TableCell>
                         {header.map((e, i) => (
                           <TableCell align="left" key={i}>
@@ -219,11 +207,13 @@ export const Clients = () => {
                               <TableCell padding="checkbox">
                                 <Checkbox
                                   color="primary"
-                                  checked={items[i].checked}
-                                  onClick={() => handleSelect(i)}
+                                  checked={useCheckBoxSelector.items[i].checked}
+                                  onClick={() => handleSelect(row.id)}
                                 />
                               </TableCell>
-                              <TableCell align="left">{row?.name}</TableCell>
+                              <TableCell align="left" sx={{ color: "#2563EB" }}>
+                                {row?.name}
+                              </TableCell>
                               <TableCell align="left">
                                 {row?.bi_point}
                               </TableCell>
@@ -244,13 +234,14 @@ export const Clients = () => {
                               <TableCell align="left">
                                 {row?.total_point}
                               </TableCell>
-                              <TableCell align="left">{row?.user.name}</TableCell>
+                              <TableCell align="left">
+                                {row?.user.name}
+                              </TableCell>
                               <TableCell align="left">
                                 <Grid
                                   sx={{ display: "flex", flexDirection: "row" }}
                                 >
                                   <IconButton
-                              
                                     aria-label="menu"
                                     onClick={() =>
                                       handleClickConfirmation(row?.id)
@@ -259,14 +250,12 @@ export const Clients = () => {
                                     <TrashIcone />
                                   </IconButton>
                                   <IconButton
-                              
                                     aria-label="menu"
                                     onClick={() => handleNavigate(row?.id)}
                                   >
                                     <EditIcon />
                                   </IconButton>
                                   <IconButton
-                              
                                     aria-label="menu"
                                     // onClick={handleClick}
                                   >

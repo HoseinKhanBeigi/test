@@ -3,17 +3,14 @@ export const meetingForm = (
   handleChangeAgentId,
   statusMeetingAgents,
   handleChangeUserId,
-  handleChangeGuests,
   handleChangeSetUsers,
-  guests,
   users,
   agents,
-  client_idInit,
   MeetingAgents,
   statusDetail,
   meetingDetails,
-  entities,
-  status
+  meetingEntities,
+  statusMeetingEntities
 ) => {
   return [
     {
@@ -22,6 +19,7 @@ export const meetingForm = (
       type: "text",
       typeInput: "RHFTextField",
       loading: statusDetail === "succeeded",
+      farsi: true,
     },
     {
       name: "client_id",
@@ -31,10 +29,11 @@ export const meetingForm = (
       multiple: false,
       propValue: "id",
       propTitle: "name",
-      loadingCreate: status === "succeeded",
-      loadingEdit: status === "succeeded" && statusDetail === "succeeded",
-      values: status === "succeeded" && entities?.data?.clients,
-      value: statusDetail === "succeeded" && meetingDetails?.data?.client,
+      loadingCreate: true,
+      loadingEdit:
+        statusMeetingEntities === "succeeded" && statusDetail === "succeeded",
+      values: meetingEntities?.data?.clients ?? [],
+      value: meetingDetails?.data?.client,
       async: true,
     },
     {
@@ -45,16 +44,12 @@ export const meetingForm = (
       change: handleChangeAgentId,
       propValue: "id",
       propTitle: "name",
-      loadingCreate:
-        status === "succeeded" && statusMeetingAgents === "succeeded",
+      loadingCreate: true,
       loadingEdit:
         statusMeetingAgents === "succeeded" && statusDetail === "succeeded",
-      values:
-        status === "succeeded" &&
-        statusMeetingAgents === "succeeded" &&
-        MeetingAgents?.data,
+      values: MeetingAgents?.data ?? [],
       async: true,
-      value:statusDetail === "succeeded" && agents,
+      value: agents ?? [],
     },
     {
       name: "user_id",
@@ -64,10 +59,11 @@ export const meetingForm = (
       multiple: false,
       propValue: "id",
       propTitle: "name",
-      loadingCreate: status === "succeeded",
-      loadingEdit: statusDetail === "succeeded" && status === "succeeded",
-      values: status === "succeeded" && entities?.data?.users,
-      value: entities?.data?.users.find(
+      loadingCreate: true,
+      loadingEdit:
+        statusDetail === "succeeded" && statusMeetingEntities === "succeeded",
+      values: meetingEntities?.data?.users ?? [],
+      value: meetingEntities?.data?.users.find(
         (e) => e.id === meetingDetails?.data?.user_id
       ),
       async: true,
@@ -90,15 +86,40 @@ export const meetingForm = (
       name: "users",
       label: "companies",
       typeInput: "RHAuto",
-      value: users,
       multiple: true,
       change: handleChangeSetUsers,
-      loadingCreate: status === "succeeded",
-      loadingEdit: statusDetail === "succeeded" && status === "succeeded",
-      values: status === "succeeded" && entities?.data?.users,
+      loadingCreate: true,
+      loadingEdit:
+        statusDetail === "succeeded" && statusMeetingEntities === "succeeded",
+      values: meetingEntities?.data?.users ?? [],
+      value: users ?? [],
       async: true,
       propValue: "id",
       propTitle: "name",
+    },
+  ];
+};
+
+export const meetingFormDate = (
+  datePickerValue,
+  handleChangeDatePicker,
+  valueTime,
+  handleChangeEndTimePicker
+) => {
+  return [
+    {
+      name: "start",
+      label: "dateAndTime",
+      value: datePickerValue,
+      typeInput: "DateTimePicker",
+      change: handleChangeDatePicker,
+    },
+    {
+      name: "end",
+      label: "endTime",
+      value: valueTime,
+      typeInput: "TimePicker",
+      change: handleChangeEndTimePicker,
     },
   ];
 };

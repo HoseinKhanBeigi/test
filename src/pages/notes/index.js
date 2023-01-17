@@ -1,12 +1,13 @@
 import { Grid } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import { Box, Card, Link, Typography, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import InputAdornment from "@mui/material/InputAdornment";
-import IconButton from '@mui/material/IconButton';
+import IconButton from "@mui/material/IconButton";
 import Input from "@mui/material/Input";
-import { useRef, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import {
   Filled,
   SeenMessage,
@@ -16,247 +17,179 @@ import {
   UploadIcon,
   SendIcon,
 } from "../../components/icons";
+import { HeaderPage } from "../../components/headerPage";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
+import moment from "moment";
+import {
+  addMonths,
+  format,
+  getMonth,
+  setMonth,
+  setYear,
+  subMonths,
+} from "date-fns-jalali";
+import { convertDigits } from "persian-helpers";
+import { noteMessageAction } from "../../features/notes";
+import {
+  messageNoteAction,
+  storeMessageNote,
+  notesAction,
+  messageDepedencies,
+} from "../../actions/notes";
+import { removeMessageNote } from "../../features/noteMessage";
+import { removeDependencies} from "../../features/noteDepedencies"
+import { RHAuto } from "../../components/hook-form";
 
 export const Notes = () => {
-  const [currentSelect, setCurrentSelect] = useState([
-    { state: false, name: "all" },
-    { state: false, name: "all2" },
-    { state: false, name: "all3" },
-    { state: false, name: "all4" },
-    { state: false, name: "all5" },
-    { state: false, name: "all6" },
-  ]);
-  const handleClick = (event) => {
-    const newState = currentSelect.map((e) => {
-      if (e.name === event.currentTarget.getAttribute("data-name")) {
-        return {
-          ...e,
-          state: true,
-        };
-      } else {
-        return {
-          ...e,
-          state: false,
-        };
-      }
-    });
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
+  const note_id = useRef();
+  const messageBody = useRef();
+  const mentioned_someOne = useRef();
+  const [disabled, setDisabled] = useState(true);
+  const [disabledMessage, setDisabledMessage] = useState(true);
 
-    setCurrentSelect(newState);
+  const { status, noteTitle } = useSelector((state) => state.noteSlice);
+  const [mentionMessage, setMentionMessage] = useState();
+  const { statusMessage, messagesNote } = useSelector(
+    (state) => state.messageNoteSlice
+  );
+  const { statusDependencies, entitiesDependencies } = useSelector(
+    (state) => state.noteDependencies
+  );
+  useDispatchAction(notesAction, status);
+  useDispatchAction(messageDepedencies, statusDependencies, "option");
+
+  
+
+  const handleClick = (e) => {
+    const findMention = noteTitle.find((k) => k.id === e.id);
+    setMentionMessage(findMention);
+    dispatch(noteMessageAction({ id: e.id }));
+    if (e?.current_message) {
+      note_id.current = e?.current_message?.note_id;
+      dispatch(messageNoteAction({ id: e?.current_message?.note_id }));
+      // dispatch(messageDepedencies({}));
+      setDisabledMessage(false)
+    } else {
+      dispatch(removeMessageNote());
+      note_id.current = "";
+      messageBody.current.value = ""
+      setDisabledMessage(true);
+      setDisabled(true);
+    }
+  };
+  const sendMessage = () => {
+    const res = {
+      body: messageBody.current.value,
+      note_id: note_id.current,
+      mention_id: mentioned_someOne.current,
+      attach: "",
+    };
+    if (!res.attach) {
+      delete res.attach;
+    }
+    if (!res.mention_id) {
+      delete res.mention_id;
+    }
+    if (res.note_id && res.body) {
+      dispatch(storeMessageNote({ id: note_id.current, res }));
+    }
+
+    console.log(res, "res");
   };
 
-  const [values, setValues] = useState({
-    amount: "",
-    password: "",
-    weight: "",
-    weightRange: "",
-    showPassword: false,
-  });
 
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+  const selectChange = (e, value, reason, details) => {
+    mentioned_someOne.current = value.id;
   };
+
+  const handleChangeMessage = (e) => {
+    if (!e.target.value) {
+      setDisabled(true);
+    } else {
+      setDisabled(false);
+    }
+  };
+
   return (
-    <Grid container>
-      <Grid
-        container
-        dir="rtl"
-        justifyContent="space-between"
-        alignItems="center"
-        mb={2}
-      >
-        <Grid item>
-          <Grid
-            item
-            container
-            justifyContent="space-between"
-            alignItems="center"
-            sx={{ width: "760px" }}
-          >
-            <Grid item>
-              <Typography>notes</Typography>
-            </Grid>
-            <Circle num={2} />
-            <Grid item>
-              <Grid
-                container
-                justifyContent="space-between"
-                sx={{ width: "632px", background: "#f3f3f3" }}
-              >
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all"
-                  sx={{ background: currentSelect[0].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[0].state ? "#017874" : ""}>
-                    all
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all2"
-                  sx={{ background: currentSelect[1].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[1].state ? "#017874" : ""}>
-                    allasda asd
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all3"
-                  sx={{ background: currentSelect[2].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[2].state ? "#017874" : ""}>
-                    all
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all4"
-                  sx={{ background: currentSelect[3].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[3].state ? "#017874" : ""}>
-                    alasdl asd
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all5"
-                  sx={{ background: currentSelect[4].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[4].state ? "#017874" : ""}>
-                    alasdasdadss sdl
-                  </Typography>
-                </Grid>
-                <Grid
-                  item
-                  padding={1}
-                  onClick={handleClick}
-                  data-name="all6"
-                  sx={{ background: currentSelect[5].state ? "#E5FFF6" : "" }}
-                >
-                  <Typography color={currentSelect[5].state ? "#017874" : ""}>
-                    alasdl
-                  </Typography>
-                </Grid>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Grid>
+    <>
+      <HeaderPage title={t("notes")}>
         <Grid item>
           <Button variant="contained">new note</Button>
         </Grid>
-      </Grid>
-      <Grid container dir="rtl" spacing={2}>
-        <Grid item container xl={4}>
-          <Card sx={{ padding: "12px", width: "100%" }}>
-            <SearchSection />
-            <TitleMessage mt={2} text={"neshan shode"}>
-              <Filled />
-            </TitleMessage>
-            <BodyMessage
-              background={"#E5FFF6"}
-              color={"#017874"}
-              status={"typing"}
-            >
-              {"aasd"}
-            </BodyMessage>
-            <BodyMessage status={"seen"}>
-              <SeenMessage />
-            </BodyMessage>
-            <BodyMessage color="rgba(59, 59, 59, 0.45)" status={"summery"}>
-              {"aasd"}
-            </BodyMessage>
-            <TitleMessage mt={3} text={"all notes"}>
-              <AllMessage />
-            </TitleMessage>
-            <BodyMessage color="rgba(59, 59, 59, 0.45)" status={"summery"}>
-              {"aasd"}
-            </BodyMessage>
-            <BodyMessage color="rgba(59, 59, 59, 0.45)" status={"summery"}>
-              {"aasd"}
-            </BodyMessage>
-            <BodyMessage color="rgba(59, 59, 59, 0.45)" status={"summery"}>
-              {"aasd"}
-            </BodyMessage>
-          </Card>
-        </Grid>
-        <Grid item container xl={8}>
-          <Card sx={{ padding: "12px", width: "100%" }}>
-            <Paper
-              sx={{
-                padding: "12px",
-                width: "100%",
-                borderBottom: "1px solid silver",
-              }}
-            >
-              <Grid
-                container
-                justifyContent={"space-between"}
-                alignItems="center"
-              >
-                <Typography>name</Typography>
-                <Grid item>
-                  <PhoneIcon />
-                  <PhoneOption />
-                </Grid>
+      </HeaderPage>
+      <Grid container>
+        <Grid container dir="rtl" spacing={2}>
+          <Grid
+            item
+            container
+            md={4}
+            xl={4}
+            sx={{
+              scrollbarColor: "rebeccapurple green",
+              scrollbarWidth: "thin",
+            }}
+          >
+            <Card sx={{ padding: "12px", width: "100%" }}>
+              <Grid sx={{ height: "740px", overflowY: "scroll" }}>
+                <TitleMessage mt={3} text={"all notes"}>
+                  <AllMessage />
+                </TitleMessage>
+                {noteTitle
+                  .filter((e) => !e?.user)
+                  .map((e, i) => (
+                    <BodyMessage
+                      key={i}
+                      background={e?.back}
+                      color={"#017874"}
+                      handleClick={() => handleClick(e)}
+                      status={"typing"}
+                      name={e?.title}
+                      // time={convertDigits(format(new Date(e.created_at), "HH:mm"))}
+                    ></BodyMessage>
+                  ))}
+                <TitleMessage mt={2} text={"mentioned_messages"}>
+                  <Filled />
+                </TitleMessage>
+                {noteTitle
+                  .filter((e) => e?.user)
+                  ?.map((e, i) => (
+                    <BodyMessage
+                      key={i}
+                      background={e?.back}
+                      handleClick={() => handleClick(e)}
+                      color={"#017874"}
+                      status={"typing"}
+                      name={e?.user?.name}
+                      time={convertDigits(
+                        format(new Date(e?.created_at), "HH:mm")
+                      )}
+                    ></BodyMessage>
+                  ))}
               </Grid>
-            </Paper>
-            <Grid container sx={{ height: "646px", overflowY: "scroll" }}>
-              <MessageOfTicketSender
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="white"
-                background="#017874"
-              />
-              <MessageOfTicketReciver
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="#242731"
-                background="#017874"
-              />
-              <MessageOfTicketSender
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="white"
-                background="#017874"
-              />
-              <MessageOfTicketReciver
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="#242731"
-                background="#017874"
-              />
+            </Card>
+          </Grid>
+          <Grid item container xl={8} md={8}>
+            <Card sx={{ padding: "12px", width: "100%" }}>
+              <Grid sx={{ height: "646px", overflowY: "scroll" }}>
+                {/* <MessageOfTicketReciver
+                  message={mentionMessage?.body}
+                  color="#242731"
+                  background="#017874"
+                /> */}
+                {messagesNote?.data?.messages.map((e,i) => (
+                  <MessageOfTicketSender
+                  key={i}
+                    message={e.body}
+                    color="white"
+                    background="#017874"
+                  />
+                ))}
+              </Grid>
 
-              <MessageOfTicketSender
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="white"
-                background="#017874"
-              />
-                <MessageOfTicketSender
-                message={
-                  "asdadj a dadald  skdfsdf ksdjf sjdfgsdfjfdhjsdfghsgf gdsfjsd gjsfgfgghjhfsf  jfkjsg"
-                }
-                color="white"
-                background="#017874"
-              />
-            </Grid>
-       
               <Grid
                 item
                 container
@@ -267,28 +200,57 @@ export const Notes = () => {
                   borderRadius: "16px",
                   padding: "10px 10px 10px 14px",
                 }}
+                mt={2}
               >
-                <IconButton sx={{ p: "10px" }} aria-label="menu">
-                 < UploadIcon />
+                <IconButton aria-label="menu" disabled={disabledMessage}>
+                  <UploadIcon />
                 </IconButton>
-                <Input
-                  sx={{ ml: 1, flex: 1 , width:"100%" }}
+
+                <Autocomplete
+                  id="combo-box-demo"
+                  options={
+                    statusDependencies === "succeeded"
+                      ? entitiesDependencies?.data
+                      : []
+                  }
+                  disabled={disabledMessage}
+                  getOptionLabel={(option) => option.name}
+                  onChange={selectChange}
+                  sx={{ width: 100 }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      variant="standard"
+                      label={t("mentiond")}
+                    />
+                  )}
+                />
+                <TextField
+                  sx={{ ml: 1, flex: 1, width: "100%" }}
                   placeholder=""
+                  onChange={handleChangeMessage}
+                  inputRef={messageBody}
+                  disabled={disabledMessage}
+                  variant="standard"
+                  label={t("messageContext")}
                   inputProps={{ "aria-label": "search google maps" }}
                 />
+
                 <IconButton
                   type="button"
                   sx={{ p: "10px" }}
                   aria-label="search"
+                  onClick={sendMessage}
+                  disabled={disabled}
                 >
-                 < SendIcon />
+                  <SendIcon fill={!disabled ? "#017874" : "silver"} />
                 </IconButton>
               </Grid>
-
-          </Card>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
+    </>
   );
 };
 
@@ -323,19 +285,28 @@ const PName = ({ name }) => {
   return <Typography fontWeight={400}>{name}</Typography>;
 };
 
-const BodyMessage = ({ children, background, color, status }) => {
+const BodyMessage = ({
+  children,
+  name,
+  time,
+  background,
+  color,
+  status,
+  handleClick,
+}) => {
   return (
-    <Grid item sx={{ background: background }} mb={4}>
+    <Grid
+      item
+      sx={{ background: background, cursor: "pointer" }}
+      mb={4}
+      onClick={handleClick}
+    >
       <Grid container justifyContent={"space-between"}>
-        <PName name={"mess rafassanjan"} />
-        <Ptime time={"4:20 PM"} />
+        <PName name={name} />
+        <Ptime time={time} />
       </Grid>
       <Grid container justifyContent={"space-between"}>
-        <Typography color={color}>
-          {/* {status !== "seen" ? Value : <Value />} */}
-          {children}
-        </Typography>
-        {status === "typing" && <Circle num={2} />}
+        <Typography color={color}>{children}</Typography>
       </Grid>
     </Grid>
   );
@@ -371,7 +342,7 @@ const SearchSection = () => {
 
 const MessageOfTicketSender = ({ message, color, background, nameColor }) => {
   return (
-    <Grid container mb={2} justifyContent="flex-start">
+    <Grid container justifyContent="flex-start" mb={2}>
       <Grid
         item
         sx={{
@@ -379,6 +350,7 @@ const MessageOfTicketSender = ({ message, color, background, nameColor }) => {
           width: "400px",
           borderRadius: "16px 0px 16px 16px",
           padding: "10px 10px 10px 14px",
+          height: "fit-content",
         }}
       >
         <Typography color={color}>{message}</Typography>
@@ -388,9 +360,9 @@ const MessageOfTicketSender = ({ message, color, background, nameColor }) => {
   );
 };
 
-const MessageOfTicketReciver = ({ message, color, nameColor }) => {
+const MessageOfTicketReciver = ({ message, color, nameColor, handleClick }) => {
   return (
-    <Grid container mb={2} justifyContent="flex-end">
+    <Grid container justifyContent="flex-end" mb={2}>
       <Grid
         item
         sx={{
@@ -398,6 +370,7 @@ const MessageOfTicketReciver = ({ message, color, nameColor }) => {
           width: "400px",
           borderRadius: "0px 16px 16px 16px",
           padding: "10px 10px 10px 14px",
+          height: "fit-content",
         }}
       >
         <Typography color={color}>{message}</Typography>

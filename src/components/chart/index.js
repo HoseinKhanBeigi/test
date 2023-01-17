@@ -132,7 +132,7 @@ export function BaseOptionChart() {
     stroke: {
       width: 3,
       curve: 'smooth',
-      lineCap: 'round'
+      lineCap: 'round',
     },
 
     // Grid

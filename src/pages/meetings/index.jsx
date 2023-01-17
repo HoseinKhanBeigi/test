@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-
+import React, { useEffect, useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
@@ -13,46 +12,23 @@ import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
-import { meetingsAction, deleteMeeting } from "../../actions/meetings";
-import {
-  addMonths,
-  format,
-  getMonth,
-  setMonth,
-  setYear,
-  subMonths,
-} from "date-fns-jalali";
-import { useReducer } from "react";
+import { meetingsList, deleteMeeting,meetingDetail,MeetingsDepenAgent,meetingDependencies } from "../../actions/meetings";
+import { format } from "date-fns-jalali";
 import Notifier from "../../components/notify";
 import { responseMessage } from "../../features/messageLog";
-import MenuItem from "@mui/material/MenuItem";
-import { usersList, deleteUser } from "../../actions/users";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
 import { getQueryParams } from "../../utils";
-import { initialTabs, initialDrops } from "./filterItems";
+import { initialDrops } from "./filterItems";
 import { Typography } from "@mui/material";
 import { convertDigits } from "persian-helpers";
 import { createSearchParams, useNavigate } from "react-router-dom";
-import moment from "moment";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { HeaderPage } from "../../components/headerPage";
-import { MenuItems } from "../../components/menuItems";
 import { PaginationTable } from "../../components/pagination";
-import { DialogComponent } from "../../components/dialog";
 import { Confirmation } from "../../components/confirmation";
-// import { useNavigate } from "react-router-dom";
 
 export const Meetings = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [userid, setUserId] = React.useState();
-  const open = Boolean(anchorEl);
-  const handleFilterMenu = (event, id) => {
-    setUserId(id);
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+  const [deleteState, setDeleteState] = React.useState(false);
   const navigate = useNavigate();
 
   const { t } = useTranslation();
@@ -73,23 +49,21 @@ export const Meetings = () => {
     (state) => state.meetingListSlice
   );
 
-  useEffect(() => {
-    const params = { page: 1 };
-    navigate({
-      search: `?${createSearchParams(params)}`,
-    });
-    dispatch(meetingsAction({ params: { page: 1, ...getQueryParams(),limit:8 } }));
-  }, []);
+  useDispatchAction(meetingsList, status);
 
-  const handleNavigate = (id) => {
+  const handleNavigate = (id,row) => {
     navigate(`/interactions/meetings/update/${id}`);
+    dispatch(meetingDetail({ id }));
+    dispatch(MeetingsDepenAgent({ id: row.client_id }));
+    dispatch(meetingDependencies({}))
   };
 
   const handleDelete = (id) => {
     dispatch(deleteMeeting({ id })).then((res) => {
       if (res.payload.status === 200) {
+        setDeleteState(true);
         dispatch(responseMessage(res.payload.message));
-        dispatch(meetingsAction({ params: { ...getQueryParams() } }));
+        dispatch(meetingsList({ params: { ...getQueryParams() } }));
         setOpenConfirmation(false);
       }
     });
@@ -107,13 +81,16 @@ export const Meetings = () => {
     <>
       <HeaderPage
         title={t("meetingList")}
-        action={meetingsAction}
+        action={meetingsList}
         entities={entities}
         status={status}
         initialDrops={initialDrops}
         page="table"
         defaultQuery={{ ...getQueryParams() }}
         dateFilter
+        filterPage
+        download
+        searchPage
       />
       <Grid container>
         <Box
@@ -157,12 +134,19 @@ export const Meetings = () => {
                               format(new Date(row?.start), "yyyy/MM/dd")
                             )}
                           </TableCell>
-                          <TableCell align="left"  sx={{width:"100px" }}>
+                          <TableCell
+                            align="left"
+                            sx={{ width: "100px", color: "#017874" }}
+                          >
                             {convertDigits(
                               format(new Date(row?.start), " HH:mm")
                             )}
                           </TableCell>
-                          <TableCell align="left" width={"300px"}>
+                          <TableCell
+                            align="left"
+                            width={"300px"}
+                            sx={{ color: "#017874" }}
+                          >
                             {convertDigits(
                               format(new Date(row?.end), " HH:mm")
                             )}
@@ -170,33 +154,31 @@ export const Meetings = () => {
                           <TableCell align="left">{row?.topic}</TableCell>
                           <TableCell align="left">{row?.owner?.name}</TableCell>
 
-                          <TableCell align="left">{row?.attach === null? "ندارد":"دارد"}</TableCell>
-                          <TableCell
-                          
-        
-                          >
-                            <Grid sx={{ display: "flex", flexDirection: "row" }}>
-                            <IconButton
-                         
-                              aria-label="menu"
-                              onClick={() => handleClickConfirmation(row.id)}
+                          <TableCell align="left">
+                            {row?.attach === null ? "ندارد" : "دارد"}
+                          </TableCell>
+                          <TableCell>
+                            <Grid
+                              sx={{ display: "flex", flexDirection: "row" }}
                             >
-                              <TrashIcone />
-                            </IconButton>
-                            <IconButton
-                         
-                              aria-label="menu"
-                              onClick={() => handleNavigate(row.id)}
-                            >
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton
-                         
-                              aria-label="menu"
-                              // onClick={(e) => handleFilterMenu(e, row.id)}
-                            >
-                              <OptionIcone />
-                            </IconButton>
+                              <IconButton
+                                aria-label="menu"
+                                onClick={() => handleClickConfirmation(row.id)}
+                              >
+                                <TrashIcone />
+                              </IconButton>
+                              <IconButton
+                                aria-label="menu"
+                                onClick={() => handleNavigate(row.id,row)}
+                              >
+                                <EditIcon />
+                              </IconButton>
+                              <IconButton
+                                aria-label="menu"
+                                // onClick={(e) => handleFilterMenu(e, row.id)}
+                              >
+                                <OptionIcone />
+                              </IconButton>
                             </Grid>
                           </TableCell>
                         </TableRow>
@@ -217,11 +199,11 @@ export const Meetings = () => {
             <PaginationTable
               status={status}
               entities={entities}
-              action={meetingsAction}
+              action={meetingsList}
             />
           </Paper>
         </Box>
-        <Notifier />
+        {deleteState && <Notifier />}
         <Confirmation
           statusConfirmation={openConfirmation}
           stateId={stateId}

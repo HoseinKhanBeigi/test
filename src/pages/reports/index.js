@@ -1,172 +1,159 @@
 import * as React from "react";
 import { Grid } from "@mui/material";
-import { Box, Card, Link, Typography, Stack } from "@mui/material";
-import { AppDashboard } from "../../components/dashboard";
+import { Box, Link, Typography, Stack } from "@mui/material";
+import { AppDashboard } from "../../components/areaChart";
 import TextField from "@mui/material/TextField";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import {
-  UserIcon,
-  Polygon1,
-  Polygon2,
-  Polygon3,
-  PopupCity,
-  Yazed
-} from "../../components/icons";
+// import {
+//   UserIcon,
+//   Polygon1,
+//   Polygon2,
+//   Polygon3,
+//   PopupCity,
+//   Yazed,
+// } from "../../components/icons";
+import { debounce } from "lodash";
+import { MapIran } from "./map";
+import CircularProgress from "@mui/material/CircularProgress";
+import { HeaderPage } from "../../components/headerPage";
 import { useTranslation } from "react-i18next";
-import Paper from "@mui/material/Paper";
-import InputBase from "@mui/material/InputBase";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import SearchIcon from "@mui/icons-material/Search";
-import DirectionsIcon from "@mui/icons-material/Directions";
-import Modal from "@mui/material/Modal";
-import maghadas from "./moghadas.png";
-import picStr from "./picStr.png";
-
-// import AccountCircle from '@mui/icons-material/AccountCircle';
-import InputAdornment from "@mui/material/InputAdornment";
-import IranMap from "../../components/iranMap";
-
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "100%",
-  bgcolor: "background.paper",
-  height: "100%",
-
-  boxShadow: 24,
-  p: 4,
-};
+import { searchInMap, searchReport } from "../../actions/reports";
+import { useDispatch, useSelector } from "react-redux";
+import { CardBranch, UserCard } from "./card";
 
 export const Reports = () => {
-  const [value, setValue] = React.useState("1");
+  const { t, i18n } = useTranslation();
+  const dispatch = useDispatch();
+  const [branch, setBranch] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
 
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  const handleChangeSearch = (e) => {
+    const result = { search: e.target.value };
+    if (e.target.value) {
+      dispatch(searchReport(result)).then((e) => {
+        const data = [];
+        if (e.payload.status === 200) {
+          setLoading(false);
+          if (
+            e.payload.data.branches.length > 0 ||
+            e.payload.data.users.length > 0
+          ) {
+            const newData = [
+              { branches: e.payload.data.branches },
+              { users: e.payload.data.users },
+            ];
+            newData.map((branch, i) => {
+              data.push(branch);
+            });
+            console.log(data);
+            setBranch(data);
+          } else if (e.payload.data.length === 0) {
+            setBranch([]);
+          }
+        }
+      });
+    } else {
+      setBranch([]);
+    }
   };
 
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const handleClickModal = () => {};
-  const { t, i18n } = useTranslation();
+  const debouncedResults = React.useMemo(() => {
+    return debounce(handleChangeSearch, 500);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      debouncedResults.cancel();
+    };
+  });
+
+  const handleDispatch = (item) => {
+    if (item.name.d) {
+      const result = { province: item.name.d };
+      setLoading(true);
+      dispatch(searchInMap(result)).then((e) => {
+        const data = [];
+        if (e.payload.status === 200) {
+          setLoading(false);
+          if (e.payload.data.length > 0) {
+            const newData = [{ branches: e.payload.data }];
+            newData.map((branch, i) => {
+              data.push(branch);
+            });
+            setBranch(data);
+          } else if (e.payload.data.length === 0) {
+            setBranch([]);
+          }
+        }
+      });
+    }
+  };
+
   return (
     <>
-      <Grid
-        container
-        flexDirection={"column"}
-        justifyContent="end"
-        alignItems={"end"}
-      >
-        <Grid item mb={8}>
-          <Typography className="title">{t("report")}</Typography>
-        </Grid>
-      </Grid>
-      <Grid container dir="rtl" spacing={2}>
-        <Grid item xs={12} md={6} lg={6}>
-          <Paper
-            sx={{
-              p: "2px 4px",
-              display: "flex",
-              alignItems: "center",
-              width: 400,
-            }}
-          >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder={t("manger")}
-              inputProps={{ "aria-label": "search google maps" }}
+      <HeaderPage title={t("reports")} tab={false} />
+      <Grid container dir="rtl" justifyContent={"space-between"}>
+        <Grid item xl={4} md={4}>
+          <Grid container mb={2}>
+            <TextField
+              fullWidth
+              name={"search"}
+              label={t(`search`)}
+              type={"text"}
+              typeForm={"create"}
+              onInput={debouncedResults}
+              InputProps={{
+                sx: {
+                  "& input": {
+                    textAlign: "start",
+                  },
+                },
+              }}
             />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
-              <SearchIcon />
-            </IconButton>
-          </Paper>
-          <Grid container alignItems={"center"} mt={4}>
-            <img src={maghadas} />
-            <Typography padding={2}>{"مرتضی مقدسیان"}</Typography>
           </Grid>
-          <Card
-                    
-                    sx={{ border: "1px solid silver", marginBottom: "6px" }}
-                  >
-                    <Grid
-                      container
-                      justifyContent={"space-between"}
-                      alignItems="center"
-                    >
-                      <Grid item xl={6}>
-                        <Grid
-                          item
-                          container
-                          flexDirection={"column"}
-                          padding={2}
-                        >
-                          <Grid
-                            container
-                            sx={{ justifyContent: "space-between" }}
-                            mb={2}
-                          >
-                            <Typography>شعبه ناهید</Typography>
-                            <Typography>ممتاز</Typography>
-                          </Grid>
-                          <Grid
-                            container
-                            sx={{ justifyContent: "space-between" }}
-                            mb={2}
-                          >
-                            <Typography>آدرس: </Typography>
-                            <Typography>ناهید غربی پلاک 38 </Typography>
-                          </Grid>
-                          <Grid
-                            container
-                            sx={{ justifyContent: "space-between" }}
-                            mb={2}
-                          >
-                            <Typography>تلفن:</Typography>
-                            <Typography>02188001200</Typography>
-                          </Grid>
-                          <Grid
-                            container
-                            sx={{ justifyContent: "space-between" }}
-                          >
-                            <Typography
-                              sx={{
-                                background: "#F7C3E0",
-                                borderRadius: "8px",
-                                padding: "4px",
-                              }}
-                            >
-                              ریالی
-                            </Typography>
-                            <Typography
-                              sx={{
-                                background: "#C0DDC0",
-                                borderRadius: "8px",
-                                padding: "4px",
-                              }}
-                            >
-                              ارزی
-                            </Typography>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid item xl={6}>
-                        <img src={picStr} />
-                      </Grid>
-                    </Grid>
-                  </Card>
-        </Grid>
 
-        <Grid item xs={12} md={6} lg={6}>
-          <div>
-            <Yazed />
-          </div>
+          {loading ? (
+            <Grid container justifyContent={"center"}>
+              <CircularProgress />
+            </Grid>
+          ) : branch.length === 0 ? (
+            <Typography>{t("")}</Typography>
+          ) : (
+            branch?.map((k, j) => {
+              if (k?.branches) {
+                return k?.branches?.map((e, i) => (
+                  <Grid container mb={2}>
+                    <CardBranch
+                      key={i}
+                      name={e.name}
+                      phone={e.phone}
+                      address={e.address}
+                      level={e.level}
+                    />
+                  </Grid>
+                ));
+              } else if (k?.users) {
+                return k?.users?.map((e, i) => (
+                  <Grid container mb={2}>
+                    <UserCard
+                      name={e.name}
+                      position={e.position}
+                      mobile={e.mobile}
+                      organization={e.organization}
+                    />
+                  </Grid>
+                ));
+              }
+            })
+          )}
+        </Grid>
+        <Grid item xl={6} md={6}>
+          <Grid container>
+            <MapIran handleDispatch={handleDispatch} />
+          </Grid>
         </Grid>
       </Grid>
     </>

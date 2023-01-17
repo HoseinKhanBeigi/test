@@ -10,14 +10,15 @@ export const clientForm = (
   status,
   statusDetail,
   entities,
-  interstedName
+  interstedName,
+  clientDetails
 ) => {
   return [
     {
       name: "email",
       label: "email",
       type: "text",
-      left:true,
+      left: true,
       typeInput: "RHFTextField",
       loading: statusDetail === "succeeded",
     },
@@ -27,12 +28,12 @@ export const clientForm = (
       type: "text",
       typeInput: "RHFTextField",
       loading: statusDetail === "succeeded",
+      farsi: true,
     },
     {
       name: "type",
       typeInput: "RHRadioGroup",
       loading: statusDetail === "succeeded",
-
 
       values: [{ name: "حقیقی" }, { name: "حقوقی" }],
       change: handleChangeClient,
@@ -49,10 +50,10 @@ export const clientForm = (
         valueRadio !== undefined
           ? valueRadio === "حقیقی"
             ? "national_number"
-            : "national_identifier"
+            : "national_number"
           : dataInput === "حقیقی"
           ? "national_number"
-          : "national_identifier",
+          : "national_number",
 
       label:
         valueRadio !== undefined
@@ -65,7 +66,7 @@ export const clientForm = (
 
       type: "text",
       typeInput: "RHFTextField",
-      left:true,
+      left: true,
       loading: statusDetail === "succeeded",
     },
     {
@@ -79,7 +80,7 @@ export const clientForm = (
       name: "birth_at",
       typeInput: "RHDatePicker",
       change: handleChangeDatePicker,
-      label:"birth_at"
+      label: "birth_at",
     },
     {
       name: "job",
@@ -99,15 +100,17 @@ export const clientForm = (
     {
       name: "interests",
       label: "intersted",
-      typeInput: "RHMultiSelect",
+      typeInput: "RHAuto",
       change: handleChangeIntersted,
-      loadingCreate:status === "succeeded",
+      loadingCreate: true,
       loadingEdit: statusDetail === "succeeded" && status === "succeeded",
-      values: status === "succeeded" && entities?.data?.interests,
+      values: entities?.data?.interests ?? [],
+      multiple: true,
       async: true,
-      value:interstedName,
+      value: interstedName,
       propValue: "id",
       propTitle: "title",
+      show: valueRadio === "حقیقی" ? false : true,
     },
     {
       name: "user_id",
@@ -116,7 +119,7 @@ export const clientForm = (
       change: handleChangeUserId,
       propValue: "id",
       propTitle: "name",
-      loadingCreate:status === "succeeded",
+      loadingCreate: status === "succeeded",
       loadingEdit: statusDetail === "succeeded" && status === "succeeded",
       values: status === "succeeded" && entities?.data?.users,
       async: true,
@@ -124,9 +127,11 @@ export const clientForm = (
     {
       name: "business",
       label: "حوزه فعالیت",
-      typeInput: "RHSelectField",
+      typeInput: "RHAuto",
       change: handleChangeBussiness,
-      loading: statusDetail === "succeeded",
+      loadingCreate: true,
+      loadingEdit: statusDetail === "succeeded" && status === "succeeded",
+      value: clientDetails?.data?.client?.business? { name: clientDetails?.data?.client?.business }:"",
       values: [
         { name: "آموزش" },
         { name: "ارگان های دولتی" },
@@ -148,8 +153,7 @@ export const clientForm = (
         { name: "حمل و نقل" },
       ],
       propValue: "name",
-      async: false,
-      loadingCreate: statusDetail === "succeeded",
+      propTitle: "name",
     },
   ];
 };

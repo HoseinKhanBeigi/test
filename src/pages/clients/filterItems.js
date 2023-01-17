@@ -87,17 +87,5 @@ export const initialTabs = [
         { name: 'E', checked: false, key: "bi_point" },
       ],
     },
-
-    // {
-    //   open: false,
-    //   title: "generation",
-    //   inputType: "RADIO",
-
-    //   values: [
-    //     { name: "X", checked: false, key: "generation" },
-    //     { name: "Y", checked: false, key: "generation" },
-    //     { name: "Z", checked: false, key: "generation" },
-    //   ],
-    // },
   
   ];

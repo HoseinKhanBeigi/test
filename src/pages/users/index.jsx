@@ -15,10 +15,15 @@ import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Notifier from "../../components/notify";
 import MenuItem from "@mui/material/MenuItem";
-import { usersList, deleteUser } from "../../actions/users";
+import {
+  usersList,
+  deleteUser,
+  userDetail,
+  userOrganization,
+} from "../../actions/users";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
 import { getQueryParams } from "../../utils";
-import { initialTabs, initialDrops } from "./filterItems";
+import { initialTabs } from "./filterItems";
 import { Typography } from "@mui/material";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { responseMessage } from "../../features/messageLog";
@@ -28,13 +33,25 @@ import { PaginationTable } from "../../components/pagination";
 import { DialogComponent } from "../../components/dialog";
 import { Confirmation } from "../../components/confirmation";
 import { convertDigits } from "persian-helpers";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
+import { useCheckBox } from "../../hooks/useCheckBox";
+import {
+  dropDownAction,
+  filterAction,
+  filterList,
+} from "../../features/filter";
 // import { useNavigate } from "react-router-dom";
 
 export const Users = () => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [userid, setUserId] = React.useState();
   const [deleteState, setDeleteState] = React.useState(false);
   const open = Boolean(anchorEl);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [stateId, setStateId] = useState();
+
   const handleFilterMenu = (event, id) => {
     setUserId(id);
     setAnchorEl(event.currentTarget);
@@ -60,29 +77,20 @@ export const Users = () => {
     (state) => state.userListSlice
   );
 
-  useEffect(() => {
-    const params = { page: 1 };
-    navigate({
-      search: `?${createSearchParams(params)}`,
-    });
-
-    dispatch(usersList({ params: { page: 1, ...getQueryParams() } }));
-  }, []);
-
-  const navigate = useNavigate();
-
-  const [openDialog, setOpenDialog] = React.useState(false);
-
   const handleClickOpen = () => {
     setOpenDialog(true);
   };
 
-  const onChange = (e) => {
-    // console.log(e);
-  };
-
-  const handleNavigate = (id) => {
-    navigate(`/users/update/${id}`);
+  const handleNavigate = (id, organization) => {
+    dispatch(userDetail({ id })).then(()=>{
+      dispatch(
+        userOrganization({
+          organization_type: organization,
+        })
+      )
+      navigate(`/users/update/${id}`);
+    })
+    
   };
 
   const handleDelete = (id) => {
@@ -96,71 +104,54 @@ export const Users = () => {
     });
   };
 
-  const [openConfirmation, setOpenConfirmation] = useState(false);
-  const [stateId, setStateId] = useState();
-
   const handleClickConfirmation = (id) => {
     setOpenConfirmation(true);
     setStateId(id);
   };
 
-  const initialReducer = useRef([]);
-
-  const handlePushItem = (item) => {
-    item.map((_, i) => {
-      initialReducer.current[i] = { checked: false, id: i };
-    });
-  };
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "SELECTALL":
-        return state.map((item) => {
-          return { ...item, checked: !item.checked };
-        });
-
-      case "SELECTITEM":
-        return state.map((item) => {
-          if (item.id === action.payload) {
-            return { ...item, checked: !item.checked };
-          } else {
-            return item;
-          }
-        });
-      default:
-        return state;
-    }
-  };
-
+  useDispatchAction(usersList, status);
+  const useCheckBoxSelector = useCheckBox(status, entities);
   const handleSelectAll = (item) => {
-    console.log(initialReducer.current.length);
-    dispatchAction({ type: "SELECTALL" });
+    useCheckBoxSelector.dispatchAction({ type: "SELECTALL" });
   };
-
-  const handleChangeSelect = (item) => {
-    if (initialReducer.current.length === 0) {
-      item.map((_, i) => {
-        initialReducer.current.push({ checked: false, id: i });
-      });
-    }
-  };
-
   const handleSelect = (i) => {
-    dispatchAction({ type: "SELECTITEM", payload: i });
+    useCheckBoxSelector.dispatchAction({ type: "SELECTITEM", id: i });
   };
 
-  const [items, dispatchAction] = useReducer(reducer, initialReducer.current);
+  const { initialDropsUser, filterList } = useSelector(
+    (state) => state.filterSlice
+  );
 
-  let num = "09123979838";
-  const res = num.replace(/\D/g, "").match(/(\d{4})(\d{2})(\d{2})(\d{3})/);
+  const handleChange = (item) => {
+    dispatch(
+      dropDownAction({
+        type: `DROPDOWN`,
+        title: item.title,
+        name: "initialDropsUser",
+      })
+    );
+  };
 
-  const mobileMask = (number) => {
-    let part1 = number.slice(0, 4);
-    let part2 = number.slice(4, 6);
-    let part3 = number.slice(6, 8);
-    let part4 = number.slice(8, 11);
-    console.log(part1, part2, part3, part4);
-    return res;
+  const handleChangeCheckBox = (item) => {
+    dispatch(
+      filterAction({
+        type: "CHECKBOX",
+        title: item.title,
+        name: "initialDropsUser",
+        item,
+      })
+    );
+  };
+
+  const handleChangeRadio = (item) => {
+    dispatch(
+      filterAction({
+        type: "RADIO",
+        title: item.title,
+        name: "initialDropsUser",
+        item,
+      })
+    );
   };
 
   return (
@@ -171,9 +162,15 @@ export const Users = () => {
         entities={entities}
         status={status}
         initialTabs={initialTabs}
-        initialDrops={initialDrops}
+        initialDrops={initialDropsUser}
+        handleChange={handleChange}
         page="table"
+        filterPage
+        download
+        searchPage
         tab={true}
+        handleChangeCheckBox={handleChangeCheckBox}
+        handleChangeRadio={handleChangeRadio}
         defaultQuery={{ ...getQueryParams() }}
       />
       <Grid container>
@@ -194,8 +191,6 @@ export const Users = () => {
                   <TableRow sx={{ backgroundColor: "#EFF3F3" }}>
                     <TableCell padding="checkbox">
                       <Checkbox color="primary" onClick={handleSelectAll} />
-                      {status === "succeeded" &&
-                        handlePushItem(entities?.data?.data)}
                     </TableCell>
                     {header.map((e, i) => (
                       <TableCell align="left" key={i}>
@@ -208,16 +203,16 @@ export const Users = () => {
                   {status === "succeeded" &&
                     entities?.data?.data.map((row, i) => {
                       let part1 = row?.mobile?.slice(0, 4);
-                      let part2 = row?.mobile?.slice(4, 6);
-                      let part3 = row?.mobile?.slice(6, 8);
-                      let part4 = row?.mobile?.slice(8, 11);
+                      let part2 = row?.mobile?.slice(4, 7);
+                      let part3 = row?.mobile?.slice(7, 9);
+                      let part4 = row?.mobile?.slice(9, 11);
                       return (
                         <TableRow key={i} role="checkbox">
                           <TableCell padding="checkbox">
                             <Checkbox
                               color="primary"
-                              checked={items[i].checked}
-                              onClick={() => handleSelect(i)}
+                              checked={useCheckBoxSelector.items[i].checked}
+                              onClick={() => handleSelect(row.id)}
                             />
                           </TableCell>
                           <TableCell align="left">{row.name}</TableCell>
@@ -238,7 +233,9 @@ export const Users = () => {
                             </IconButton>
                             <IconButton
                               aria-label="menu"
-                              onClick={() => handleNavigate(row.id)}
+                              onClick={() =>
+                                handleNavigate(row.id, row.organization)
+                              }
                             >
                               <EditIcon />
                             </IconButton>
@@ -289,7 +286,6 @@ export const Users = () => {
         <DialogComponent
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
-          onChange={onChange}
           userid={userid}
         />
 

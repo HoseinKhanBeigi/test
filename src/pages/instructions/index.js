@@ -2,7 +2,7 @@ import * as React from "react";
 import { Grid } from "@mui/material";
 import { Box, Card, Link, Typography, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
-import { AppDashboard } from "../../components/dashboard";
+import { AppDashboard } from "../../components/areaChart";
 import TextField from "@mui/material/TextField";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";

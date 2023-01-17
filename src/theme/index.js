@@ -18,6 +18,7 @@ import createCache from "@emotion/cache";
 import rtlPlugin from "stylis-plugin-rtl";
 import { CacheProvider } from "@emotion/react";
 import { prefixer } from "stylis";
+import { useDispatch, useSelector } from "react-redux";
 
 // ----------------------------------------------------------------------
 
@@ -31,15 +32,17 @@ const cacheRtl = createCache({
 });
 
 export default function ThemeProvider({ children }) {
+  const { colors } = useSelector((state) => state.MutiColors);
+  const MainColor = colors.find((e) => e.status === true);
   const themeOptions = useMemo(
     () => ({
-      palette,
+      palette: { primary: { main: MainColor.background } },
       shape: { borderRadius: 8 },
       typography,
       shadows,
       customShadows,
     }),
-    []
+    [MainColor.background]
   );
 
   const theme = createTheme(themeOptions);
@@ -49,11 +52,9 @@ export default function ThemeProvider({ children }) {
     <StyledEngineProvider injectFirst>
       <CacheProvider value={cacheRtl}>
         <MUIThemeProvider theme={theme}>
-
           <CssBaseline />
           {/* <CssModulesSlider /> */}
           {children}
-
         </MUIThemeProvider>
       </CacheProvider>
     </StyledEngineProvider>

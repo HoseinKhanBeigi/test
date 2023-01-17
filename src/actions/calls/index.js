@@ -1,6 +1,6 @@
 import { createAsyncAction } from "../../services/actionHandler";
 
-export const callsAction = createAsyncAction("/calls", "callList", "get");
+export const callsList = createAsyncAction("/calls", "callList", "get");
 export const callsDepen =  createAsyncAction("/calls/create", "depenCalls", "get");
 export const callsDepenAgent = createAsyncAction("/calls/create", "depencallAgent", "get");
 export const callsCreate =  createAsyncAction("/calls", "createCall", "post");

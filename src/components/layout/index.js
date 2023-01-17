@@ -5,11 +5,12 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
-
+import { useTheme } from "@mui/material/styles";
+import MenuIcon from "@mui/icons-material/Menu";
 import Select from "@mui/material/Select";
 import { useTranslation } from "react-i18next";
-
-import { Typography } from "@mui/material";
+import { format } from "date-fns-jalali";
+import { AppBar, Toolbar, Typography } from "@mui/material";
 import CssBaseline from "@mui/material/CssBaseline";
 
 import StarBorder from "@mui/icons-material/StarBorder";
@@ -39,22 +40,12 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { useSelector, useDispatch } from "react-redux";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { dashboardApp } from "../../actions/profile";
-import {removeState} from "../../features/detailUser"
+import { removeState } from "../../features/detailUser";
+import { changeMenuBar } from "../../features/navbar";
 import "./index.css";
 import {
-  Dlogo,
-  Hlogo,
-  ReLogo,
-  Users,
-  Clients,
-  InteractionsLogo,
-  InstructionsLogo,
-  NotesLogo,
-  AdminLogo,
-  Checkouts,
-  ProfileLogo,
   UserIconTitle,
   CreateIcon,
   PhoneIcon,
@@ -63,81 +54,71 @@ import {
   SupportAgentIcon,
   NotifyIcon,
   Phone,
+  IconMenuBar,
 } from "../icons";
+import moment from "moment";
+import { styled } from "@mui/material/styles";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
+
+const NavBar = styled("nav", {
+  shouldForwardProp: (prop) => prop !== "openwidth",
+})(({ theme, openwidth }) => ({
+  ...(!openwidth && {
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    width: `90px`,
+  }),
+  ...(openwidth && {
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    width: `211px`,
+  }),
+}));
+
+const Header = styled(AppBar, {
+  shouldForwardProp: (prop) => prop !== "openwidth",
+})(({ theme, openwidth }) => ({
+  ...(openwidth && {
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    width: `100%`,
+  }),
+  ...(!openwidth && {
+    transition: theme.transitions.create("width", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    width: `calc(100% - 211px)`,
+  }),
+  [theme.breakpoints.up("md")]: {
+    display: "none",
+  },
+}));
+const ItemMenu= styled("li", {
+  shouldForwardProp: (prop) => prop !== "openwidth",
+})(({ theme, openwidth }) => ({
+  ...(openwidth && {
+
+
+  }),
+
+  [theme.breakpoints.up("md")]: {
+    display: "none",
+  },
+}));
 export const Layout = () => {
   const path = useLocation();
   const params = useParams();
+
   const history = useNavigate();
-  const [currentSelect, setCurrentSelect] = useState([
-    { id: "logo", color: "#ffffff" },
-    { id: "home", color: "#ffffff" },
-    { id: "reports", color: "#ffffff" },
-    { id: "users", color: "#ffffff" },
-    { id: "clients", color: "#ffffff" },
-    { id: "interactions", color: "#ffffff" },
-    { id: "instructions", color: "#ffffff" },
-    { id: "notes", color: "#ffffff" },
-    { id: "admin", color: "#ffffff" },
-    { id: "profile", color: "#ffffff" },
-  ]);
+  console.log(path.pathname.slice(1, path.pathname.length));
   const root = useRef();
-  const handleClick = (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    [...root.current.querySelectorAll(".sideBar_item")].forEach((e) => {
-      e.classList.remove("sideBar_current");
-    });
-
-    const newState = currentSelect.map((e) => {
-      if (e.id === event.currentTarget.getAttribute("data-name")) {
-        return {
-          ...e,
-          color: (e.color = "#017874"),
-        };
-      } else {
-        return {
-          ...e,
-          color: (e.color = "#ffffff"),
-        };
-      }
-    });
-
-    setCurrentSelect(newState);
-
-    event.currentTarget.classList.add("sideBar_current");
-    [...root.current.querySelectorAll(".sideBar_item")][0].classList.remove(
-      "sideBar_current"
-    );
-  };
-
-  useEffect(() => {
-    if (path.pathname === "/") {
-      history(`/home`);
-    }
-
-    const newState = currentSelect.map((e) => {
-      if (e.id === path.pathname.slice(1)) {
-        return {
-          ...e,
-          color: (e.color = "#017874"),
-        };
-      } else {
-        return {
-          ...e,
-          color: (e.color = "#ffffff"),
-        };
-      }
-    });
-
-    setCurrentSelect(newState);
-    [...root.current.querySelectorAll(".sideBar_item")].forEach((e) => {
-      if (e.getAttribute("data-name") === path.pathname.slice(1)) {
-        e.classList.add("sideBar_current");
-      }
-    });
-  }, [path.pathname]);
-
-  const handleCreate = () => {};
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -166,7 +147,6 @@ export const Layout = () => {
 
   const handleInsertUserSingle = () => {
     navigate("users/create");
-    // dispatch(removeState())
     setAnchorEl(null);
   };
 
@@ -178,6 +158,12 @@ export const Layout = () => {
   const handleInsertClientSingle = () => {
     navigate("clients/create");
     setAnchorEl(null);
+  };
+
+  const [openwidth, setOpenwidth] = useState(false);
+
+  const handleOpenMenuBar = () => {
+    setOpenwidth(!openwidth);
   };
 
   const handleInsertClientCouple = () => {
@@ -201,175 +187,250 @@ export const Layout = () => {
     (state) => state.dashboardAppSlice
   );
 
-  React.useEffect(() => {
-  
-      dispatch(dashboardApp({}));
-    
-  }, []);
+  const { navbarList } = useSelector((state) => state.navBarSlice);
 
+  useDispatchAction(dashboardApp,statusDashboard,"option")
 
-  // dashboardAppSlice
+  const handleClick = (e) => {
+    dispatch(changeMenuBar({ status: e.id }));
+    if (e.id === "IconMenuBar") {
+      handleOpenMenuBar();
+    }
+  };
+  const theme = useTheme();
   return (
-    <Box
-      sx={{
-        width: "1900px",
-        display: "flex",
-        flexWrap: "nowrap",
-        flexDirection: "row-reverse",
-      }}
-
-      // justifyContent="center"
-    >
-      <nav className="nav1">
-        <ul className="sideBar_list" ref={root}>
-          <li className="sideBar_item" onClick={handleClick} data-name="logo">
-            <Link to="home">
-              <Dlogo stroke={currentSelect.color} />
-            </Link>
-          </li>
-          <li className="sideBar_item" onClick={handleClick} data-name="home">
-            <Link to="home">
-              <Hlogo stroke={currentSelect[1].color} />{" "}
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="reports"
-          >
-            <Link to="reports">
-              <ReLogo stroke={currentSelect[2].color} />{" "}
-            </Link>
-          </li>
-          <li className="sideBar_item" onClick={handleClick} data-name="users">
-            <Link to="users">
-              <Users stroke={currentSelect[3].color} />{" "}
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="clients"
-          >
-            <Link to="clients">
-              <Clients stroke={currentSelect[4].color} />
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="interactions"
-          >
-            <Link to="interactions">
-              <InteractionsLogo stroke={currentSelect[5].color} />
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="instructions"
-          >
-            <Link to="instructions">
-              <InstructionsLogo stroke={currentSelect[6].color} />
-            </Link>
-          </li>
-          <li className="sideBar_item" onClick={handleClick} data-name="notes">
-            <Link to="notes">
-              <NotesLogo stroke={currentSelect[7].color} />
-            </Link>
-          </li>
-          <li className="sideBar_item" onClick={handleClick} data-name="admin">
-            <Link to="admin">
-              <AdminLogo stroke={currentSelect[8].color} />
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="checkouts"
-          >
-            <Link to="checkouts">
-              <Checkouts stroke={currentSelect[9].color} />
-            </Link>
-          </li>
-          <li
-            className="sideBar_item"
-            onClick={handleClick}
-            data-name="profile"
-          >
-            <Link to="profile">
-              <ProfileLogo stroke={currentSelect.color} />
-            </Link>
-          </li>
-        </ul>
-      </nav>
-
-      <Container maxWidth="lg">
-        <Grid
-          container
-          dir="rtl"
-          justifyContent={"space-between"}
-          alignItems="center"
+    <Box>
+      <NavBar
+        style={{
+          display: "flex",
+          // width: "211px",
+          right: 0,
+          height: "100vh",
+          position: "fixed",
+          // overflowY: "scroll",
+          top: 0,
+          backgroundColor: theme.palette.primary.main,
+          zIndex: 999,
+        }}
+        openwidth={openwidth}
+      >
+        <ul
+          style={{
+            display: "flex",
+            listStyle: "none",
+            flexDirection: "column",
+            margin: 0,
+            justifyContent: "space-between",
+            alignItems: "center",
+            alignContent: "center",
+            padding: 0,
+            width: openwidth ? "211px" : "90px",
+            zIndex: 999,
+          }}
+          ref={root}
         >
-          <Grid item>
-            <Grid
-              container
-              alignItems={"center"}
-              sx={{
-                width: "100%",
-                border: "1px solid #777777",
-                padding: "0.3rem",
-                borderRadius: "12px",
-              }}
-              justifyContent="space-between"
-            >
-              <UserIconTitle />
-              {statusDashboard === "succeeded" && (
-                <Typography
-                  paddingLeft={"7px"}
-                >{`${entitiesDashboard?.data?.user?.name} -${entitiesDashboard?.data?.user?.position}- ${entitiesDashboard?.data?.user?.level} `}</Typography>
-              )}
-            </Grid>
-          </Grid>
+          {navbarList.map((E) => {
+            {
+              return openwidth && E.id === "logo" ? (
+                <li
+                  style={{
+                    background: `${
+                      E.status ? "#E5FFF6" : theme.palette.primary.main
+                    }`,
+                    display: "flex",
+                    width: "144px",
+                    height: "142px",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    borderRadius: "8px",
+                  }}
+                  data-name="logo"
+                >
+                  <Link
+                    to={
+                      E.id === "IconMenuBar"
+                        ? path.pathname.slice(1, path.pathname.length)
+                        : E.path
+                    }
+                    style={{ width: "1.3rem", height: "1.3rem" }}
+                    // onClick={() => handleClick(E)}
+                  >
+                    <E.Logo
+                      stroke={E.status ? theme.palette.primary.main : "#ffffff"}
+                      style={{
+                        transform: "scale(3.5)",
+                        position: "relative",
+                        top: "47px",
+                        transition: "transform 2s linear 1s"
+                      }}
+                    />
+                  </Link>
+                  <Box
+                    sx={{
+                      width: "144px",
+                      height: "42px",
+                      background: "rgb(229, 255, 246)",
+                      position: "relative",
+                      top: "102px",
+                      borderRadius: "8px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Typography color={theme.palette.primary.main}>
+                      {statusDashboard === "succeeded" &&
+                        entitiesDashboard?.data?.user?.name}
+                    </Typography>
+                  </Box>
+                </li>
+              ) : (
+                <ItemMenu
+                  style={{
+                    background: `${
+                      E.status ? "#E5FFF6" : theme.palette.primary.main
+                    }`,
+                    display: "flex",
+             
+                    width: openwidth ? "144px" : "2.3rem",
+                    height: openwidth ? "42px" : "2.3rem",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    borderRadius: "8px",
+                    transition: "width 2s  height 2s linear"
+                  }}
+                  data-name="logo"
+                >
+                  {openwidth && (
+                    <Typography
+                      color={E.status ? theme.palette.primary.main : "#ffffff"}
+                    >
+                      {t(E.id)}
+                    </Typography>
+                  )}
 
-          <Grid item>
-            <Grid
-              container
-              sx={{ width: "184px" }}
-              alignItems="center"
-              justifyContent={"space-between"}
+                  <Link
+                    to={
+                      E.id === "IconMenuBar"
+                        ? path.pathname.slice(1, path.pathname.length)
+                        : E.path
+                    }
+                    style={{ width: "1.3rem", height: "1.3rem" }}
+                    onClick={() => handleClick(E)}
+                  >
+                    <E.Logo
+                      stroke={E.status ? theme.palette.primary.main : "#ffffff"}
+                    />
+                  </Link>
+                </ItemMenu>
+              );
+            }
+          })}
+        </ul>
+      </NavBar>
+      <Container maxWidth="lg">
+        <Header position="fixed" openwidth={open}>
+          <Toolbar>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{ flexGrow: 1 }}
+              component="div"
             >
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                onClick={handleClick1}
+              Persistent drawer
+            </Typography>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="end"
+              // onClick={handleDrawerOpen}
+              // sx={{ ...(open && { display: 'none' }) }}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Toolbar>
+        </Header>
+        <Box sx={{ position: "relative" }}>
+          <Grid
+            container
+            dir="rtl"
+            justifyContent={"space-between"}
+            alignItems="center"
+          >
+            <Grid item md={3} lg={3} sm={3} xs={12}>
+              <Grid
+                container
+                alignItems={"center"}
+                sx={{
+                  width: "100%",
+                  border: "1px solid #777777",
+                  padding: "0.3rem",
+                  borderRadius: "12px",
+                }}
+                justifyContent="space-between"
               >
-                <CreateIcon />
-              </IconButton>
-              <IconButton
-                sx={{ p: "0px" }}
-                aria-label="menu"
-                // onClick={handleCreate}
+                <UserIconTitle />
+                {/* {format(new Date(row?.start), "HH:mm")} */}
+                {}
+                {statusDashboard === "succeeded" && (
+                  <Typography paddingLeft={"7px"}>
+                    {`${entitiesDashboard?.data?.user?.name} -${entitiesDashboard?.data?.user?.position}- ${entitiesDashboard?.data?.user?.level} `}
+                    {/* {format(
+                    new Date(entitiesDashboard?.data?.meetings[0]?.start),
+                    "MMMM"
+                  )} */}{" "}
+                    {/* {moment(new Date(entitiesDashboard?.data?.meetings[0]?.start)).format("dddd")} */}
+                  </Typography>
+                )}
+              </Grid>
+            </Grid>
+            <Grid item md={4} lg={4} sm={4} xs={12}>
+              <Grid
+                container
+                // sx={{ width: "224px" }}
+                alignItems="center"
+                justifyContent={"flex-end"}
               >
-                <Phone />
-              </IconButton>
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                // onClick={handleCreate}
-              >
-                <SupportAgentIcon />
-              </IconButton>
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                // onClick={handleCreate}
-              >
-                <NotifyIcon />
-              </IconButton>
+                {/* <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    onClick={handleOpenMenuBar}
+                  >
+                    <IconMenuBar stroke={"#000"} />
+                  </IconButton> */}
+
+                <IconButton
+                  sx={{ p: "10px" }}
+                  aria-label="menu"
+                  onClick={handleClick1}
+                >
+                  <CreateIcon />
+                </IconButton>
+                <IconButton
+                  sx={{ p: "0px" }}
+                  aria-label="menu"
+                  // onClick={handleCreate}
+                >
+                  <Phone />
+                </IconButton>
+                <IconButton
+                  sx={{ p: "10px" }}
+                  aria-label="menu"
+                  // onClick={handleCreate}
+                >
+                  <SupportAgentIcon />
+                </IconButton>
+                <IconButton
+                  sx={{ p: "10px" }}
+                  aria-label="menu"
+                  // onClick={handleCreate}
+                >
+                  <NotifyIcon />
+                </IconButton>
+              </Grid>
             </Grid>
           </Grid>
-        </Grid>
+        </Box>
         <Box>
           <Outlet />
         </Box>

@@ -1,7 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useReducer } from "react";
 import ListItemButton from "@mui/material/ListItemButton";
-import Button from "@mui/material/Button";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
@@ -19,56 +16,11 @@ export const DropDown = ({
   open,
   handleClick,
   data,
-  status,
-  property,
-  onFilter,
-  onFilterDropDown,
   defaultQuery,
-  filtersList,
+  handleChangeCheckBox,
+  handleChangeRadio,
 }) => {
-  const label = { inputProps: { "aria-label": "Checkbox demo" } };
   const { t } = useTranslation();
-
-  let defaults = useRef([]);
-
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "CHECKBOX":
-        return state.map((item) => {
-           if (item[property] === action[property]) {
-            onFilter({ ...item, [status]: !item[status] });
-            onFilterDropDown({ ...item, [status]: !item[status] });
-            return { ...item, [status]: !item[status] };
-          } else {
-            return item;
-          }
-        });
-      case "RADIO":
-        return state.map((item) => {
-          if (item[property] === action[property]) {
-            onFilter({ ...item, [status]: !item[status] });
-            onFilterDropDown({ ...item, [status]: !item[status] });
-            return { ...item, [status]: !item[status] };
-          } else {
-            onFilter({ ...item, [status]: false });
-            return { ...item, [status]: false };
-          }
-        });
-      default:
-        return state;
-    }
-  };
-
-  const handleChangeCheckBox = (item) => {
-    dispatch({ type: "CHECKBOX", [property]: item[property] });
-  };
-
-  const handleChangeRadio = (item) => {
-    dispatch({ type: "RADIO", [property]: item[property] });
-  };
-
-  const [items, dispatch] = useReducer(reducer, data.values);
 
   return (
     <>
@@ -84,7 +36,7 @@ export const DropDown = ({
 
       <Collapse in={open} timeout="auto">
         <List component="div" disablePadding sx={{ marginBottom: "16px" }}>
-          {items.map((e, i) => {
+          {data.values.map((e, i) => {
             return (
               <Grid
                 key={i}
@@ -92,25 +44,24 @@ export const DropDown = ({
                 alignItems={"center"}
                 justifyContent="flex-end"
               >
-                <Typography>{t(`${e[property]}`)}</Typography>
+                <Typography>{t(`${e.title}`)}</Typography>
                 {data.inputType === "CHECKBOX" ? (
                   <Checkbox
-                    checked={e[status]}
-                    {...label}
+                    checked={e.checked}
                     onChange={() => handleChangeCheckBox(e)}
                   />
                 ) : (
                   <RadioGroup
                     aria-labelledby="demo-controlled-radio-buttons-group"
                     name="type"
-                    value={e[property]}
-                    checked={e[status]}
+                    value={e.title}
+                    checked={e.checked}
                     onChange={() => handleChangeRadio(e)}
                   >
                     <FormControlLabel
                       defaultValue={defaultQuery.type}
-                      checked={e[status]}
-                      value={e[status] && e[property]}
+                      checked={e.checked}
+                      value={e.checked && e.title}
                       control={<Radio />}
                     />
                   </RadioGroup>

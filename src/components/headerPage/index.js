@@ -1,11 +1,4 @@
-import React, {
-  useMemo,
-  useEffect,
-  useRef,
-  useCallback,
-  useState,
-} from "react";
-
+import React, { useEffect } from "react";
 import { convertDigits } from "persian-helpers";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
@@ -13,7 +6,7 @@ import Menu from "@mui/material/Menu";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useReducer } from "react";
+import { removeFilter } from "../../features/filter";
 import {
   getQueryParams,
   groupBy,
@@ -25,19 +18,18 @@ import {
   SearchIcon,
   AnalysisIcon,
   SmartFilterIcon,
-  LoadingIcon,
   DownloadIcon,
   ChangeViewIcom,
 } from "../icons";
 import { useSearchParams } from "react-router-dom";
-import { styled, useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import TextField from "@mui/material/TextField";
+
 import IconButton from "@mui/material/IconButton";
-import { createSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { createSearchParams, useNavigate } from "react-router-dom";
 import { FilterDropDown } from "../filter";
 import { Tabs } from "../tabs";
-import { debounce, isArray } from "lodash";
+import { SearchInput } from "../search";
+
 import { CustomDateRangePickerDay } from "../dateRangePicker";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
@@ -50,11 +42,19 @@ export const HeaderPage = ({
   tab,
   initialTabs,
   initialDrops,
+  handleChange,
   defaultQuery,
   analysis,
   action,
   changeview,
   dateFilter,
+  filterPage,
+  download,
+  clientList,
+  searchPage,
+  children,
+  handleChangeCheckBox,
+  handleChangeRadio,
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(false);
@@ -68,65 +68,26 @@ export const HeaderPage = ({
     setAnchorEl(false);
   };
 
-  const TextInput = styled(TextField, {
-    shouldForwardProp: (prop) => prop !== "openwidth",
-  })(({ theme, openwidth }) => ({
-    width: "0px",
-    ...(openwidth && {
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-      width: `${240}px`,
-    }),
-  }));
-
   const [openin, setOpen] = React.useState(false);
 
-  const [filterList, setFilterList] = useState([]);
-
-  const onFilterDropDown = (e) => {
-    if (e.checked) {
-      setFilterList((pre) => [...pre, { name: e.name, key: e.key }]);
-    }
-    if (e.checked === false) {
-      let filterItems = [...filterList];
-      let filterItems2 = filterItems.filter(
-        (element) => e.name !== element.name
-      );
-      setFilterList(filterItems2);
-    }
-  };
+  const { filterList } = useSelector((state) => state.filterSlice);
 
   const handleDrawerOpen = () => {
     setOpen((pre) => !pre);
   };
 
-  const filtersList = useRef([]);
-  const onFilter = (e) => {
-    filtersList.current.push({ name: e.name, key: e.key });
-    if (e.checked === false) {
-      filtersList.current = filtersList.current.filter(
-        (element) => e.name !== element.name
-      );
-    }
-  };
-
   const handleCancel = () => {
     removeParams(["organization", "type", "bi_point"], navigate);
-    filtersList.current = [];
     dispatch(action({ params: { ...getQueryParams() } }));
+    dispatch(removeFilter());
   };
 
   const handleExecution = () => {
-    const { organizations, type, bi_point } = groupBy(
-      filtersList.current,
-      "key"
-    );
+    const { organization, userType, bi_point } = groupBy(filterList, "key");
     const params = {
-      organization: organizations?.map((e) => e.name).join(","),
-      type: type?.map((e) => e.name).join(","),
-      bi_point: bi_point?.map((e) => e.name).join(","),
+      organization: organization?.map((e) => e.title).join(","),
+      type: userType?.map((e) => e.title).join(","),
+      bi_point: bi_point?.map((e) => e.title).join(","),
     };
 
     const defaults = { ...getQueryParams() };
@@ -140,52 +101,9 @@ export const HeaderPage = ({
     dispatch(action({ params: params }));
   };
 
-  const handleChangeSearch = (e) => {
-    if (e.target.value !== "") {
-      const params = { ...getQueryParams(), search: e.target.value };
-      navigate({
-        search: `?${createSearchParams(params)}`,
-      });
-      delete params.page;
-      dispatch(action({ params: params }));
-    } else if (e.target.value === "") {
-      removeParams("search", navigate);
-      dispatch(action({ params: { ...getQueryParams() } }));
-    }
-  };
-
-  const debouncedResults = useMemo(() => {
-    return debounce(handleChangeSearch, 500);
-  }, []);
-
   useEffect(() => {
-    return () => {
-      debouncedResults.cancel();
-    };
-  });
-
-  const actiontype = "DROPDOWN";
-  const property = "title";
-  const status1 = "open";
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case `${actiontype}`:
-        return state.map((item) => {
-          if (item[property] === action[property]) {
-            return { ...item, [status1]: !item[status1] };
-          } else {
-            return item;
-          }
-        });
-      default:
-        return state;
-    }
-  };
-
-  const handleChange = (item) => {
-    dispatch1({ type: `${actiontype}`, [property]: item[property] });
-  };
-  const [items, dispatch1] = useReducer(reducer, initialDrops);
+    dispatch(removeFilter());
+  }, [title]);
 
   const [valueDate, setValue] = React.useState([null, null]);
 
@@ -266,19 +184,13 @@ export const HeaderPage = ({
             />
           ) : (
             <>
-              {" "}
               <Divider />
               <FilterDropDown
-                initialReducer={initialDrops}
                 defaultQuery={defaultQuery}
-                filtersList={filtersList}
-                actiontype="DROPDOWN"
-                property="title"
-                status="open"
-                onFilterDropDown={onFilterDropDown}
-                onFilter={onFilter}
-                items={items}
+                items={initialDrops}
                 handleChange={handleChange}
+                handleChangeCheckBox={handleChangeCheckBox}
+                handleChangeRadio={handleChangeRadio}
               />
               <Grid container justifyContent={"space-between"} mt={2}>
                 <Button
@@ -361,6 +273,7 @@ export const HeaderPage = ({
                 keyss={initialTabs[0].key}
                 property="name"
                 status="checked"
+                clientList={clientList}
               />
             </Grid>
           )}
@@ -373,23 +286,26 @@ export const HeaderPage = ({
               justifyContent="flex-end"
               alignItems={"center"}
             >
-              <TextField
-                id="standard-basic"
-                label="جستجو"
-                variant="standard"
-                type="text"
-                name="search"
-                defaultValue={defaultQuery?.search}
-                onInput={debouncedResults}
-              />
+              {children}
+              {searchPage && (
+                <>
+                  <SearchInput
+                    defaultQuery={defaultQuery?.search}
+                    action={action}
+                    removeParams={removeParams}
+                    openin={openin}
+                  />
 
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                onClick={handleDrawerOpen}
-              >
-                <SearchIcon />
-              </IconButton>
+                  <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    onClick={handleDrawerOpen}
+                  >
+                    <SearchIcon />
+                  </IconButton>
+                </>
+              )}
+
               {analysis && (
                 <IconButton
                   sx={{ p: "10px" }}
@@ -399,14 +315,16 @@ export const HeaderPage = ({
                   <AnalysisIcon />
                 </IconButton>
               )}
+              {filterPage && (
+                <IconButton
+                  sx={{ p: "10px" }}
+                  aria-label="menu"
+                  onClick={handleFilterMenu}
+                >
+                  <SmartFilterIcon />
+                </IconButton>
+              )}
 
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                onClick={handleFilterMenu}
-              >
-                <SmartFilterIcon />
-              </IconButton>
               {changeview && (
                 <IconButton
                   sx={{ p: "10px" }}
@@ -417,13 +335,15 @@ export const HeaderPage = ({
                 </IconButton>
               )}
 
-              <IconButton
-                sx={{ p: "10px" }}
-                aria-label="menu"
-                // onClick={handleCreate}
-              >
-                <DownloadIcon />
-              </IconButton>
+              {download && (
+                <IconButton
+                  sx={{ p: "10px" }}
+                  aria-label="menu"
+                  // onClick={handleCreate}
+                >
+                  <DownloadIcon />
+                </IconButton>
+              )}
             </Grid>
           </Grid>
         )}

@@ -24,15 +24,12 @@ export const callForm = (
       multiple: false,
       propValue: "id",
       propTitle: "name",
-      loadingCreate: status === "succeeded",
+      loadingCreate: true,
       loadingEdit: statusDetail === "succeeded" && status === "succeeded",
-      values: status === "succeeded" && entities?.data?.clients,
-      value:
-        statusDetail === "succeeded" &&
-        status === "succeeded" &&
-        entities?.data?.clients.find(
-          (e) => e.id === callDetails?.data?.client?.id
-        ),
+      values: entities?.data?.clients ?? [],
+      value: entities?.data?.clients.find(
+        (e) => e.id === callDetails?.data?.client?.id
+      ),
       async: true,
     },
     {
@@ -43,16 +40,37 @@ export const callForm = (
       multiple: false,
       propValue: "id",
       propTitle: "name",
-      loadingCreate: status === "succeeded" && statuscallAgents === "succeeded",
+      loadingCreate: true,
       loadingEdit:
         statusDetail === "succeeded" && statuscallAgents === "succeeded",
 
-      values:
-        status === "succeeded" &&
-        statuscallAgents === "succeeded" ?
-        callAgents?.data:[],
-        value:{},
+      values: callAgents?.data ?? [],
+      value: "",
       async: true,
+    },
+  ];
+};
+
+export const callFormDate = (
+  datePickerValue,
+  handleChangeTimePickerStart,
+  valueTime,
+  handleChangeTimePicker
+) => {
+  return [
+    {
+      name: "start",
+      label: "dateAndTime",
+      value: datePickerValue,
+      typeInput: "TimePicker",
+      change: handleChangeTimePickerStart,
+    },
+    {
+      name: "end",
+      label: "endTime",
+      value: valueTime,
+      typeInput: "TimePicker",
+      change: handleChangeTimePicker,
     },
   ];
 };

@@ -91,6 +91,9 @@ const resources = {
       "insertcall":"درج تماس",
       "meetingTopic":"عنوان جلسه",
       "clientName":"نام مشتری",
+      "search":"جستجو",
+      "reports":"گزارش ها",
+      "notes":"یادداشت ها",
       "placeMeeting":"محل جلسه",
       "dirctorMeeting":"دبیر جلسه",
       "participants":"شرکت کنندگان",
@@ -122,7 +125,26 @@ const resources = {
       "must be a minimum of 4 characters":"کد پرسنلی باید 4 رقم باشد",
       "forwardUser":"بازاریاب مستقیم",
       "topic":"موضوع",
-      "birth_at":"تاریخ تولد"
+      "birth_at":"تاریخ تولد",
+      "notification":"اعلانات",
+      "language":"زبان",
+      "context":"پس زمینه",
+      "main color":"رنگ اصلی",
+      "light":"روشن",
+      "dark":"تیره",
+      "farsi":"فارسی",
+      "clients":"مشتریان",
+      "users":"مدیران ارتباط",
+      "interactions":"تعاملات",
+      "instructions":"دستورالعمل ها",
+      "admin":"پنل مدیریت",
+      "home":"میز کار",
+      "checkouts":"استعلامات",
+      "profile":"پروفایل",
+      "IconMenuBar":"منو"
+
+
+
 
     },
   },

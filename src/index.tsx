@@ -10,6 +10,7 @@ import reportWebVitals from "./reportWebVitals";
 import ThemeProvider from "./theme";
 import store from "./store";
 import "./i18n";
+import { BaseOptionChartStyle } from "./components/chart";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -20,6 +21,7 @@ root.render(
       <AxiosInterceptor>
         <SnackbarProvider maxSnack={6} autoHideDuration={3000}>
           <ThemeProvider>
+          {/* <BaseOptionChartStyle /> */}
             <App />
           </ThemeProvider>
         </SnackbarProvider>

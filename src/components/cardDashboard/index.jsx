@@ -7,7 +7,7 @@ import { Card, CardHeader, Divider } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import {
   Curve,
-  Clients,
+  ClientIcone,
   Flash,
   Frame1325,
   Frame1326,
@@ -25,7 +25,7 @@ export const CardNote = () => {
   const { t, i18n } = useTranslation();
   const test = [1, 2];
   return (
-    <Card sx={{ padding: "16px" }}>
+    <Card sx={{ padding: "16px", height: "100%" }}>
       <Grid
         container
         justifyContent={"space-between"}
@@ -108,22 +108,23 @@ export const MeetingCard = () => {
           <PlusIcon />
         </IconButton>
       </Grid>
-      <Grid
-        container
-        justifyContent={"space-between"}
-        alignItems="center"
-        mb={2}
-      >
-        <Typography>{"پتروشیمی"}</Typography>
-        <IconButton
-          aria-label="menu"
-          //   onClick={() => handleDelete(row.id)}
-        >
-          <OptionIcone />
-        </IconButton>
-      </Grid>
       {test.map((e, i) => (
         <>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            alignItems="center"
+            mb={2}
+            mt={2}
+          >
+            <Typography>{"پتروشیمی"}</Typography>
+            <IconButton
+              aria-label="menu"
+              //   onClick={() => handleDelete(row.id)}
+            >
+              <OptionIcone />
+            </IconButton>
+          </Grid>
           <Grid
             container
             justifyContent={"space-between"}
@@ -169,5 +170,30 @@ export const MeetingCard = () => {
         </>
       ))}
     </>
+  );
+};
+
+export const CountClients = ({ count, percent }) => {
+  return (
+    <Card sx={{ padding: "16px", height: "100%" }}>
+      <Grid container justifyContent={"center"} alignItems={"center"}>
+        <Grid container mt={3} justifyContent={"center"}>
+          <IconButton>
+            <ClientIcone />
+          </IconButton>
+        </Grid>
+        <Grid container justifyContent={"center"} mt={2} mb={1}>
+          <Typography fontSize={12} align="center">
+            {"تعداد مشتریان مستقیم"} {`${count} نفر`}
+          </Typography>
+        </Grid>
+        <Grid container justifyContent={"center"} mt={1} mb={2}>
+          <Typography
+            fontSize={12}
+            color="#017874"
+          >{`${percent}% از کل پرتفوی مشتریان`}</Typography>
+        </Grid>
+      </Grid>
+    </Card>
   );
 };
