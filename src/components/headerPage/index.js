@@ -2,11 +2,12 @@ import React, { useEffect } from "react";
 import { convertDigits } from "persian-helpers";
 import { Link } from "react-router-dom";
 import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
 import Menu from "@mui/material/Menu";
 import Divider from "@mui/material/Divider";
 import { Typography } from "@mui/material";
 import Button from "@mui/material/Button";
-import { removeFilter } from "../../features/filter";
+import { removeFilterUser, removeFilterClient } from "../../features/filter";
 import {
   getQueryParams,
   groupBy,
@@ -20,6 +21,9 @@ import {
   SmartFilterIcon,
   DownloadIcon,
   ChangeViewIcom,
+  PlusIcon,
+  CreateIcon,
+  NavigationIcon,
 } from "../icons";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -27,12 +31,13 @@ import { useTranslation } from "react-i18next";
 import IconButton from "@mui/material/IconButton";
 import { createSearchParams, useNavigate } from "react-router-dom";
 import { FilterDropDown } from "../filter";
-import { Tabs } from "../tabs";
+import { Tabs } from "../tabsFilter";
 import { SearchInput } from "../search";
 
 import { CustomDateRangePickerDay } from "../dateRangePicker";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
+import { TabButtons } from "../tabButton";
 
 export const HeaderPage = ({
   title,
@@ -40,8 +45,8 @@ export const HeaderPage = ({
   status,
   page,
   tab,
-  initialTabs,
   initialDrops,
+  filterRMTabs,
   handleChange,
   defaultQuery,
   analysis,
@@ -55,6 +60,10 @@ export const HeaderPage = ({
   children,
   handleChangeCheckBox,
   handleChangeRadio,
+  ButtonTabs,
+  handleButtons,
+  instructionTab,
+  createInstructions,
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = React.useState(false);
@@ -77,17 +86,24 @@ export const HeaderPage = ({
   };
 
   const handleCancel = () => {
-    removeParams(["organization", "type", "bi_point"], navigate);
+    removeParams(["organization", "type", "bi_point", "gender"], navigate);
     dispatch(action({ params: { ...getQueryParams() } }));
-    dispatch(removeFilter());
+    dispatch(removeFilterUser());
+    dispatch(removeFilterClient());
   };
 
   const handleExecution = () => {
-    const { organization, userType, bi_point } = groupBy(filterList, "key");
+    const { organization, userType, bi_point, clientType, gender } = groupBy(
+      filterList,
+      "key"
+    );
     const params = {
       organization: organization?.map((e) => e.title).join(","),
-      type: userType?.map((e) => e.title).join(","),
+      type: clientType
+        ? clientType?.map((e) => e.title).join(",")
+        : userType?.map((e) => e.title).join(","),
       bi_point: bi_point?.map((e) => e.title).join(","),
+      gender: gender?.map((e) => e.title).join(","),
     };
 
     const defaults = { ...getQueryParams() };
@@ -102,7 +118,8 @@ export const HeaderPage = ({
   };
 
   useEffect(() => {
-    dispatch(removeFilter());
+    dispatch(removeFilterUser());
+    dispatch(removeFilterClient());
   }, [title]);
 
   const [valueDate, setValue] = React.useState([null, null]);
@@ -125,15 +142,6 @@ export const HeaderPage = ({
   const { statusDashboard, entitiesDashboard, error } = useSelector(
     (state) => state.dashboardAppSlice
   );
-
-  const tabData = [];
-  if (tab) {
-    initialTabs[0]?.values.filter((e) => {
-      if (e.name >= entitiesDashboard?.data?.user?.level) {
-        tabData.push(e);
-      }
-    });
-  }
 
   return (
     <>
@@ -212,142 +220,170 @@ export const HeaderPage = ({
           )}
         </Grid>
       </Menu>
-      <Grid
-        container
-        flexDirection={"row-reverse"}
-        alignItems="center"
-        columns={16}
-        justifyContent="space-between"
-        mb={4}
-        mt={2}
-      >
-        <Grid item xl={4}>
-          <Grid container dir="rtl" gap={1}>
-            <Typography className="title">{title}</Typography>
-            {page === "table" && (
-              <>
-                <Typography color={"#3B3B3B"}>
-                  {convertDigits(1)}-
-                  {status === "succeeded" &&
-                    convertDigits(entities?.data.per_page)}
-                </Typography>
-                <Typography color={"#3B3B3B"}>{t("from")}</Typography>
-                <Typography color={"#3B3B3B"}>
-                  {status === "succeeded" &&
-                    convertDigits(entities?.data.total)}{" "}
-                  {t("person")}
-                </Typography>
-              </>
-            )}
+      <Paper>
+        <Grid
+          container
+          flexDirection={"row-reverse"}
+          alignItems="center"
+          columns={16}
+          justifyContent="space-between"
+          mb={4}
+          mt={2}
+        >
+          <Grid item xl={3}>
+            <Grid container dir="rtl" gap={1}>
+              <Typography className="title">{title}</Typography>
+              {page === "table" && (
+                <>
+                  <Typography color={"#3B3B3B"}>
+                    {convertDigits(1)}-
+                    {status === "succeeded" &&
+                      convertDigits(entities?.data.per_page)}
+                  </Typography>
+                  <Typography color={"#3B3B3B"}>{t("from")}</Typography>
+                  <Typography color={"#3B3B3B"}>
+                    {status === "succeeded" &&
+                      convertDigits(entities?.data.total)}{" "}
+                    {t("person")}
+                  </Typography>
+                </>
+              )}
 
-            {page === "detail" && (
-              <>
-                <Typography>{entities?.name}</Typography>
+              {page === "detail" && (
+                <>
+                 
+                  <NavigationIcon />
+                  <Typography>{entities?.name}</Typography>
+                  <Typography color={"gray"}>{`(${entities?.level})`}</Typography>
+                  <Typography color="#FF2020">
+                    <Link
+                      onClick={() => navigate(-1)}
+                      color="#FF2020"
+                      style={{ color: "#FF2020" }}
+                    >
+                      {t("returnToPreviousPage")}
+                    </Link>
+                  </Typography>
+                </>
+              )}
+              {page === "form" && (
                 <Typography color="#FF2020">
                   <Link
                     onClick={() => navigate(-1)}
-                    color="#FF2020"
                     style={{ color: "#FF2020" }}
                   >
                     {t("returnToPreviousPage")}
                   </Link>
                 </Typography>
-              </>
+              )}
+            </Grid>
+          </Grid>
+          <Grid item xl={7}>
+            {tab && (
+              <Grid
+                container
+                justifyContent={"end"}
+                flexDirection="row-reverse"
+              >
+                <Tabs
+                  actionFilter={action}
+                  filterRMTabs={filterRMTabs}
+                  entitiesDashboard={entitiesDashboard}
+                  statusDashboard={statusDashboard}
+                  status={status}
+                  clientList={clientList}
+                />
+              </Grid>
             )}
-            {page === "form" && (
-              <Typography color="#FF2020">
-                <Link onClick={() => navigate(-1)} style={{ color: "#FF2020" }}>
-                  {t("returnToPreviousPage")}
-                </Link>
-              </Typography>
+            {ButtonTabs && (
+              <Grid container justifyContent={"end"}>
+                <TabButtons
+                  ButtonTabs={ButtonTabs}
+                  handleButtons={handleButtons}
+                />
+              </Grid>
             )}
           </Grid>
-        </Grid>
-        <Grid item xl={6}>
-          {tab && tabData.length > 2 && (
-            <Grid container justifyContent={"end"} flexDirection="row-reverse">
-              <Tabs
-                actionFilter={action}
-                initialReducer={tabData}
-                actiontype={initialTabs[0].inputType}
-                keyss={initialTabs[0].key}
-                property="name"
-                status="checked"
-                clientList={clientList}
-              />
-            </Grid>
-          )}
-        </Grid>
-        {page !== "form" && page !== "dashboard" && (
-          <Grid item xl={6}>
-            <Grid
-              container
-              flexDirection={"row-reverse"}
-              justifyContent="flex-end"
-              alignItems={"center"}
-            >
-              {children}
-              {searchPage && (
-                <>
-                  <SearchInput
-                    defaultQuery={defaultQuery?.search}
-                    action={action}
-                    removeParams={removeParams}
-                    openin={openin}
-                  />
+          {page !== "form" && page !== "dashboard" && (
+            <Grid item xl={6}>
+              <Grid
+                container
+                flexDirection={"row-reverse"}
+                justifyContent="flex-end"
+                alignItems={"center"}
+              >
+                {children}
+                {searchPage && (
+                  <>
+                    <SearchInput
+                      defaultQuery={defaultQuery?.search}
+                      action={action}
+                      removeParams={removeParams}
+                      openin={openin}
+                    />
 
+                    <IconButton
+                      sx={{ p: "10px" }}
+                      aria-label="menu"
+                      onClick={handleDrawerOpen}
+                    >
+                      <SearchIcon />
+                    </IconButton>
+                  </>
+                )}
+
+                {analysis && (
                   <IconButton
                     sx={{ p: "10px" }}
                     aria-label="menu"
-                    onClick={handleDrawerOpen}
+                    // onClick={handleCreate}
                   >
-                    <SearchIcon />
+                    <AnalysisIcon />
                   </IconButton>
-                </>
-              )}
+                )}
+                {instructionTab && (
+                  <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    onClick={createInstructions}
+                  >
+                    <CreateIcon />
+                  </IconButton>
+                )}
+                {filterPage && (
+                  <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    onClick={handleFilterMenu}
+                  >
+                    <SmartFilterIcon />
+                  </IconButton>
+                )}
 
-              {analysis && (
-                <IconButton
-                  sx={{ p: "10px" }}
-                  aria-label="menu"
-                  // onClick={handleCreate}
-                >
-                  <AnalysisIcon />
-                </IconButton>
-              )}
-              {filterPage && (
-                <IconButton
-                  sx={{ p: "10px" }}
-                  aria-label="menu"
-                  onClick={handleFilterMenu}
-                >
-                  <SmartFilterIcon />
-                </IconButton>
-              )}
+                {changeview && (
+                  <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    onClick={changeview}
+                  >
+                    <ChangeViewIcom />
+                  </IconButton>
+                )}
 
-              {changeview && (
-                <IconButton
-                  sx={{ p: "10px" }}
-                  aria-label="menu"
-                  onClick={changeview}
-                >
-                  <ChangeViewIcom />
-                </IconButton>
-              )}
-
-              {download && (
-                <IconButton
-                  sx={{ p: "10px" }}
-                  aria-label="menu"
-                  // onClick={handleCreate}
-                >
-                  <DownloadIcon />
-                </IconButton>
-              )}
+                {download && (
+                  <IconButton
+                    sx={{ p: "10px" }}
+                    aria-label="menu"
+                    // onClick={handleCreate}
+                  >
+                    <DownloadIcon />
+                  </IconButton>
+                )}
+              </Grid>
             </Grid>
-          </Grid>
-        )}
-      </Grid>
+          )}
+        </Grid>
+      </Paper>
     </>
   );
 };

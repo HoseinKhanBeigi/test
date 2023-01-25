@@ -23,10 +23,14 @@ import { useTranslation } from "react-i18next";
 import { searchInMap, searchReport } from "../../actions/reports";
 import { useDispatch, useSelector } from "react-redux";
 import { CardBranch, UserCard } from "./card";
+import Notifier from "../../components/notify";
+import { useNavigate } from "react-router-dom";
+import { userDetail } from "../../actions/users";
 
 export const Reports = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [branch, setBranch] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
 
@@ -48,7 +52,7 @@ export const Reports = () => {
             newData.map((branch, i) => {
               data.push(branch);
             });
-            console.log(data);
+      
             setBranch(data);
           } else if (e.payload.data.length === 0) {
             setBranch([]);
@@ -69,6 +73,12 @@ export const Reports = () => {
       debouncedResults.cancel();
     };
   });
+
+  const handleClick = (id) => {
+    dispatch(userDetail({ id })).then(() => {
+      navigate(`/reports/${id}`);
+    });
+  };
 
   const handleDispatch = (item) => {
     if (item.name.d) {
@@ -140,9 +150,11 @@ export const Reports = () => {
                   <Grid container mb={2}>
                     <UserCard
                       name={e.name}
+                      id={e?.id}
                       position={e.position}
                       mobile={e.mobile}
                       organization={e.organization}
+                      handleClick={handleClick}
                     />
                   </Grid>
                 ));
@@ -156,6 +168,7 @@ export const Reports = () => {
           </Grid>
         </Grid>
       </Grid>
+      <Notifier />
     </>
   );
 };

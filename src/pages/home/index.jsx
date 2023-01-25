@@ -11,6 +11,7 @@ import { Card, CardHeader, Divider } from "@mui/material";
 import {
   CardNote,
   CountClients,
+  TargetCard,
   MeetingCard,
 } from "../../components/cardDashboard";
 
@@ -49,24 +50,11 @@ export const Home = () => {
     entitiesDashboard,
     areaChartCategories,
     areaChartValues,
+    basketClient,
     error,
   } = useSelector((state) => state.dashboardAppSlice);
 
-  const categories = ["حقوقی", "حقیقی"];
-  const series = [
-    {
-      name: " شما",
-      data: [20, 12],
-    },
-    {
-      name: "RM سطح",
-      data: [110, 120],
-    },
-    {
-      name: "کل",
-      data: [600000, 24000],
-    },
-  ];
+  const categories = ["حقیقی", "حقوقی"];
 
   return (
     <>
@@ -95,28 +83,38 @@ export const Home = () => {
             ]}
           />
 
-          <Grid container mb={2} mt={2}>
+          <Grid container mb={2} mt={2} columnSpacing={2}>
             <Grid item md={3} lg={3} sm={3} xs={12}>
-              <CountClients count={8} percent={3} />
+              <CountClients
+                count={entitiesDashboard?.data?.client_count_chart?.clients_count}
+                percent={entitiesDashboard?.data?.client_count_chart?.clients_percent}
+                status={statusDashboard === "succeeded"}
+              />
             </Grid>
             <Grid item md={9} lg={9} sm={9} xs={12}>
-              asdasd
+              <TargetCard />
             </Grid>
           </Grid>
           <Grid container spacing={2}>
             <Grid item md={7} lg={7} sm={6} xs={12}>
-              <StackBar categories={categories} series={series} />
+              <Card>
+                <StackBar
+                  categories={categories}
+                  series={basketClient}
+                  status={statusDashboard === "succeeded"}
+                />
+              </Card>
             </Grid>
             <Grid item md={5} lg={5} sm={6} xs={12}>
-              <CardNote />
+              <CardNote notes={entitiesDashboard?.data?.notes}   status={statusDashboard === "succeeded"}/>
             </Grid>
           </Grid>
         </Grid>
         <Grid item md={4} lg={4} sm={6} xs={12} order={{ xs: 1, sm: 1, md: 1 }}>
-          <Card sx={{ padding: "20px", height: "100%" }}>
+          <Card sx={{ padding: "20px" }}>
             <DatePicker />
             <Divider />
-            <MeetingCard />
+            <MeetingCard  meetings={entitiesDashboard?.data?.meetings} status={statusDashboard === "succeeded"}/>
           </Card>
         </Grid>
       </Grid>

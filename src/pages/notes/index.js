@@ -39,8 +39,9 @@ import {
   messageDepedencies,
 } from "../../actions/notes";
 import { removeMessageNote } from "../../features/noteMessage";
-import { removeDependencies} from "../../features/noteDepedencies"
+import { removeDependencies } from "../../features/noteDepedencies";
 import { RHAuto } from "../../components/hook-form";
+import { NoteForm } from "../../components/noteDialog";
 
 export const Notes = () => {
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ export const Notes = () => {
   const note_id = useRef();
   const messageBody = useRef();
   const mentioned_someOne = useRef();
+  const [title, setTitle] = useState();
   const [disabled, setDisabled] = useState(true);
   const [disabledMessage, setDisabledMessage] = useState(true);
 
@@ -62,21 +64,32 @@ export const Notes = () => {
   useDispatchAction(notesAction, status);
   useDispatchAction(messageDepedencies, statusDependencies, "option");
 
-  
-
   const handleClick = (e) => {
+    if (e?.title) {
+      setTitle(e.title);
+    } else if (e?.user.name) {
+      setTitle(e?.user.name);
+    }
+
     const findMention = noteTitle.find((k) => k.id === e.id);
-    setMentionMessage(findMention);
+    if (findMention?.note_id) {
+      dispatch(messageNoteAction({ id: findMention?.note_id })).then((e) => {
+        note_id.current = findMention?.note_id;
+        setDisabledMessage(false);
+      });
+      setMentionMessage(findMention);
+    }
+
     dispatch(noteMessageAction({ id: e.id }));
     if (e?.current_message) {
       note_id.current = e?.current_message?.note_id;
       dispatch(messageNoteAction({ id: e?.current_message?.note_id }));
       // dispatch(messageDepedencies({}));
-      setDisabledMessage(false)
+      setDisabledMessage(false);
     } else {
       dispatch(removeMessageNote());
       note_id.current = "";
-      messageBody.current.value = ""
+      messageBody.current.value = "";
       setDisabledMessage(true);
       setDisabled(true);
     }
@@ -88,6 +101,7 @@ export const Notes = () => {
       mention_id: mentioned_someOne.current,
       attach: "",
     };
+    
     if (!res.attach) {
       delete res.attach;
     }
@@ -98,9 +112,7 @@ export const Notes = () => {
       dispatch(storeMessageNote({ id: note_id.current, res }));
     }
 
-    console.log(res, "res");
   };
-
 
   const selectChange = (e, value, reason, details) => {
     mentioned_someOne.current = value.id;
@@ -114,11 +126,18 @@ export const Notes = () => {
     }
   };
 
+  const [open, setOpen] = useState(false);
+
+  const openNoteForm = ()=>{
+    setOpen(true)
+  }
+
   return (
     <>
+    <NoteForm open={open} setOpen={setOpen} title="new note"/>
       <HeaderPage title={t("notes")}>
         <Grid item>
-          <Button variant="contained">new note</Button>
+          <Button variant="contained" onClick={openNoteForm}>new note</Button>
         </Grid>
       </HeaderPage>
       <Grid container>
@@ -133,67 +152,96 @@ export const Notes = () => {
               scrollbarWidth: "thin",
             }}
           >
-            <Card sx={{ padding: "12px", width: "100%" }}>
-              <Grid sx={{ height: "740px", overflowY: "scroll" }}>
-                <TitleMessage mt={3} text={"all notes"}>
-                  <AllMessage />
-                </TitleMessage>
-                {noteTitle
-                  .filter((e) => !e?.user)
-                  .map((e, i) => (
-                    <BodyMessage
-                      key={i}
-                      background={e?.back}
-                      color={"#017874"}
-                      handleClick={() => handleClick(e)}
-                      status={"typing"}
-                      name={e?.title}
-                      // time={convertDigits(format(new Date(e.created_at), "HH:mm"))}
-                    ></BodyMessage>
-                  ))}
-                <TitleMessage mt={2} text={"mentioned_messages"}>
-                  <Filled />
-                </TitleMessage>
-                {noteTitle
-                  .filter((e) => e?.user)
-                  ?.map((e, i) => (
-                    <BodyMessage
-                      key={i}
-                      background={e?.back}
-                      handleClick={() => handleClick(e)}
-                      color={"#017874"}
-                      status={"typing"}
-                      name={e?.user?.name}
-                      time={convertDigits(
-                        format(new Date(e?.created_at), "HH:mm")
-                      )}
-                    ></BodyMessage>
-                  ))}
-              </Grid>
+            <Card
+              sx={{
+                padding: "12px",
+                width: "100%",
+                height: "740px",
+                overflowY: "scroll",
+              }}
+            >
+              <TitleMessage mt={3} text={"all notes"}>
+                <AllMessage />
+              </TitleMessage>
+              {noteTitle
+                .filter((e) => !e?.user)
+                .map((e, i) => (
+                  <BodyMessage
+                    key={i}
+                    background={e?.back}
+                    color={"#017874"}
+                    handleClick={() => handleClick(e)}
+                    status={"typing"}
+                    name={e?.title}
+                    // time={convertDigits(format(new Date(e.created_at), "HH:mm"))}
+                  ></BodyMessage>
+                ))}
+              <TitleMessage mt={2} text={"mentioned_messages"}>
+                <Filled />
+              </TitleMessage>
+              {noteTitle
+                .filter((e) => e?.user)
+                ?.map((e, i) => (
+                  <BodyMessage
+                    key={i}
+                    background={e?.back}
+                    handleClick={() => handleClick(e)}
+                    color={"#017874"}
+                    status={"typing"}
+                    name={e?.user?.name}
+                    time={convertDigits(
+                      format(new Date(e?.created_at), "HH:mm")
+                    )}
+                  ></BodyMessage>
+                ))}
             </Card>
           </Grid>
-          <Grid item container xl={8} md={8}>
-            <Card sx={{ padding: "12px", width: "100%" }}>
-              <Grid sx={{ height: "646px", overflowY: "scroll" }}>
-                {/* <MessageOfTicketReciver
-                  message={mentionMessage?.body}
-                  color="#242731"
-                  background="#017874"
-                /> */}
-                {messagesNote?.data?.messages.map((e,i) => (
-                  <MessageOfTicketSender
-                  key={i}
-                    message={e.body}
-                    color="white"
+          <Grid item container xl={8} md={8} flexDirection="column">
+            <Card
+              sx={{
+                padding: "12px",
+                width: "100%",
+                height: "742px",
+                overflowY: "scroll",
+              }}
+            >
+              {/* {!messagesNote?.data?.messages && (
+                  <MessageOfTicketReciver
+                    message={mentionMessage?.body}
+                    color="#242731"
                     background="#017874"
                   />
-                ))}
-              </Grid>
+                )} */}
+              <Box
+                sx={{
+                  position: "sticky",
+                  top: 0,
+                  width: "100%",
+                  height: "59px",
+                  borderBottom: "1px solid",
+                  borderBottomColor: "silver",
+                  background: "white",
+                }}
+              >
+                {title}
+              </Box>
+
+              {messagesNote?.data?.messages.map((e, i) => (
+                <MessageOfTicketSender
+                  key={i}
+                  message={e.body}
+                  own={e}
+                  color="white"
+                  background="#017874"
+                />
+              ))}
 
               <Grid
                 item
                 container
                 sx={{
+                  position: "sticky",
+                  bottom: 0,
                   background: "#F5F6FA",
                   width: "100%",
                   border: "1px solid #E9E9F2",
@@ -340,13 +388,23 @@ const SearchSection = () => {
   );
 };
 
-const MessageOfTicketSender = ({ message, color, background, nameColor }) => {
+const MessageOfTicketSender = ({
+  message,
+  color,
+  background,
+  nameColor,
+  own,
+}) => {
   return (
-    <Grid container justifyContent="flex-start" mb={2}>
+    <Grid
+      container
+      justifyContent={own.own === 0 ? "flex-end" : "flex-start"}
+      mb={2}
+    >
       <Grid
         item
         sx={{
-          background: background,
+          background: own.own === 0 ? "#017874" : "silver",
           width: "400px",
           borderRadius: "16px 0px 16px 16px",
           padding: "10px 10px 10px 14px",
@@ -354,7 +412,7 @@ const MessageOfTicketSender = ({ message, color, background, nameColor }) => {
         }}
       >
         <Typography color={color}>{message}</Typography>
-        <Typography color={nameColor}>name</Typography>
+        <Typography color={nameColor}>{own?.mentioned_user?.name}</Typography>
       </Grid>
     </Grid>
   );

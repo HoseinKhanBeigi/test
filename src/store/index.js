@@ -28,11 +28,21 @@ import noteSlice from "../features/notes";
 import messageNoteSlice from "../features/noteMessage";
 import MutiColors from "../features/mutiColors";
 import navBarSlice from "../features/navbar";
-import noteDependencies from "../features/noteDepedencies"
+import noteDependencies from "../features/noteDepedencies";
+import tabSlice from "../features/tabs";
+import { instructionsAdminSlice } from "../features/admin/instructions";
+import { InstructionCategoriesSlice } from "../features/admin/instructionsCategories";
+import { userManagerSlice } from "../features/admin/userManager";
+import { branchesSlice } from "../features/admin/branches";
+import permissionsSlice from "../features/admin/permissions";
+import { clientNoteSlice } from "../features/notes/clientNote";
+import { instructionsSlice } from "../features/instructions";
+import {agentsSlice} from "../features/agents";
 
 const store = configureStore({
   reducer: {
     noteSlice,
+    agentsSlice,
     interactionSlice,
     loginSlice,
     userListSlice,
@@ -59,7 +69,15 @@ const store = configureStore({
     reportsSlice,
     MutiColors,
     navBarSlice,
-    noteDependencies
+    noteDependencies,
+    tabSlice,
+    instructionsAdminSlice,
+    InstructionCategoriesSlice,
+    userManagerSlice,
+    branchesSlice,
+    permissionsSlice,
+    clientNoteSlice,
+    instructionsSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

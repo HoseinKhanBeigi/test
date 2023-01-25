@@ -14,6 +14,7 @@ import TableCell from "@mui/material/TableCell";
 import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
 import Notifier from "../../components/notify";
+import Skeleton from "@mui/material/Skeleton";
 import MenuItem from "@mui/material/MenuItem";
 import {
   usersList,
@@ -21,6 +22,7 @@ import {
   userDetail,
   userOrganization,
 } from "../../actions/users";
+import CircularProgress from "@mui/material/CircularProgress";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
 import { getQueryParams } from "../../utils";
 import { initialTabs } from "./filterItems";
@@ -76,21 +78,21 @@ export const Users = () => {
   const { status, entities, error } = useSelector(
     (state) => state.userListSlice
   );
+  const { filterRMTabs } = useSelector((state) => state.tabSlice);
 
   const handleClickOpen = () => {
     setOpenDialog(true);
   };
 
   const handleNavigate = (id, organization) => {
-    dispatch(userDetail({ id })).then(()=>{
+    dispatch(userDetail({ id })).then(() => {
       dispatch(
         userOrganization({
           organization_type: organization,
         })
-      )
+      );
       navigate(`/users/update/${id}`);
-    })
-    
+    });
   };
 
   const handleDelete = (id) => {
@@ -108,7 +110,6 @@ export const Users = () => {
     setOpenConfirmation(true);
     setStateId(id);
   };
-
   useDispatchAction(usersList, status);
   const useCheckBoxSelector = useCheckBox(status, entities);
   const handleSelectAll = (item) => {
@@ -161,7 +162,7 @@ export const Users = () => {
         action={usersList}
         entities={entities}
         status={status}
-        initialTabs={initialTabs}
+        filterRMTabs={filterRMTabs}
         initialDrops={initialDropsUser}
         handleChange={handleChange}
         page="table"
@@ -200,7 +201,24 @@ export const Users = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {status === "succeeded" &&
+                  {status !== "succeeded" ? (
+                    [...Array(7)].map((_, i) => (
+                      <TableRow role="checkbox" key={i}>
+                        {[...Array(7)].map((_, k) => (
+                          <TableCell>
+                            <Box>
+                              <Skeleton
+                                key={k}
+                                width={40}
+                                variant="rectangular"
+                                sx={{ my: 4, mx: 1 }}
+                              />
+                            </Box>
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
                     entities?.data?.data.map((row, i) => {
                       let part1 = row?.mobile?.slice(0, 4);
                       let part2 = row?.mobile?.slice(4, 7);
@@ -248,7 +266,8 @@ export const Users = () => {
                           </TableCell>
                         </TableRow>
                       );
-                    })}
+                    })
+                  )}
                 </TableBody>
               </Table>
             </TableContainer>

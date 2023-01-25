@@ -9,7 +9,7 @@ export const createAsyncAction = (url, type, method) => {
       const config = {
         headers: {
           "Content-Type":
-            values.file || values?.res?.attach || values?.attach
+            values.file || values?.res?.attach || values?.attach || values?.avatar
               ? "multipart/form-data"
               : "application/json",
           "Access-Control-Allow-Credentials": true,

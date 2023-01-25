@@ -7,6 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { userLogin } from "../../actions/login";
 import { NavLink, Outlet } from "react-router-dom";
 import Notifier from "../../components/notify";
+import { dashboardApp } from "../../actions/profile";
 
 // @mui
 import {
@@ -67,6 +68,7 @@ export default function Login() {
     dispatch(userLogin(e)).then((res) => {
       if (res.payload.status === 200) {
         navigate("/home");
+        dispatch(dashboardApp({}));
       }
     });
   };
@@ -85,7 +87,7 @@ export default function Login() {
           // backgroundRepeat: "no-repeat",
           // backgroundSize: "cover",
           // height:'auto',
-          // width:"100%"
+          height: "100%",
         }}
       >
         <img src={backG3} className="imglogin" />

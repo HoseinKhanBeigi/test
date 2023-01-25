@@ -4,7 +4,7 @@ import pic from "./pic.png";
 
 export const CardBranch = ({ phone, address, name, level }) => {
   return (
-    <Card sx={{minWidth:"500px"}}>
+    <Card>
       <Grid container dir="rtl">
         <Grid item xs={6} paddingLeft="12px" paddingRight={"12px"}>
           <Grid container justifyContent={"space-between"} mb={2} mt={2}>
@@ -60,9 +60,9 @@ export const CardBranch = ({ phone, address, name, level }) => {
   );
 };
 
-export const UserCard = ({name,position,organization,mobile}) => {
+export const UserCard = ({name,position,organization,mobile,handleClick,id}) => {
   return (
-    <Card sx={{minWidth:"500px"}}>
+    <Card sx={{minWidth:"380px",cursor:"pointer"}} onClick={()=>handleClick(id)}>
       <Grid
         container
         dir="rtl"

@@ -112,11 +112,11 @@ export function AreaChart({
           show: false,
           format: "dd MMM",
           // formatter:(value)=>{
-          //   console.log(value);
+       
           //   return value
           // }
           // formatter: (value) => {
-          //   console.log(value);
+       
           //   switch (value) {
           //     case 1:
           //       return "فروردین";
@@ -163,7 +163,7 @@ export function AreaChart({
           type="area"
           series={options.series}
           options={options}
-          height={382}
+          height={300}
         />
       </Box>
     </Card>

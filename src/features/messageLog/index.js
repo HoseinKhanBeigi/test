@@ -12,6 +12,9 @@ const messageLog = createSlice({
       state.uploadMessage = [];
     },
     messageHandling(state, action) {
+
+
+    
       if (action.payload?.status === 400) {
         if (action.payload?.data?.errors?.errors) {
           action.payload?.data?.errors?.errors.map((e) => {
@@ -36,7 +39,13 @@ const messageLog = createSlice({
           mess: "مجددا احراز هویت کنید",
           variant: "error",
         });
-      } else {
+      }else if (action.payload?.status === 403) {
+        state.messages.push({
+          mess: "دسترسی شما مجاز نمی باشد",
+          variant: "error",
+        });
+      }  
+      else {
         state.messages.push({
           mess: "خطا از زیر ساخت",
           variant: "error",

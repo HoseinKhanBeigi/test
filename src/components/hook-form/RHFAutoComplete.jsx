@@ -27,7 +27,6 @@ export function CheckboxesTags({
   const [options, setOptions] = React.useState([]);
   const loading = statusClient !== "succeeded";
   const handleChangeAutoComplete = (e, value,reason,details) => {
-    console.log(reason,details);
     onChange(value);
   };
 

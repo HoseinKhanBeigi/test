@@ -58,7 +58,7 @@ export const Interactions = () => {
   // useEffect(() => {
   //   const date = moment().locale("en").format("YYYY-MM-DD");
   //   const today = getDates(date);
-  //   console.log(today);
+  
 
   //   const result = {
   //     calendar_start_date: "2023-01-20",

@@ -81,7 +81,6 @@ export const AddAgents = ({
       agent_phone.current.value
 
     ) {
-      console.log("tesss");
       setIsSave(true);
     } else {
       setIsSave(false);
@@ -130,7 +129,6 @@ export const AddAgents = ({
         agent_name.current.value = action.agent_name;
         agent_phone.current.value = action.agent_phone;
         // agent_position.current = action.agent_position;
-        console.log(action.agent_position);
         setAge(action.agent_position);
 
         const idx = state.agents.findIndex((t) => t.id === action.id);
@@ -151,7 +149,7 @@ export const AddAgents = ({
         setAge("");
         const agent = Object.assign({}, state.agents[idx]);
 
-        console.log(action.agent_position);
+      
         agent.agent_name = action.agent_name;
         agent.agent_phone = action.agent_phone;
         agent.agent_position = action.agent_position;

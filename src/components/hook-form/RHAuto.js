@@ -66,6 +66,7 @@ export default function RHAuto({ name, children, ...other }) {
             classes={{
               option: styles.option,
             }}
+            fullWidth
             multiple={other.multiple}
             id={other.multiple ? "multiple-limit-tags" : "combo-box-demo"}
             options={other.value}

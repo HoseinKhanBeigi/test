@@ -1,7 +1,6 @@
 // userSlice.js
-import { createSlice } from '@reduxjs/toolkit'
-import { usersList } from '../../actions/users'
-
+import { createSlice } from "@reduxjs/toolkit";
+import { usersList } from "../../actions/users";
 
 const initialState = {
   entities: [],
@@ -10,7 +9,7 @@ const initialState = {
 };
 
 export const userListSlice = createSlice({
-  name: 'usersList',
+  name: "usersList",
   initialState,
   reducers: {},
   extraReducers(builder) {
@@ -20,8 +19,10 @@ export const userListSlice = createSlice({
         state.entities = [];
       })
       .addCase(usersList.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.entities = action.payload
+        if (state.status === "pending") {
+          state.status = "succeeded";
+          state.entities = action.payload;
+        }
       })
       .addCase(usersList.rejected, (state, action) => {
         state.status = "failed";

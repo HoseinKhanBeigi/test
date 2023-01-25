@@ -34,8 +34,8 @@ const initialState = {
       title: "clientType",
       inputType: "RADIO",
       values: [
-        { name: "حقیقی", checked: false, key: "type" },
-        { name: "حقوقی", checked: false, key: "type" },
+        { title: "حقیقی", checked: false, key: "clientType" },
+        { title: "حقوقی", checked: false, key: "clientType" },
       ],
     },
 
@@ -45,8 +45,8 @@ const initialState = {
       inputType: "RADIO",
 
       values: [
-        { name: "آقا", checked: false, key: "gender" },
-        { name: "خانم", checked: false, key: "gender" },
+        { title: "مرد", checked: false, key: "gender" },
+        { title: "زن", checked: false, key: "gender" },
       ],
     },
     {
@@ -55,14 +55,14 @@ const initialState = {
       inputType: "CHECKBOX",
 
       values: [
-        { name: "A*", checked: false, key: "bi_point" },
-        { name: "A+", checked: false, key: "bi_point" },
-        { name: "A", checked: false, key: "bi_point" },
-        { name: "B+", checked: false, key: "bi_point" },
-        { name: "B", checked: false, key: "bi_point" },
-        { name: "C", checked: false, key: "bi_point" },
-        { name: "D", checked: false, key: "bi_point" },
-        { name: "E", checked: false, key: "bi_point" },
+        { title: "A*", checked: false, key: "bi_point" },
+        { title: "A+", checked: false, key: "bi_point" },
+        { title: "A", checked: false, key: "bi_point" },
+        { title: "B+", checked: false, key: "bi_point" },
+        { title: "B", checked: false, key: "bi_point" },
+        { title: "C", checked: false, key: "bi_point" },
+        { title: "D", checked: false, key: "bi_point" },
+        { title: "E", checked: false, key: "bi_point" },
       ],
     },
   ],
@@ -85,7 +85,7 @@ const filterSlice = createSlice({
       const idx = state[action.payload.name].findIndex(
         (f) => f.title === action.payload.item.key
       );
-      
+
       state[action.payload.name][idx].values = state[action.payload.name][
         idx
       ].values.map((item, index) => {
@@ -112,7 +112,7 @@ const filterSlice = createSlice({
         }
       });
     },
-    removeFilter(state) {
+    removeFilterUser(state) {
       state.filterList = [];
       state.initialDropsUser = state.initialDropsUser.map((e) => {
         return { ...e, open: false };
@@ -123,9 +123,21 @@ const filterSlice = createSlice({
         });
       });
     },
+    removeFilterClient(state) {
+      state.filterList = [];
+      state.initialDropsClient = state.initialDropsClient.map((e) => {
+        return { ...e, open: false };
+      });
+
+      state.initialDropsClient.map((e, i) => {
+        e.values = e.values.map((item) => {
+          return { ...item, checked: false };
+        });
+      });
+    },
   },
 });
 
-export const { dropDownAction, filterAction, removeFilter } =
+export const { dropDownAction, filterAction, removeFilterUser,removeFilterClient } =
   filterSlice.actions;
 export default filterSlice.reducer;

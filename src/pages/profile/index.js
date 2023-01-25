@@ -11,10 +11,31 @@ import {
 } from "../../components/icons";
 import Badge from "@mui/material/Badge";
 import { ProfileDialog } from "../../components/profileDialog";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { uploadAvatar ,dashboardApp} from "../../actions/profile";
+
+import { useDispatch,useSelector } from "react-redux";
 
 export const Profile = () => {
   const [open, setOpen] = useState(false);
+  const inputRef = useRef(null);
+  const dispatch = useDispatch();
+  const handleClick = () => {
+    inputRef.current.click();
+  };
+
+  const { statusDashboard, entitiesDashboard, error } = useSelector(
+    (state) => state.dashboardAppSlice
+  );
+
+  const handleClickInput = (e) => {
+    const res = e.target.files[0];
+    dispatch(uploadAvatar({ avatar: res })).then((e) => {
+      if (e.payload.status === 200) {
+        dispatch(dashboardApp({}))
+      }
+    });
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -22,6 +43,7 @@ export const Profile = () => {
   const handleClose = () => {
     setOpen(false);
   };
+  const handleUploadImage = () => {};
   return (
     <Grid container>
       <Box
@@ -60,7 +82,7 @@ export const Profile = () => {
             </Grid>
             <Grid item xs={6}>
               <Typography color={"white"} align="end">
-                {"مهدی سیف علی شاهی"}
+              {entitiesDashboard?.data?.user?.name}
               </Typography>
             </Grid>
 
@@ -69,7 +91,7 @@ export const Profile = () => {
             </Grid>
             <Grid item xs={6}>
               <Typography color={"white"} align="end">
-                {"2727"}
+                {entitiesDashboard?.data?.user?.personnel_code}
               </Typography>
             </Grid>
           </Grid>
@@ -89,14 +111,21 @@ export const Profile = () => {
                 <IconButton
                   aria-label="menu"
                   sx={{ padding: 0, top: "-20px" }}
-
-                  //   onClick={() => handleDelete(row.id)}
+                  onClick={handleClick}
                 >
                   <AvatarButton />
                 </IconButton>
               }
             >
-              <Avatar sx={{ width: 166, height: 166 }}>H</Avatar>
+              <input
+                hidden
+                name="file"
+                ref={inputRef}
+                type="file"
+                onChange={handleClickInput}
+                multiple
+              />
+              <Avatar sx={{ width: 166, height: 166 }} src={`http://10.154.65.29:9000/${entitiesDashboard?.data?.user?.avatar}`}>H</Avatar>
             </Badge>
           </Grid>
         </Grid>
@@ -118,7 +147,7 @@ export const Profile = () => {
           <TargetIcon />
         </Box>
       </Grid>
-      <Grid container sx={{ position: "relative" }} mt={3}>
+      {/* <Grid container sx={{ position: "relative" }} mt={3}>
         <Box
           sx={{
             position: "absolute",
@@ -130,9 +159,9 @@ export const Profile = () => {
           }}
         />
         <Targets top={41} />
-        {/* <Targets top={71}/>
-        <Targets top={101}/> */}
-      </Grid>
+        <Targets top={71}/>
+        <Targets top={101}/>
+      </Grid> */}
       <ProfileDialog handleClose={handleClose} open={open} />
     </Grid>
   );

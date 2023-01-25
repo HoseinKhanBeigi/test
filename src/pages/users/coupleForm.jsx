@@ -60,7 +60,6 @@ export const CreateUserCouple = () => {
     const fileExt = file.current.name.substring(
       file.current.name.lastIndexOf(".")
     );
-    console.log(file.current,"s");
     let validExtensions = [".xlsx", ".xls"];
     if (validExtensions.includes(fileExt)) {
       setTextContent(t("file uploaded"));
@@ -87,7 +86,6 @@ export const CreateUserCouple = () => {
       if (res.payload.status === 200) {
         navigate("/users");
       } else {
-        // console.log(res);
       }
       setLoading(false);
     });

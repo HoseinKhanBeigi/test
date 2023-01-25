@@ -8,7 +8,10 @@ import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import Pagination from "@mui/material/Pagination";
+import { convertDigits } from "persian-helpers";
+import { format } from "date-fns-jalali";
+
+import { PaginationTable } from "../../components/pagination";
 import {
   UserIcon,
   Polygon1,
@@ -20,65 +23,79 @@ import {
 } from "../../components/icons";
 import { useTranslation } from "react-i18next";
 import doc from "./doc.png";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
+import { useDispatch, useSelector } from "react-redux";
+import { instructionsAction } from "../../actions/instructions";
+import Paper from "@mui/material/Paper";
+import { HeaderPage } from "../../components/headerPage";
 
 export const Instructions = () => {
   const { t, i18n } = useTranslation();
-  const data = [1, 2, 3, 4, 5, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 88, 8, 8, 8, 4];
+  const { status, entities } = useSelector((state) => state.instructionsSlice);
+  useDispatchAction(instructionsAction, status);
 
-  const [page, setPage] = React.useState(1);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
+  const options = React.useMemo(() => {
+    const res = {
+      data: entities?.data?.instructions.data,
+      entities: {
+        data: {
+          total: entities?.data?.instructions.total,
+        },
+      },
+    };
+    return res;
+  }, [status]);
+
   return (
     <>
-      <Grid
-        container
-        flexDirection={"column"}
-        justifyContent="end"
-        alignItems={"end"}
-      >
-        <Grid item mb={3}>
-          <Typography className="title">{t("instructions")}</Typography>
-        </Grid>
-      </Grid>
+      <HeaderPage title={t("instructions")} />
 
-      <Grid container spacing={2} columns={16} justifyContent="center">
-        { data.map((_, i) => {
+      <Grid container spacing={2} justifyContent="flex-end">
+        {options?.data?.map((e, i) => {
           return (
-            <Grid item key={i} xl={3}>
+            <Grid item key={i} xs={6} sm={3} md={2}>
               <Card sx={{ padding: "12px", width: "176px", height: "224px" }}>
                 <Grid container mb={2}>
                   <img src={doc} />
                 </Grid>
 
-                <Grid container mb={2} justifyContent="space-between" dir="rtl">
-                  <Typography>1401/1/1234</Typography>
-                  <Typography
-                    sx={{
-                      background: "#C0DDC0",
-                      padding: "2px",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    cl
+                <Grid container mb={2} justifyContent="center" dir="rtl">
+                  <Typography>
+                    {" "}
+                    {convertDigits(
+                      format(new Date(e?.created_at), "yyyy/MM/dd")
+                    )}
                   </Typography>
                 </Grid>
                 <Grid container justifyContent={"center"} textAlign="center">
-                  <Typography fontSize={"15px"}>
-                    {"شرایط جدید اهدای تسهیلات"}
-                  </Typography>
+                  <Typography fontSize={"15px"}>{e.name}</Typography>
                 </Grid>
                 <Grid container justifyContent={"center"} textAlign="center">
                   <Button
                     fullWidth
                     sx={{ background: "#5041BC", color: "white" }}
                   >
-                    <Typography fontSize={"12px"} sx={{ paddingRight: "2px" }}>
-                      {t("download")}
-                    </Typography>
                     <DownloadIconInstruc />
+                    <a
+                      href={`http://10.154.65.29:9000/${e.path}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "23px",
+                        color: "white",
+                      }}
+                    >
+                      <Typography
+                        fontSize={"12px"}
+                        sx={{ paddingRight: "2px" }}
+                      >
+                        {t("download")}
+                      </Typography>
+                    </a>
                   </Button>
                 </Grid>
               </Card>
@@ -86,19 +103,13 @@ export const Instructions = () => {
           );
         })}
       </Grid>
-      <Pagination
-        count={data.length > 10 ? Math.ceil(data.length / 10) : 1}
-        page={page}
-        onChange={handleChangePage}
-        color="secondary"
-        sx={{
-          "& > *": {
-            paddingTop: "72px !important",
-            paddingBottom: "12px !important",
-            justifyContent: "center",
-          },
-        }}
-      />
+      <Paper>
+        <PaginationTable
+          status={status}
+          entities={options.entities}
+          action={instructionsAction}
+        />
+      </Paper>
     </>
   );
 };

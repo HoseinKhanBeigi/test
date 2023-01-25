@@ -59,65 +59,79 @@ import {
 import moment from "moment";
 import { styled } from "@mui/material/styles";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
+import useResponsive from "../../hooks/useResponsive";
 
 const NavBar = styled("nav", {
   shouldForwardProp: (prop) => prop !== "openwidth",
-})(({ theme, openwidth }) => ({
-  ...(!openwidth && {
+})(({ theme, openwidth, isDesktop, isResponsive }) => ({
+  ...(openwidth === false && {
     transition: theme.transitions.create("width", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    width: `90px`,
+    width: isDesktop ? `90px` : 0,
   }),
-  ...(openwidth && {
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+  ...(openwidth &&
+    !isDesktop && {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      width: !isDesktop && isResponsive ? "211px" : 0,
     }),
-    width: `211px`,
-  }),
+
+  ...(openwidth &&
+    isDesktop && {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      width: "211px",
+    }),
 }));
 
 const Header = styled(AppBar, {
   shouldForwardProp: (prop) => prop !== "openwidth",
-})(({ theme, openwidth }) => ({
-  ...(openwidth && {
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+})(({ theme, openwidth, isResponsive }) => ({
+  ...(openwidth &&
+    !isResponsive && {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      width: `100%`,
     }),
-    width: `100%`,
-  }),
-  ...(!openwidth && {
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+  ...(!openwidth &&
+    isResponsive && {
+      transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+      width: `calc(100% - 211px)`,
     }),
-    width: `calc(100% - 211px)`,
-  }),
   [theme.breakpoints.up("md")]: {
     display: "none",
   },
 }));
-const ItemMenu= styled("li", {
+const ItemMenu = styled("li", {
   shouldForwardProp: (prop) => prop !== "openwidth",
 })(({ theme, openwidth }) => ({
-  ...(openwidth && {
+  ...(openwidth && {}),
 
+  width: openwidth ? "144px" : "2.3rem",
+  height: openwidth ? "42px" : "2.3rem",
+  justifyContent: "space-around",
+  alignItems: "center",
+  borderRadius: "8px",
+  transition: "width 2s  height 2s linear",
 
-  }),
-
-  [theme.breakpoints.up("md")]: {
-    display: "none",
-  },
+  display: "flex",
 }));
 export const Layout = () => {
   const path = useLocation();
   const params = useParams();
-
+  const [isResponsive, setIsResponsive] = useState(false);
   const history = useNavigate();
-  console.log(path.pathname.slice(1, path.pathname.length));
   const root = useRef();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -189,18 +203,40 @@ export const Layout = () => {
 
   const { navbarList } = useSelector((state) => state.navBarSlice);
 
-  useDispatchAction(dashboardApp,statusDashboard,"option")
+  useDispatchAction(dashboardApp, statusDashboard, "option");
+
+  const isDesktop = useResponsive("up", "md");
+
+  useEffect(() => {
+    if (isDesktop === false) {
+      setOpenwidth(true);
+    } else {
+      setOpenwidth(false);
+    }
+  }, [isDesktop]);
 
   const handleClick = (e) => {
     dispatch(changeMenuBar({ status: e.id }));
     if (e.id === "IconMenuBar") {
+      navigate(path.pathname.slice(1, path.pathname.length));
+    } else {
+      navigate(e.path);
+    }
+
+    if (e.id === "IconMenuBar") {
       handleOpenMenuBar();
     }
+  };
+  const handleDrawerOpen = () => {
+
+    setIsResponsive(!isResponsive);
   };
   const theme = useTheme();
   return (
     <Box>
       <NavBar
+        isResponsive={isResponsive}
+        isDesktop={isDesktop}
         style={{
           display: "flex",
           // width: "211px",
@@ -246,12 +282,12 @@ export const Layout = () => {
                   }}
                   data-name="logo"
                 >
-                  <Link
-                    to={
-                      E.id === "IconMenuBar"
-                        ? path.pathname.slice(1, path.pathname.length)
-                        : E.path
-                    }
+                  <Box
+                    // to={
+                    //   E.id === "IconMenuBar"
+                    //     ? path.pathname.slice(1, path.pathname.length)
+                    //     : E.path
+                    // }
                     style={{ width: "1.3rem", height: "1.3rem" }}
                     // onClick={() => handleClick(E)}
                   >
@@ -261,10 +297,10 @@ export const Layout = () => {
                         transform: "scale(3.5)",
                         position: "relative",
                         top: "47px",
-                        transition: "transform 2s linear 1s"
+                        transition: "transform 2s linear 1s",
                       }}
                     />
-                  </Link>
+                  </Box>
                   <Box
                     sx={{
                       width: "144px",
@@ -284,22 +320,16 @@ export const Layout = () => {
                     </Typography>
                   </Box>
                 </li>
-              ) : (
+              ) : isDesktop === true ? (
                 <ItemMenu
                   style={{
                     background: `${
                       E.status ? "#E5FFF6" : theme.palette.primary.main
                     }`,
-                    display: "flex",
-             
-                    width: openwidth ? "144px" : "2.3rem",
-                    height: openwidth ? "42px" : "2.3rem",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    borderRadius: "8px",
-                    transition: "width 2s  height 2s linear"
+                    cursor:"pointer"
                   }}
-                  data-name="logo"
+                  openwidth={openwidth}
+                  onClick={() => handleClick(E)}
                 >
                   {openwidth && (
                     <Typography
@@ -309,27 +339,64 @@ export const Layout = () => {
                     </Typography>
                   )}
 
-                  <Link
-                    to={
-                      E.id === "IconMenuBar"
-                        ? path.pathname.slice(1, path.pathname.length)
-                        : E.path
-                    }
-                    style={{ width: "1.3rem", height: "1.3rem" }}
+                  <Box
+                    // to={
+                    //   E.id === "IconMenuBar"
+                    //     ? path.pathname.slice(1, path.pathname.length)
+                    //     : E.path
+                    // }
+                    style={{ width: "1.3rem", height: "1.3rem",cursor:"pointer" }}
                     onClick={() => handleClick(E)}
                   >
                     <E.Logo
                       stroke={E.status ? theme.palette.primary.main : "#ffffff"}
                     />
-                  </Link>
+                  </Box>
                 </ItemMenu>
+              ) : (
+                E.id !== "IconMenuBar" && (
+                  <ItemMenu
+                    style={{
+                      background: `${
+                        E.status ? "#E5FFF6" : theme.palette.primary.main
+                      }`,
+                    }}
+                    openwidth={openwidth}
+                  >
+                    {openwidth && (
+                      <Typography
+                        color={
+                          E.status ? theme.palette.primary.main : "#ffffff"
+                        }
+                      >
+                        {t(E.id)}
+                      </Typography>
+                    )}
+
+                    <Box
+                      // to={
+                      //   E.id === "IconMenuBar"
+                      //     ? path.pathname.slice(1, path.pathname.length)
+                      //     : E.path
+                      // }
+                      style={{ width: "1.3rem", height: "1.3rem" }}
+                      onClick={() => handleClick(E)}
+                    >
+                      <E.Logo
+                        stroke={
+                          E.status ? theme.palette.primary.main : "#ffffff"
+                        }
+                      />
+                    </Box>
+                  </ItemMenu>
+                )
               );
             }
           })}
         </ul>
       </NavBar>
       <Container maxWidth="lg">
-        <Header position="fixed" openwidth={open}>
+        <Header position="fixed" openwidth={open} isResponsive={isResponsive}>
           <Toolbar>
             <Typography
               variant="h6"
@@ -337,13 +404,17 @@ export const Layout = () => {
               sx={{ flexGrow: 1 }}
               component="div"
             >
-              Persistent drawer
+              {statusDashboard === "succeeded" && !isDesktop && (
+                <Typography paddingLeft={"7px"}>
+                  {`${entitiesDashboard?.data?.user?.name} -${entitiesDashboard?.data?.user?.position}- ${entitiesDashboard?.data?.user?.level} `}
+                </Typography>
+              )}
             </Typography>
             <IconButton
               color="inherit"
               aria-label="open drawer"
               edge="end"
-              // onClick={handleDrawerOpen}
+              onClick={handleDrawerOpen}
               // sx={{ ...(open && { display: 'none' }) }}
             >
               <MenuIcon />
@@ -370,16 +441,11 @@ export const Layout = () => {
                 justifyContent="space-between"
               >
                 <UserIconTitle />
-                {/* {format(new Date(row?.start), "HH:mm")} */}
+
                 {}
-                {statusDashboard === "succeeded" && (
+                {statusDashboard === "succeeded" && isDesktop && (
                   <Typography paddingLeft={"7px"}>
                     {`${entitiesDashboard?.data?.user?.name} -${entitiesDashboard?.data?.user?.position}- ${entitiesDashboard?.data?.user?.level} `}
-                    {/* {format(
-                    new Date(entitiesDashboard?.data?.meetings[0]?.start),
-                    "MMMM"
-                  )} */}{" "}
-                    {/* {moment(new Date(entitiesDashboard?.data?.meetings[0]?.start)).format("dddd")} */}
                   </Typography>
                 )}
               </Grid>

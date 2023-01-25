@@ -16,7 +16,7 @@ const MutiColors = createSlice({
     changeColor(state, action) {
       state.colors = state.colors.map((item) => {
         if (item.name === action.payload.name) {
-          return { ...item, status: !item.status };
+          return { ...item, status: true };
         } else {
           return { ...item, status: false };
         }

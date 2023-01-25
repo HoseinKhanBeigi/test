@@ -21,8 +21,13 @@ import { CreateClientCouple } from "./pages/clients/coupleForm";
 import { CreateClientSingle } from "./pages/clients/singleForm";
 import { CompareUser } from "./pages/users/compareUser";
 import { DetailReports } from "./pages/reports/reportDetail";
-import LinearProgress from "@mui/material/LinearProgress";
-import { Accessiblities } from "./pages/accessibities";
+import { ClientDetail } from "./pages/clientDetail";
+import { Accessiblities } from "./pages/adminpanel/accessibilies";
+import { Search } from "./pages/search";
+import { Branches } from "./pages/adminpanel/branches";
+import { UserManager } from "./pages/adminpanel/userManager";
+import { InstructionsUpdate } from "./pages/adminpanel/instructions";
+import { SMS } from "./pages/adminpanel/sms";
 import { FormCall } from "./pages/calls/form";
 import { FormMeeting } from "./pages/meetings/form";
 
@@ -40,7 +45,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             <Route path="/reports">
               <Route index element={<Reports />} />
-              <Route path=":id" element={<DetailReports/>} />
+              <Route path=":id" element={<DetailReports />} />
             </Route>
             <Route path="/users">
               <Route index element={<Users />} />
@@ -59,6 +64,7 @@ function App() {
 
             <Route path="/clients">
               <Route index element={<Clients />} />
+              <Route path=":id" element={<ClientDetail />} />
               <Route
                 path="create"
                 element={<CreateClientSingle typeForm={"create"} />}
@@ -73,23 +79,39 @@ function App() {
               <Route index element={<Interactions />} />
               <Route path="calls">
                 <Route index element={<Calls />} />
-                <Route path="create" element={<FormCall typeForm={"create"}/>} />
-                <Route path="update/:id" element={<FormCall typeForm={"edit"}/>} />
+                <Route
+                  path="create"
+                  element={<FormCall typeForm={"create"} />}
+                />
+                <Route
+                  path="update/:id"
+                  element={<FormCall typeForm={"edit"} />}
+                />
               </Route>
 
               <Route path="meetings">
                 <Route index element={<Meetings />} />
-                <Route path="create" element={<FormMeeting typeForm={"create"}/>} />
-                <Route path="update/:id" element={<FormMeeting typeForm={"edit"}/>} />
+                <Route
+                  path="create"
+                  element={<FormMeeting typeForm={"create"} />}
+                />
+                <Route
+                  path="update/:id"
+                  element={<FormMeeting typeForm={"edit"} />}
+                />
               </Route>
-          
             </Route>
             <Route path="/instructions" element={<Instructions />} />
             <Route path="/notes" element={<Notes />} />
-            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin" element={<AdminPanel />}>
+              <Route path="accessiblities" element={<Accessiblities />} />
+              <Route path="branches" element={<Branches />} />
+              <Route path="sms" element={<SMS />} />
+              <Route path="userManager" element={<UserManager />} />
+              <Route path="instructure" element={<InstructionsUpdate />} />
+            </Route>
 
-            <Route path="/checkouts" element={<Checkouts />} />
-            <Route path="/checkouts" element={<Checkouts />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/profile" element={<Profile />} />
           </Route>
         </Route>

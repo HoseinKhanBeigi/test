@@ -4,6 +4,11 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import { Card, CardHeader, Divider } from "@mui/material";
+import Switch from "@mui/material/Switch";
+import { styled } from "@mui/material/styles";
+import { format } from "date-fns-jalali";
+import moment from "moment";
+import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
 import {
   Curve,
@@ -20,12 +25,19 @@ import {
   Yazed,
 } from "../../components/icons";
 import { Typography } from "@mui/material";
+import "./index.css";
 
-export const CardNote = () => {
+export const CardNote = ({ notes, status }) => {
   const { t, i18n } = useTranslation();
-  const test = [1, 2];
+  const options = React.useMemo(() => {
+    const res = {
+      notes,
+    };
+    return res;
+  }, [status]);
+
   return (
-    <Card sx={{ padding: "16px", height: "100%" }}>
+    <Card sx={{ padding: "16px" }}>
       <Grid
         container
         justifyContent={"space-between"}
@@ -41,7 +53,7 @@ export const CardNote = () => {
           <PlusIcon />
         </IconButton>
       </Grid>
-      {test.map((e, i) => (
+      {options?.notes?.map((e, i) => (
         <>
           <Grid
             container
@@ -51,7 +63,7 @@ export const CardNote = () => {
             alignItems="center"
             alignContent={"center"}
           >
-            <Typography>{"عباسی 4587562"}</Typography>
+            <Typography>{e?.title}</Typography>
             <Typography
               sx={{
                 background: "#DBEAFE",
@@ -76,7 +88,7 @@ export const CardNote = () => {
           </Grid>
           <Divider
             sx={{
-              display: test.length - 1 === i ? "none" : "block",
+              display: options?.notes?.length - 1 === i ? "none" : "block",
               borderColor: "black",
             }}
           />
@@ -86,9 +98,14 @@ export const CardNote = () => {
   );
 };
 
-export const MeetingCard = () => {
+export const MeetingCard = ({ meetings, status }) => {
   const { t, i18n } = useTranslation();
-  const test = [1, 2];
+  const options = React.useMemo(() => {
+    const res = {
+      meetings,
+    };
+    return res;
+  }, [status]);
   return (
     <>
       {" "}
@@ -108,7 +125,7 @@ export const MeetingCard = () => {
           <PlusIcon />
         </IconButton>
       </Grid>
-      {test.map((e, i) => (
+      {options?.meetings?.map((e, i) => (
         <>
           <Grid
             container
@@ -117,7 +134,7 @@ export const MeetingCard = () => {
             mb={2}
             mt={2}
           >
-            <Typography>{"پتروشیمی"}</Typography>
+            <Typography>{e?.client?.name}</Typography>
             <IconButton
               aria-label="menu"
               //   onClick={() => handleDelete(row.id)}
@@ -150,7 +167,10 @@ export const MeetingCard = () => {
             <Grid item>
               <Grid container alignItems={"center"}>
                 <Typography fontSize={14}>
-                  {"یکشنبه 13 ام آذر ماه 1401"}
+                  {moment(new Date(e?.start)).format("dddd")}{" "}
+                  {moment(new Date(e?.start)).format("d")}{"ام"}{" "}
+                  {format(new Date(e?.start), "MMMM")}{" "}
+                  {format(new Date(e?.start), "Y")}
                 </Typography>
                 <IconButton
                   aria-label="menu"
@@ -163,7 +183,7 @@ export const MeetingCard = () => {
           </Grid>
           <Divider
             sx={{
-              display: test.length - 1 === i ? "none" : "block",
+              display: options?.meetings?.length - 1 === i ? "none" : "block",
               borderColor: "black",
             }}
           />
@@ -173,7 +193,15 @@ export const MeetingCard = () => {
   );
 };
 
-export const CountClients = ({ count, percent }) => {
+export const CountClients = ({ count, percent, status }) => {
+  const option = React.useMemo(() => {
+    const res = {
+      percent,
+      count,
+    };
+    return res;
+  }, [status]);
+
   return (
     <Card sx={{ padding: "16px", height: "100%" }}>
       <Grid container justifyContent={"center"} alignItems={"center"}>
@@ -184,16 +212,89 @@ export const CountClients = ({ count, percent }) => {
         </Grid>
         <Grid container justifyContent={"center"} mt={2} mb={1}>
           <Typography fontSize={12} align="center">
-            {"تعداد مشتریان مستقیم"} {`${count} نفر`}
+            {"تعداد مشتریان مستقیم"} {`${option.count} نفر`}
           </Typography>
         </Grid>
         <Grid container justifyContent={"center"} mt={1} mb={2}>
           <Typography
             fontSize={12}
             color="#017874"
-          >{`${percent}% از کل پرتفوی مشتریان`}</Typography>
+          >{`${option.percent}% از کل پرتفوی مشتریان`}</Typography>
         </Grid>
       </Grid>
     </Card>
+  );
+};
+
+export const TargetCard = () => {
+  return (
+    <Card sx={{ padding: "16px", height: "100%" }}>
+      <Grid container rowSpacing={6}>
+        <Grid item container justifyContent={"space-between"}>
+          <Typography>{"فاصله شما نسبت به هدف"}</Typography>
+          <Box sx={{ position: "relative" }}>
+            <input
+              className="toggle"
+              type="checkbox"
+              role="switch"
+              name="toggle"
+              value="on"
+            ></input>
+            <Box
+              sx={{
+                position: "absolute",
+                top: 3,
+                display: "flex",
+                width: "253px",
+                paddingLeft: "12px",
+                paddingRight: "20px",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>خود</span>
+              <span>هم گروه ها</span>
+            </Box>
+
+            {/* <Typography>{"خود"}</Typography> */}
+          </Box>
+        </Grid>
+        <Grid item container>
+          <RankBox background={"#F6541E"} val="رتبه شما" />
+          <RankBox background={"#F6541E"} val="هدف" />
+        </Grid>
+        <Grid item container justifyContent="end">
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "480px",
+              height: "10px",
+              background: "rgba(0, 0, 0, 0.12)",
+              borderRadius: "28px",
+              position: "relative",
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                maxWidth: "80%",
+                height: "10px",
+                background: "#F7541E",
+                borderRadius: "28px",
+                position: "absolute",
+              }}
+            ></Box>
+          </Box>
+        </Grid>
+      </Grid>
+    </Card>
+  );
+};
+
+export const RankBox = ({ background, val }) => {
+  return (
+    <Grid container item xs alignItems={"center"} gap={2}>
+      <Box sx={{ width: "30px", height: "4px", background }} />
+      <Typography>{val}</Typography>
+    </Grid>
   );
 };

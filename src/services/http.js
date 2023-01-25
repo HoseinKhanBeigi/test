@@ -26,6 +26,8 @@ const AxiosInterceptor = ({ children }) => {
         navigate("/login");
         dispatch(messageHandling(error.response));
         localStorage.removeItem("userToken");
+      } else if (error.response.status === 403) {
+        dispatch(messageHandling(error.response));
       }
 
       return Promise.reject(error);

@@ -42,7 +42,7 @@ export const clientForm = (
       name: "gender",
       typeInput: "RHRadioGroup",
       loading: statusDetail === "succeeded",
-      values: [{ name: "آقا" }, { name: "بانو" }],
+      values: [{ name: "مرد" }, { name: "زن" }],
       change: handleChangeGender,
     },
     {

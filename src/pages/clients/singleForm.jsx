@@ -30,7 +30,7 @@ export const CreateClientSingle = ({ typeForm }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [genderRadio, setGenderRadio] = React.useState("آقا");
+  const [genderRadio, setGenderRadio] = React.useState("مرد");
   const [interstedName, setIntersted] = React.useState([]);
 
   const { status, entities } = useSelector(
@@ -122,8 +122,8 @@ export const CreateClientSingle = ({ typeForm }) => {
 
   const onSubmit = (e) => {
     if (typeForm === "edit") {
-      const rese = e;
-      dispatch(clientUpdate({ id: params.id, res: rese })).then((result) => {
+      const result = e;
+      dispatch(clientUpdate({ id: params.id, res: result })).then((result) => {
         if (result.payload.status === 200) {
           dispatch(clientsList({}))
           dispatch(responseMessage(result.payload.message));

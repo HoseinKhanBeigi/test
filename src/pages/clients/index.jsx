@@ -17,7 +17,6 @@ import Box from "@mui/material/Box";
 import { PaginationTable } from "../../components/pagination";
 import { HeaderPage } from "../../components/headerPage";
 import { getQueryParams } from "../../utils";
-import { initialTabs, initialDrops } from "./filterItems";
 import {
   clientsList,
   deleteClient,
@@ -35,6 +34,7 @@ import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { useCheckBox } from "../../hooks/useCheckBox";
 import {
   dropDownAction,
+  filterAction,
   CheckBoxAction,
   filterList,
 } from "../../features/filter";
@@ -72,6 +72,11 @@ export const Clients = () => {
     dispatch(clientOrganization({}));
   };
 
+  const handleClick= (id)=>{
+    navigate(`/clients/${id}`);
+    dispatch(clientDetail({ id }));
+  }
+
   const handleDelete = (id) => {
     dispatch(deleteClient({ id })).then((res) => {
       if (res.payload.status === 200) {
@@ -99,6 +104,7 @@ export const Clients = () => {
     useCheckBoxSelector.dispatchAction({ type: "SELECTITEM", id: i });
   };
 
+  const { filterRMTabs } = useSelector((state) => state.tabSlice);
   const { initialDropsClient } = useSelector((state) => state.filterSlice);
   const handleChange = (item) => {
     dispatch(
@@ -106,6 +112,28 @@ export const Clients = () => {
         type: `DROPDOWN`,
         title: item.title,
         name: "initialDropsClient",
+      })
+    );
+  };
+
+  const handleChangeCheckBox = (item) => {
+    dispatch(
+      filterAction({
+        type: "CHECKBOX",
+        title: item.title,
+        name: "initialDropsClient",
+        item,
+      })
+    );
+  };
+
+  const handleChangeRadio = (item) => {
+    dispatch(
+      filterAction({
+        type: "RADIO",
+        title: item.title,
+        name: "initialDropsClient",
+        item,
       })
     );
   };
@@ -122,10 +150,12 @@ export const Clients = () => {
         searchPage
         tab={true}
         action={clientsList}
-        initialTabs={initialTabs}
+        filterRMTabs={filterRMTabs}
         initialDrops={initialDropsClient}
         handleChange={handleChange}
         changeview={handleChangeView}
+        handleChangeCheckBox={handleChangeCheckBox}
+        handleChangeRadio={handleChangeRadio}
         defaultQuery={{ ...getQueryParams() }}
         clientList
       />
@@ -179,95 +209,98 @@ export const Clients = () => {
                         ))}
                       </TableRow>
                     </TableHead>
-
-                    {statusClient !== "succeeded" ? (
-                      <TableBody>
-                        <TableRow role="checkbox">
-                          <Box
-                            sx={{
-                              height: "max-content",
-                              width: "max-content",
-                            }}
-                          >
-                            {[...Array(10)].map((_, i) => (
-                              <Skeleton
-                                key={i}
-                                variant="rectangular"
-                                sx={{ my: 4, mx: 1 }}
-                              />
-                            ))}
-                          </Box>
-                        </TableRow>
-                      </TableBody>
-                    ) : (
-                      clietList?.data?.data.map((row, i) => {
-                        return (
-                          <TableBody key={i}>
-                            <TableRow role="checkbox">
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  color="primary"
-                                  checked={useCheckBoxSelector.items[i].checked}
-                                  onClick={() => handleSelect(row.id)}
-                                />
-                              </TableCell>
-                              <TableCell align="left" sx={{ color: "#2563EB" }}>
-                                {row?.name}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row?.bi_point}
-                              </TableCell>
-                              <TableCell align="left">
-                                {convertDigits(row?.national_identifier) ||
-                                  convertDigits(row?.national_number)}
-                              </TableCell>
-                              <TableCell align="left">{""}</TableCell>
-                              <TableCell align="left">
-                                {row?.assignment_point}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row?.services_point}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row?.profit_loss}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row?.total_point}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row?.user.name}
-                              </TableCell>
-                              <TableCell align="left">
-                                <Grid
-                                  sx={{ display: "flex", flexDirection: "row" }}
-                                >
-                                  <IconButton
-                                    aria-label="menu"
-                                    onClick={() =>
-                                      handleClickConfirmation(row?.id)
-                                    }
-                                  >
-                                    <TrashIcone />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="menu"
-                                    onClick={() => handleNavigate(row?.id)}
-                                  >
-                                    <EditIcon />
-                                  </IconButton>
-                                  <IconButton
-                                    aria-label="menu"
-                                    // onClick={handleClick}
-                                  >
-                                    <OptionIcone />
-                                  </IconButton>
-                                </Grid>
-                              </TableCell>
+                    <TableBody>
+                      {statusClient !== "succeeded"
+                        ? [...Array(10)].map((_, i) => (
+                            <TableRow role="checkbox" key={i} >
+                              {[...Array(9)].map((_, k) => (
+                                <TableCell>
+                                  <Box>
+                                    <Skeleton
+                                      key={k}
+                                      width={40}
+                                      variant="rectangular"
+                                      sx={{ my: 4, mx: 1 }}
+                                    />
+                                  </Box>
+                                </TableCell>
+                              ))}
                             </TableRow>
-                          </TableBody>
-                        );
-                      })
-                    )}
+                          ))
+                        : clietList?.data?.data.map((row, i) => {
+                            return (
+                              <TableRow role="checkbox" key={i} onClick={()=>handleClick(row.id)}>
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    color="primary"
+                                    checked={
+                                      useCheckBoxSelector.items[i].checked
+                                    }
+                                    onClick={() => handleSelect(row.id)}
+                                  />
+                                </TableCell>
+                                <TableCell
+                                  align="left"
+                                  sx={{ color: "#2563EB" }}
+                                >
+                                  {row?.name}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.bi_point}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {convertDigits(row?.national_identifier) ||
+                                    convertDigits(row?.national_number)}
+                                </TableCell>
+                                <TableCell align="left">{""}</TableCell>
+                                <TableCell align="left">
+                                  {row?.assignment_point}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.services_point}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.profit_loss}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.total_point}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.user.name}
+                                </TableCell>
+                                <TableCell align="left">
+                                  <Grid
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "row",
+                                    }}
+                                  >
+                                    <IconButton
+                                      aria-label="menu"
+                                      onClick={() =>
+                                        handleClickConfirmation(row?.id)
+                                      }
+                                    >
+                                      <TrashIcone />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="menu"
+                                      onClick={() => handleNavigate(row?.id)}
+                                    >
+                                      <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                      aria-label="menu"
+                                      // onClick={handleClick}
+                                    >
+                                      <OptionIcone />
+                                    </IconButton>
+                                  </Grid>
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                    </TableBody>
                   </Table>
                 </TableContainer>
               </Paper>

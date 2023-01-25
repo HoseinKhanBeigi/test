@@ -13,7 +13,13 @@ export const ProtectedRoute = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const token = localStorage.getItem("userToken");
+  useEffect(() => {
+    if (!token) {
+      navigate(0);
+    }
+  }, [token]);
   return token ? (
     <Outlet />
   ) : (

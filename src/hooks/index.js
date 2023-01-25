@@ -15,7 +15,3 @@ export const useGetQueryParams = ({ ...values }) => {
   });
 };
 
-// export const useDebounce = (handleChange) => {
-//   console.log(handleChange);
-//   return useMemo(debounce(handleChange,300), []);
-// }

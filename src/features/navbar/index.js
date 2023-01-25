@@ -12,6 +12,7 @@ import {
   Checkouts,
   ProfileLogo,
   IconMenuBar,
+  SearchIcon,
 } from "../../components/icons";
 
 const initialState = {
@@ -36,8 +37,9 @@ const initialState = {
       path:"instructions"
     },
     { id: "notes", color: "#ffffff", status: false, Logo: NotesLogo,path:"notes" },
-    { id: "admin", color: "#ffffff", status: false, Logo: AdminLogo,path:"admin" },
-    // { id: "checkouts", color: "#ffffff", status: false, Logo: Checkouts,path:"checkouts" },
+    { id: "admin", color: "#ffffff", status: false, Logo: AdminLogo,path:"admin/accessiblities" },
+    { id: "search", color: "#ffffff", status: false, Logo: SearchIcon,path:"search" },
+
     { id: "IconMenuBar", color: "#ffffff", status: false, Logo: IconMenuBar },
     { id: "profile", color: "#ffffff", status: false, Logo: ProfileLogo,path:"profile" },
   ],

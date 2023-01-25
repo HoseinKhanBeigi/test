@@ -82,7 +82,7 @@ export const CreateClientCouple = () => {
       if (res.payload.status === 200) {
         navigate("/clients");
       } else {
-        console.log(res);
+  
       }
       setLoading(false);
     });

@@ -18,7 +18,7 @@ export function CustomDateRangePickerDay({valueDate,setValue,onAccept}) {
 
   // const onAccept = (item)=>{
   //   item.map((e) => {
-  //     console.log(dayjs(e).format());
+
   //   });
   // }
 

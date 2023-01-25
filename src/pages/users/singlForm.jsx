@@ -74,7 +74,6 @@ export const CreateUserSingle = ({ typeForm }) => {
 
   useEffect(() => {
     if (statusDetail === "succeeded" && typeForm === "edit") {
-      console.log(userDetails?.data?.user?.interests,"9000");
       setIntersts(userDetails?.data?.user?.interests);
     }
   }, [statusDetail, typeForm]);
@@ -190,7 +189,6 @@ export const CreateUserSingle = ({ typeForm }) => {
     organizationValue
   );
 
-  console.log(interests);
 
   return (
     <>

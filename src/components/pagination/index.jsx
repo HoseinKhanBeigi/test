@@ -25,7 +25,7 @@ export const PaginationTable = ({ status, entities, action }) => {
     navigate({
       search: `?${createSearchParams(params)}`,
     });
-    dispatch(action({ params: { page: newPage, ...getQueryParams(),limit:8 } }));
+    dispatch(action({ params: { page: newPage, ...getQueryParams() } }));
   };
   return (
     <>
