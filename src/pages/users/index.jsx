@@ -16,6 +16,7 @@ import Box from "@mui/material/Box";
 import Notifier from "../../components/notify";
 import Skeleton from "@mui/material/Skeleton";
 import MenuItem from "@mui/material/MenuItem";
+import noresult from "../interactions/noresult.png";
 import {
   usersList,
   deleteUser,
@@ -23,7 +24,13 @@ import {
   userOrganization,
 } from "../../actions/users";
 import CircularProgress from "@mui/material/CircularProgress";
-import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
+import {
+  TrashIcone,
+  OptionIcone,
+  EditIcon,
+  FlashUp,
+  FlashDown,
+} from "../../components/icons";
 import { getQueryParams } from "../../utils";
 import { initialTabs } from "./filterItems";
 import { Typography } from "@mui/material";
@@ -37,6 +44,7 @@ import { Confirmation } from "../../components/confirmation";
 import { convertDigits } from "persian-helpers";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { useCheckBox } from "../../hooks/useCheckBox";
+import { dashboardApp, logout } from "../../actions/profile";
 import {
   dropDownAction,
   filterAction,
@@ -70,7 +78,7 @@ export const Users = () => {
     t("placeAction"),
     t("Average_changes"),
     t("phonenumber"),
-    t("طبقه ی بازاریاب"),
+    t("طبقه ی مدیر ارتباط"),
     "",
   ];
 
@@ -95,6 +103,12 @@ export const Users = () => {
     });
   };
 
+  const handleUserDetail = (id) => {
+    dispatch(userDetail({ id })).then(() => {
+      navigate(`/reports/${id}`);
+    });
+  };
+
   const handleDelete = (id) => {
     dispatch(deleteUser({ id })).then((res) => {
       if (res.payload.status === 200) {
@@ -110,7 +124,40 @@ export const Users = () => {
     setOpenConfirmation(true);
     setStateId(id);
   };
-  useDispatchAction(usersList, status);
+  const limit = 10;
+
+  const { statusDashboard, entitiesDashboard } = useSelector(
+    (state) => state.dashboardAppSlice
+  );
+  const paramSearch = { ...getQueryParams() };
+
+  console.log(paramSearch);
+
+  useEffect(() => {
+    if (status === "idle") {
+      dispatch(dashboardApp({})).then((e) => {
+        if (!paramSearch) {
+          dispatch(
+            usersList({
+              params: { level: e.payload.data?.user?.level },
+            })
+          );
+          navigate({
+            search: `?${createSearchParams({
+              level: e.payload.data?.user?.level,
+            })}`,
+          });
+        } else {
+          dispatch(
+            usersList({
+              params: paramSearch,
+            })
+          );
+        }
+      });
+    }
+  }, [status, dispatch]);
+
   const useCheckBoxSelector = useCheckBox(status, entities);
   const handleSelectAll = (item) => {
     useCheckBoxSelector.dispatchAction({ type: "SELECTALL" });
@@ -157,6 +204,7 @@ export const Users = () => {
 
   return (
     <>
+      {" "}
       <HeaderPage
         title={t("usersList")}
         action={usersList}
@@ -201,73 +249,103 @@ export const Users = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {status !== "succeeded" ? (
-                    [...Array(7)].map((_, i) => (
-                      <TableRow role="checkbox" key={i}>
-                        {[...Array(7)].map((_, k) => (
-                          <TableCell>
-                            <Box>
-                              <Skeleton
-                                key={k}
-                                width={40}
-                                variant="rectangular"
-                                sx={{ my: 4, mx: 1 }}
-                              />
-                            </Box>
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    entities?.data?.data.map((row, i) => {
-                      let part1 = row?.mobile?.slice(0, 4);
-                      let part2 = row?.mobile?.slice(4, 7);
-                      let part3 = row?.mobile?.slice(7, 9);
-                      let part4 = row?.mobile?.slice(9, 11);
-                      return (
-                        <TableRow key={i} role="checkbox">
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={useCheckBoxSelector.items[i].checked}
-                              onClick={() => handleSelect(row.id)}
-                            />
-                          </TableCell>
-                          <TableCell align="left">{row.name}</TableCell>
-                          <TableCell align="left">{""}</TableCell>
-                          <TableCell align="left">{row.organization}</TableCell>
-                          <TableCell align="left">{""}</TableCell>
-                          <TableCell align="left">
-                            {convertDigits(part4)} {convertDigits(part3)}{" "}
-                            {convertDigits(part2)} {convertDigits(part1)}
-                          </TableCell>
-                          <TableCell align="left">{row.level}</TableCell>
-                          <TableCell align="left">
-                            <IconButton
-                              aria-label="menu"
-                              onClick={() => handleClickConfirmation(row.id)}
-                            >
-                              <TrashIcone />
-                            </IconButton>
-                            <IconButton
-                              aria-label="menu"
-                              onClick={() =>
-                                handleNavigate(row.id, row.organization)
-                              }
-                            >
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton
-                              aria-label="menu"
-                              onClick={(e) => handleFilterMenu(e, row.id)}
-                            >
-                              <OptionIcone />
-                            </IconButton>
-                          </TableCell>
+                  {status === "pending"
+                    ? [...Array(7)].map((_, i) => (
+                        <TableRow role="checkbox" key={i}>
+                          {[...Array(7)].map((_, k) => (
+                            <TableCell>
+                              <Box>
+                                <Skeleton
+                                  key={k}
+                                  width={40}
+                                  variant="rectangular"
+                                  sx={{ my: 4, mx: 1 }}
+                                />
+                              </Box>
+                            </TableCell>
+                          ))}
                         </TableRow>
-                      );
-                    })
-                  )}
+                      ))
+                    : status === "succeeded" &&
+                      entities?.data?.data.map((row, i) => {
+                        let part1 = row?.mobile?.slice(0, 4);
+                        let part2 = row?.mobile?.slice(4, 7);
+                        let part3 = row?.mobile?.slice(7, 9);
+                        let part4 = row?.mobile?.slice(9, 11);
+                        return (
+                          <TableRow key={i} role="checkbox">
+                            <TableCell padding="checkbox">
+                              <Checkbox
+                                color="primary"
+                                checked={useCheckBoxSelector.items[i].checked}
+                                onClick={() => handleSelect(row.id)}
+                              />
+                            </TableCell>
+                            <TableCell
+                              sx={{ cursor: "pointer" }}
+                              align="left"
+                              onClick={() => handleUserDetail(row.id)}
+                            >
+                              {row.name}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.clients_count === 0
+                                ? "-"
+                                : convertDigits(row.clients_count)}
+                            </TableCell>
+                            <TableCell align="center">
+                              {row.organization}
+                            </TableCell>
+                            <TableCell align="left">
+                              <Grid container justifyContent={"center"}>
+                                {row.bi_change === 0 ? (
+                                  "-"
+                                ) : row.bi_change > 0 ? (
+                                  <FlashUp />
+                                ) : (
+                                  <FlashDown />
+                                )}
+                              </Grid>
+                            </TableCell>
+                            <TableCell align="left">
+                              {convertDigits(part4)} {convertDigits(part3)}{" "}
+                              {convertDigits(part2)} {convertDigits(part1)}
+                            </TableCell>
+                            <TableCell align="center">{row.level}</TableCell>
+                            <TableCell align="left">
+                              <Grid
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: "row",
+                                }}
+                              >
+                                <IconButton
+                                  aria-label="menu"
+                                  onClick={() =>
+                                    handleClickConfirmation(row.id)
+                                  }
+                                >
+                                  <TrashIcone />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="menu"
+                                  onClick={() =>
+                                    handleNavigate(row.id, row.organization)
+                                  }
+                                >
+                                  <EditIcon />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="menu"
+                                  onClick={(e) => handleFilterMenu(e, row.id)}
+                                >
+                                  <OptionIcone />
+                                </IconButton>
+                              </Grid>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -275,9 +353,7 @@ export const Users = () => {
           <Paper sx={{ display: "flex", justifyContent: "center" }}>
             {status === "succeeded" &&
               (entities?.data?.total === 0 ||
-                entities?.data?.dada?.length === 0) && (
-                <Typography>{t("no data")}</Typography>
-              )}
+                entities?.data?.dada?.length === 0) && <img src={noresult} />}
           </Paper>
           <Paper>
             <PaginationTable
@@ -296,10 +372,10 @@ export const Users = () => {
               <Typography color={"#000000"}> {t("تخصیص مشتری ")}</Typography>
             </MenuItem>
             {/* <MenuItem sx={{ justifyContent: "center" }}>
-              <Typography color={"#000000"}>
-                {t("تخصیص مشتری گروهی")}
-              </Typography>
-            </MenuItem> */}
+                        <Typography color={"#000000"}>
+                          {t("تخصیص مشتری گروهی")}
+                        </Typography>
+                      </MenuItem> */}
           </Grid>
         </MenuItems>
         <DialogComponent
@@ -312,11 +388,12 @@ export const Users = () => {
           statusConfirmation={openConfirmation}
           stateId={stateId}
           setOpenConfirmation={setOpenConfirmation}
-          msg={"حذف بازاریاب"}
-          bodymsg={"آیا می خواهید بازاریاب را حذف کنید؟"}
+          msg={"حذف مدیر ارتباط"}
+          bodymsg={"آیا می خواهید مدیر ارتباط را حذف کنید؟"}
           handleExecution={handleDelete}
         />
-        {deleteState && <Notifier />}
+        {/* {deleteState && <Notifier />} */}
+        <Notifier />
       </Grid>
     </>
   );

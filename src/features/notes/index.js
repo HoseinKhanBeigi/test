@@ -15,14 +15,18 @@ const noteSlice = createSlice({
   reducers: {
     noteMessageAction(state, action) {
       state.noteTitle = state.noteTitle.map((item) => {
-        if (item.id === action.payload.id) {
+        console.log(action?.payload?.id);
+        if (Number(item?.idx) === Number(action?.payload?.id)) {
+          console.log(action?.payload?.id);
           return {
             ...item,
+            status: true,
             back: "#E6FFF6",
           };
         } else {
           return {
             ...item,
+            status: false,
             back: "white",
           };
         }
@@ -38,14 +42,17 @@ const noteSlice = createSlice({
       .addCase(notesAction.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.entities = action.payload;
-        state.noteTitle =[...action.payload?.data?.mentioned_messages,...action?.payload?.data?.notes].map(
-          (e) => {
-            return {
-              back: "white",
-              ...e,
-            };
-          }
-        );
+        state.noteTitle = [
+          ...action?.payload?.data?.notes,
+          ...action.payload?.data?.mentioned_messages,
+        ].map((e) => {
+          return {
+            ...e,
+            back: "white",
+            status: false,
+            idx: e.note_id ? e.note_id : e.id,
+          };
+        });
       })
       .addCase(notesAction.rejected, (state, action) => {
         state.status = "failed";

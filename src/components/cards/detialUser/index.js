@@ -2,19 +2,13 @@ import { Grid, Typography } from "@mui/material";
 import { groupBy } from "../../../utils";
 
 const entrirsTosys = [
-  { day: "today", hour: "12:00", minute: "25 دقیقه" },
-  { day: "today", hour: "13:10", minute: "25 دقیقه" },
-  { day: "today", hour: "13:10", minute: "25 دقیقه" },
-  { day: "tomorrow", hour: "12:00", minute: "25 دقیقه" },
-  { day: "tomorrow", hour: "12:00", minute: "25 دقیقه" },
-  { day: "tomorrow", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "13:10", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
-  { day: "yesterday", hour: "12:00", minute: "25 دقیقه" },
+  { day: "امروز", hour: "12:00", minute: "25 دقیقه" },
+  { day: "امروز", hour: "13:10", minute: "25 دقیقه" },
+  { day: "امروز", hour: "13:10", minute: "25 دقیقه" },
+  { day: "دیروز", hour: "13:10", minute: "25 دقیقه" },
+  { day: "دیروز", hour: "12:00", minute: "25 دقیقه" },
+  { day: "دیروز", hour: "12:00", minute: "25 دقیقه" },
+
 ];
 
 export const CountOfEntry = () => {

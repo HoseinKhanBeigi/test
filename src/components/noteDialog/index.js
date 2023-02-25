@@ -17,15 +17,16 @@ import { styled } from "@mui/material/styles";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
 
 import { useSelector, useDispatch } from "react-redux";
-import { clientsNote } from "../../actions/notes";
-export const NoteForm = ({ open, title, setOpen }) => {
+import { clientsNote,notesCreate,notesAction } from "../../actions/notes";
+import { dashboardApp } from "../../actions/profile";
+export const NoteForm = ({ open, title, setOpen,page }) => {
   const { t, i18n } = useTranslation();
   const NoteSchema = Yup.object().shape({});
   const dispatch = useDispatch();
   const { status, entities } = useSelector((state) => state.clientNoteSlice);
   useDispatchAction(clientsNote, status, "option");
   const defaultValues = {
-    title: "",
+    body: "",
     client_id: "",
   };
   const methods = useForm({
@@ -33,7 +34,16 @@ export const NoteForm = ({ open, title, setOpen }) => {
     defaultValues,
   });
 
-  const onSubmit = (e) => {};
+  const onSubmit = (e) => {
+    console.log(e);
+    dispatch(notesCreate(e)).then(()=>{
+      setOpen(false);
+      dispatch(notesAction({}));
+      if(page === "home"){
+        dispatch(dashboardApp({}))
+      }
+    })
+  };
   const handleChangeClientId = (event) => {
     methods.setValue("client_id", event.id);
   };
@@ -65,8 +75,8 @@ export const NoteForm = ({ open, title, setOpen }) => {
             </Typography>
             <RHAuto
               name="client_id"
-              label={t("typeOfInstructure")}
-              placeholder={t("typeOfInstructure")}
+              label={t("clientName")}
+              placeholder={t("clientName")}
               typeFrom="create"
               value={entities?.data ?? []}
               defaultValue={[]}
@@ -84,7 +94,7 @@ export const NoteForm = ({ open, title, setOpen }) => {
             </Typography>
             <RHFTextField
             
-              name="title"
+              name="body"
               label={t("insertNote")}
               placeholder={t("insertNote")}
               typeFrom="login"

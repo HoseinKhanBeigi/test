@@ -42,19 +42,20 @@ export const Confirmation = ({
 
       <DialogActions>
         <Grid container direction="row" justifyContent={"space-around"} mb={2}>
-   
           <Button
-            sx={{ width: "85px", color: "#000", background: "#EFF3F3" }}
+            color="no_btn"
+            sx={{ width: "85px", color: "#000" }}
             variant="contained"
             onClick={handleCloseDialog}
           >
             {t("not")}
           </Button>
           <Button
+            color="yes_btn"
+            variant="contained"
             sx={{
-              background: "#FF2020",
               width: "85px",
-              color:"#fff",
+              color: "#fff",
               fontWeight: 100,
             }}
             onClick={() => handleExecution(stateId)}

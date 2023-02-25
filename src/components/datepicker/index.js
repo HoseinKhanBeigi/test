@@ -20,6 +20,8 @@ import {
     onChange,
     handleChange,
     defaultDate,
+    entitiesDashboard,
+    handleGetMeeting,
     dateFormat = "yyyy/MM/dd",
     date: controlledDate,
     persianDigits,
@@ -85,7 +87,9 @@ import {
     
           <Calendar
             activeDate={date}
+            entitiesDashboard={entitiesDashboard}
             onChange={(newDate) =>  updateDateHandler(newDate)}
+            handleGetMeeting={handleGetMeeting}
             ref={(el) => {
               floating(el);
               setCalendarRef(el);

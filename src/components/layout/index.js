@@ -4,10 +4,15 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  createSearchParams,
 } from "react-router-dom";
 import { useTheme } from "@mui/material/styles";
 import MenuIcon from "@mui/icons-material/Menu";
-import Select from "@mui/material/Select";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 import { useTranslation } from "react-i18next";
 import { format } from "date-fns-jalali";
 import { AppBar, Toolbar, Typography } from "@mui/material";
@@ -17,6 +22,7 @@ import StarBorder from "@mui/icons-material/StarBorder";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
+import { Drawer } from "./drawer";
 
 import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
@@ -41,9 +47,14 @@ import Collapse from "@mui/material/Collapse";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import { useSelector, useDispatch } from "react-redux";
 import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
-import { dashboardApp } from "../../actions/profile";
+import { dashboardApp, logout } from "../../actions/profile";
 import { removeState } from "../../features/detailUser";
-import { changeMenuBar } from "../../features/navbar";
+import {
+  changeMenuBar,
+  openMenuBar,
+  filterMenuItem,
+  showMenuItem,
+} from "../../features/navbar";
 import "./index.css";
 import {
   UserIconTitle,
@@ -55,11 +66,17 @@ import {
   NotifyIcon,
   Phone,
   IconMenuBar,
+  ProfileLogo,
+  EnterIcone,
+  ExitIcon,
+  ChangePasswordIcon,
 } from "../icons";
 import moment from "moment";
 import { styled } from "@mui/material/styles";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
 import useResponsive from "../../hooks/useResponsive";
+import { MenuListOwn } from "../menuList";
+import { NavbarSide, NavbarSideSuperAdmin } from "./navbar";
 
 const NavBar = styled("nav", {
   shouldForwardProp: (prop) => prop !== "openwidth",
@@ -135,6 +152,8 @@ export const Layout = () => {
   const root = useRef();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorElProfile, setAnchorElProfile] = React.useState(null);
+  const openProfle = Boolean(anchorElProfile);
   const open = Boolean(anchorEl);
   const handleClick1 = (event) => {
     setAnchorEl(event.currentTarget);
@@ -210,35 +229,80 @@ export const Layout = () => {
   useEffect(() => {
     if (isDesktop === false) {
       setOpenwidth(true);
+      dispatch(filterMenuItem({ isDesktop }));
     } else {
+      dispatch(filterMenuItem({ isDesktop }));
       setOpenwidth(false);
     }
   }, [isDesktop]);
 
-  const handleClick = (e) => {
-    dispatch(changeMenuBar({ status: e.id }));
+  const handleClick = (e, key, name) => {
+    dispatch(changeMenuBar({ status: e.id, key, name }));
     if (e.id === "IconMenuBar") {
       navigate(path.pathname.slice(1, path.pathname.length));
     } else {
-      navigate(e.path);
+      if (e?.keySearch) {
+        navigate(
+          `${e.path}?${[e?.keySearch]}=${entitiesDashboard?.data?.user?.level}`
+        );
+        dispatch(
+          e?.action({
+            params: { [e?.keySearch]: entitiesDashboard?.data?.user?.level },
+          })
+        );
+      } else {
+        navigate(e.path);
+      }
     }
 
     if (e.id === "IconMenuBar") {
       handleOpenMenuBar();
     }
   };
-  const handleDrawerOpen = () => {
 
+  useEffect(() => {
+    const str = path.pathname.slice(1, path.pathname.length);
+    const res =str.split('/');
+    dispatch(
+      changeMenuBar({
+        status: res[0],
+        key: "two",
+      })
+    );
+  }, [path.pathname]);
+  const handleDrawerOpen = () => {
     setIsResponsive(!isResponsive);
+    dispatch(openMenuBar());
+  };
+
+  const handleProfile = (event) => {
+    setAnchorElProfile(event.currentTarget);
+  };
+  const handleCloseProfile = () => {
+    setAnchorElProfile(null);
   };
   const theme = useTheme();
+
+  const handleToProfile = () => {
+    navigate("/profile");
+  };
+
+  const handleToChangePassword = () => {
+    navigate("/change-password");
+  };
+  const handleLogOut = () => {
+    dispatch(logout({})).then(() => {
+      localStorage.removeItem("userToken");
+      navigate(0);
+    });
+  };
+
   return (
     <Box>
       <NavBar
         isResponsive={isResponsive}
         isDesktop={isDesktop}
         style={{
-          display: "flex",
           // width: "211px",
           right: 0,
           height: "100vh",
@@ -250,150 +314,15 @@ export const Layout = () => {
         }}
         openwidth={openwidth}
       >
-        <ul
-          style={{
-            display: "flex",
-            listStyle: "none",
-            flexDirection: "column",
-            margin: 0,
-            justifyContent: "space-between",
-            alignItems: "center",
-            alignContent: "center",
-            padding: 0,
-            width: openwidth ? "211px" : "90px",
-            zIndex: 999,
-          }}
-          ref={root}
-        >
-          {navbarList.map((E) => {
-            {
-              return openwidth && E.id === "logo" ? (
-                <li
-                  style={{
-                    background: `${
-                      E.status ? "#E5FFF6" : theme.palette.primary.main
-                    }`,
-                    display: "flex",
-                    width: "144px",
-                    height: "142px",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    borderRadius: "8px",
-                  }}
-                  data-name="logo"
-                >
-                  <Box
-                    // to={
-                    //   E.id === "IconMenuBar"
-                    //     ? path.pathname.slice(1, path.pathname.length)
-                    //     : E.path
-                    // }
-                    style={{ width: "1.3rem", height: "1.3rem" }}
-                    // onClick={() => handleClick(E)}
-                  >
-                    <E.Logo
-                      stroke={E.status ? theme.palette.primary.main : "#ffffff"}
-                      style={{
-                        transform: "scale(3.5)",
-                        position: "relative",
-                        top: "47px",
-                        transition: "transform 2s linear 1s",
-                      }}
-                    />
-                  </Box>
-                  <Box
-                    sx={{
-                      width: "144px",
-                      height: "42px",
-                      background: "rgb(229, 255, 246)",
-                      position: "relative",
-                      top: "102px",
-                      borderRadius: "8px",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Typography color={theme.palette.primary.main}>
-                      {statusDashboard === "succeeded" &&
-                        entitiesDashboard?.data?.user?.name}
-                    </Typography>
-                  </Box>
-                </li>
-              ) : isDesktop === true ? (
-                <ItemMenu
-                  style={{
-                    background: `${
-                      E.status ? "#E5FFF6" : theme.palette.primary.main
-                    }`,
-                    cursor:"pointer"
-                  }}
-                  openwidth={openwidth}
-                  onClick={() => handleClick(E)}
-                >
-                  {openwidth && (
-                    <Typography
-                      color={E.status ? theme.palette.primary.main : "#ffffff"}
-                    >
-                      {t(E.id)}
-                    </Typography>
-                  )}
-
-                  <Box
-                    // to={
-                    //   E.id === "IconMenuBar"
-                    //     ? path.pathname.slice(1, path.pathname.length)
-                    //     : E.path
-                    // }
-                    style={{ width: "1.3rem", height: "1.3rem",cursor:"pointer" }}
-                    onClick={() => handleClick(E)}
-                  >
-                    <E.Logo
-                      stroke={E.status ? theme.palette.primary.main : "#ffffff"}
-                    />
-                  </Box>
-                </ItemMenu>
-              ) : (
-                E.id !== "IconMenuBar" && (
-                  <ItemMenu
-                    style={{
-                      background: `${
-                        E.status ? "#E5FFF6" : theme.palette.primary.main
-                      }`,
-                    }}
-                    openwidth={openwidth}
-                  >
-                    {openwidth && (
-                      <Typography
-                        color={
-                          E.status ? theme.palette.primary.main : "#ffffff"
-                        }
-                      >
-                        {t(E.id)}
-                      </Typography>
-                    )}
-
-                    <Box
-                      // to={
-                      //   E.id === "IconMenuBar"
-                      //     ? path.pathname.slice(1, path.pathname.length)
-                      //     : E.path
-                      // }
-                      style={{ width: "1.3rem", height: "1.3rem" }}
-                      onClick={() => handleClick(E)}
-                    >
-                      <E.Logo
-                        stroke={
-                          E.status ? theme.palette.primary.main : "#ffffff"
-                        }
-                      />
-                    </Box>
-                  </ItemMenu>
-                )
-              );
-            }
-          })}
-        </ul>
+        {statusDashboard === "succeeded" && (
+          <Drawer
+            t={t}
+            navbarList={navbarList}
+            handleClick={handleClick}
+            openwidth={openwidth}
+            entitiesDashboard={entitiesDashboard}
+          />
+        )}
       </NavBar>
       <Container maxWidth="lg">
         <Header position="fixed" openwidth={open} isResponsive={isResponsive}>
@@ -428,17 +357,18 @@ export const Layout = () => {
             justifyContent={"space-between"}
             alignItems="center"
           >
-            <Grid item md={3} lg={3} sm={3} xs={12}>
+            <Grid item md={6} lg={6} sm={6} xs={12}>
               <Grid
+                onClick={handleProfile}
                 container
                 alignItems={"center"}
                 sx={{
-                  width: "100%",
+                  width: "fit-content",
                   border: "1px solid #777777",
                   padding: "0.3rem",
                   borderRadius: "12px",
                 }}
-                justifyContent="space-between"
+                justifyContent="center"
               >
                 <UserIconTitle />
 
@@ -450,7 +380,8 @@ export const Layout = () => {
                 )}
               </Grid>
             </Grid>
-            <Grid item md={4} lg={4} sm={4} xs={12}>
+
+            <Grid item md={6} lg={6} sm={6} xs={12}>
               <Grid
                 container
                 // sx={{ width: "224px" }}
@@ -501,6 +432,44 @@ export const Layout = () => {
           <Outlet />
         </Box>
       </Container>
+      <MenuListOwn
+        anchorEl={anchorElProfile}
+        open={openProfle}
+        handleClose={handleCloseProfile}
+      >
+        <Box sx={{ width: "130px", cursor: "pointer" }}>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            mb={2}
+            onClick={handleToProfile}
+          >
+            <Typography>{t("profile")}</Typography>
+            <ProfileLogo stroke={"#000000"} />
+          </Grid>
+        </Box>
+        <Box sx={{ width: "130px" }}>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            onClick={handleToChangePassword}
+            mb={2}
+          >
+            <Typography>{t("changePassword")}</Typography>
+            <ChangePasswordIcon stroke={"#000000"} />
+          </Grid>
+        </Box>
+        <Box sx={{ width: "130px", cursor: "pointer" }}>
+          <Grid
+            container
+            justifyContent={"space-between"}
+            onClick={handleLogOut}
+          >
+            <Typography>{t("exit")}</Typography>
+            <ExitIcon stroke={"#000000"} />
+          </Grid>
+        </Box>
+      </MenuListOwn>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -551,16 +520,46 @@ export const Layout = () => {
           <Typography dir="rtl" sx={{ padding: "12px", color: "silver" }}>
             {t("enter type of data")}
           </Typography>
+          {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+            <MenuItem
+              sx={{ justifyContent: "end" }}
+              onClick={handleInsertMeeting}
+            >
+              <Typography color={"#017874"}> {t("insert meeting")}</Typography>
+            </MenuItem>
+          ) : (
+            entitiesDashboard?.data?.user.permissions.some(
+              (e) => e.name === "meeting_create"
+            ) && (
+              <MenuItem
+                sx={{ justifyContent: "end" }}
+                onClick={handleInsertMeeting}
+              >
+                <Typography color={"#017874"}>
+                  {" "}
+                  {t("insert meeting")}
+                </Typography>
+              </MenuItem>
+            )
+          )}
 
-          <MenuItem
-            sx={{ justifyContent: "end" }}
-            onClick={handleInsertMeeting}
-          >
-            <Typography color={"#017874"}> {t("insert meeting")}</Typography>
-          </MenuItem>
-          <MenuItem sx={{ justifyContent: "end" }} onClick={handleInsertCall}>
-            <Typography color={"#017874"}>{t("insert call")}</Typography>
-          </MenuItem>
+          {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+            <MenuItem sx={{ justifyContent: "end" }} onClick={handleInsertCall}>
+              <Typography color={"#017874"}>{t("insert call")}</Typography>
+            </MenuItem>
+          ) : (
+            entitiesDashboard?.data?.user.permissions.some(
+              (e) => e.name === "call_create"
+            ) && (
+              <MenuItem
+                sx={{ justifyContent: "end" }}
+                onClick={handleInsertCall}
+              >
+                <Typography color={"#017874"}>{t("insert call")}</Typography>
+              </MenuItem>
+            )
+          )}
+
           <ListItemButton
             onClick={handleClick2}
             dir="rtl"
@@ -571,12 +570,25 @@ export const Layout = () => {
           </ListItemButton>
           <Collapse in={open2} timeout="auto">
             <List component="div" disablePadding>
-              <MenuItem
-                sx={{ justifyContent: "end" }}
-                onClick={handleInsertUserSingle}
-              >
-                <Typography color={"#017874"}> {t("single")}</Typography>
-              </MenuItem>
+              {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+                <MenuItem
+                  sx={{ justifyContent: "end" }}
+                  onClick={handleInsertUserSingle}
+                >
+                  <Typography color={"#017874"}> {t("single")}</Typography>
+                </MenuItem>
+              ) : (
+                entitiesDashboard?.data?.user.permissions.some(
+                  (e) => e.name === "user_create"
+                ) && (
+                  <MenuItem
+                    sx={{ justifyContent: "end" }}
+                    onClick={handleInsertUserSingle}
+                  >
+                    <Typography color={"#017874"}> {t("single")}</Typography>
+                  </MenuItem>
+                )
+              )}
               <MenuItem
                 sx={{ justifyContent: "end" }}
                 onClick={handleInsertUserCouple}
@@ -596,12 +608,25 @@ export const Layout = () => {
           </ListItemButton>
           <Collapse in={open3} timeout="auto">
             <List component="div" disablePadding>
-              <MenuItem
-                sx={{ justifyContent: "end" }}
-                onClick={handleInsertClientSingle}
-              >
-                <Typography color={"#017874"}> {t("single")}</Typography>
-              </MenuItem>
+              {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+                <MenuItem
+                  sx={{ justifyContent: "end" }}
+                  onClick={handleInsertClientSingle}
+                >
+                  <Typography color={"#017874"}> {t("single")}</Typography>
+                </MenuItem>
+              ) : (
+                entitiesDashboard?.data?.user.permissions.some(
+                  (e) => e.name === "client_create"
+                ) && (
+                  <MenuItem
+                    sx={{ justifyContent: "end" }}
+                    onClick={handleInsertClientSingle}
+                  >
+                    <Typography color={"#017874"}> {t("single")}</Typography>
+                  </MenuItem>
+                )
+              )}
               <MenuItem
                 sx={{ justifyContent: "end" }}
                 onClick={handleInsertClientCouple}

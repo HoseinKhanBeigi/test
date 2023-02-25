@@ -1,7 +1,7 @@
 import instance from "./http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-export const createAsyncAction = (url, type, method) => {
+export const createAsyncAction = (url, type, method,secondUrl) => {
   return createAsyncThunk(type, async ({ ...values }, thunkAPI) => {
     let fd = new FormData();
     try {
@@ -49,8 +49,12 @@ export const createAsyncAction = (url, type, method) => {
       } else {
         if (values?.id) {
           const ids = values.id;
-          const urlvalue = `${url}/${ids}`;
+          let urlvalue = `${url}/${ids}`;
+          if(secondUrl){
+            urlvalue = `${url}/${ids}${secondUrl}`;
+          }
           response = await instance[method](urlvalue, config);
+      
         } else {
           response = await instance[method](url, config);
         }

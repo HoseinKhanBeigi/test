@@ -32,6 +32,10 @@ export const CreateClientCouple = () => {
     setTextContent(t("Release to Upload File"));
   };
 
+  const handleClick = () => {
+    inputRef.current.click();
+  };
+
   const handleonDragLeave = (event) => {
     event.preventDefault();
     setTextContent(t("exelFile"));
@@ -114,6 +118,7 @@ export const CreateClientCouple = () => {
                 onDragOver={handleonDragOver}
                 onDragLeave={handleonDragLeave}
                 onDrop={handleOnDrop}
+                onClick={handleClick}
                 container
                 className="drag-area"
                 justifyContent={"center"}
@@ -127,6 +132,7 @@ export const CreateClientCouple = () => {
                   name="name"
                   ref={inputRef}
                   type="file"
+                  hidden
                   onChange={handleClickInput}
                 />
               </Grid>
@@ -136,7 +142,7 @@ export const CreateClientCouple = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {t("Download sample excel")}
+                  {t("Downloadsampleexcel")}
                 </a>
               </Grid>
 

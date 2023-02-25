@@ -6,7 +6,7 @@ import { Grid } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 import IconButton from "@mui/material/IconButton";
-import { UploadIcon } from "../../components/icons";
+import { TrashIcone, UploadIcon } from "../../components/icons";
 import { HeaderPage } from "../../components/headerPage";
 import { useTranslation } from "react-i18next";
 import Notifier from "../../components/notify";
@@ -18,13 +18,14 @@ import {
   callsDepenAgent,
   callsDetail,
   callsUpdate,
-  callsList
+  callsList,
 } from "../../actions/calls";
 import dayjs from "dayjs";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { responseMessage } from "../../features/messageLog";
 import { Typography } from "@mui/material";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
 export const FormCall = ({ typeForm }) => {
   const params = useParams();
   const { t, i18n } = useTranslation();
@@ -32,8 +33,8 @@ export const FormCall = ({ typeForm }) => {
   const navigate = useNavigate();
   const inputRef = useRef(null);
   const [file, setFile] = useState();
-  const [datePickerValue, setDatePicker] = React.useState();
-  const [valueTime, setValueTime] = React.useState();
+  const [datePickerValue, setDatePicker] = React.useState("");
+  const [valueTime, setValueTime] = React.useState("");
 
   const { statusDetail, callDetails } = useSelector(
     (state) => state.callDetailShow
@@ -42,8 +43,6 @@ export const FormCall = ({ typeForm }) => {
   const { statuscallAgents, callAgents } = useSelector(
     (state) => state.callAgentsDepen
   );
-
- 
 
   useEffect(() => {
     const id = params.id;
@@ -61,6 +60,8 @@ export const FormCall = ({ typeForm }) => {
       });
     }
   }, [statusDetail, dispatch]);
+
+  useDispatchAction(callsDepen, status);
 
   const defaultValues = {
     topic: callDetails?.data?.topic,
@@ -147,6 +148,12 @@ export const FormCall = ({ typeForm }) => {
     inputRef.current.click();
   };
 
+  const handleDeleteFile = (e)=>{
+    const result =file.filter((j)=>j.name !== e.name)
+    setFile(result);
+  }
+
+
   const handleClickInput = (e) => {
     const chosenFiles = Array.prototype.slice.call(e.target.files);
     methods.setValue("attach", chosenFiles);
@@ -226,24 +233,7 @@ export const FormCall = ({ typeForm }) => {
             alignItems={"center"}
           >
             <Typography>{t("Description")}</Typography>
-            <IconButton
-              sx={{ p: "10px" }}
-              aria-label="menu"
-              onClick={handleClick}
-            >
-              <UploadIcon />
-
-              <input
-                hidden
-                name="file"
-                ref={inputRef}
-                type="file"
-                onChange={handleClickInput}
-              />
-              {file?.map((e) => (
-                <Typography> {e?.name}</Typography>
-              ))}
-            </IconButton>
+           
           </Grid>
           <Grid container>
             <RHFTextField
@@ -256,6 +246,36 @@ export const FormCall = ({ typeForm }) => {
               rows={5}
             />
           </Grid>
+          {typeForm === "create" && (
+            <Grid container flexDirection={"column"} alignItems="end">
+              <IconButton
+                sx={{ p: "10px" }}
+                aria-label="menu"
+                onClick={handleClick}
+              >
+                <UploadIcon />
+                <input
+                  hidden
+                  name="file"
+                  ref={inputRef}
+                  type="file"
+                  onChange={handleClickInput}
+                  multiple
+                />
+              </IconButton>
+              {file?.map((e) => (
+                <Grid container justifyContent={"end"} alignItems="center">
+                  <Typography> {e?.name}</Typography>
+                  <IconButton
+                    aria-label="menu"
+                    onClick={() => handleDeleteFile(e)}
+                  >
+                    <TrashIcone />
+                  </IconButton>
+                </Grid>
+              ))}
+            </Grid>
+          )}
           <Grid container justifyContent={"end"} item mt={2}>
             <LoadingButton
               size="small"

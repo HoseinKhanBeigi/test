@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
+import { convertDigits } from "persian-helpers";
 
 export const DonutChart = ({series, labels,status}) => {
   const options = useMemo(() => {
@@ -9,9 +10,24 @@ export const DonutChart = ({series, labels,status}) => {
         chart: {
           type: "donut",
         },
+        dataLabels: {
+          
+          formatter: function (val) {
+            
+            return `%${convertDigits(val)}`;
+          },
+          // offsetY: 0,
+        },
         fill: {
           opacity: 1,
           colors: ["#F7541E", "#A0CFF9", "#5041BC"],
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return convertDigits(val);
+            },
+          },
         },
         labels,
         legend: {

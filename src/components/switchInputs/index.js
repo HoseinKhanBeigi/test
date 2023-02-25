@@ -187,14 +187,24 @@ export const switchInput = (element, typeForm, status, statusDetail, t) => {
 
     case "DateTimePicker":
       return (
-        <LocalizationProvider dateAdapter={AdapterJalaali}>
+        <LocalizationProvider
+          dateAdapter={AdapterJalaali}
+        >
           <DateTimePicker
             name={element.name}
             label={t(`${element.label}`)}
             value={element.value}
             onChange={element.change}
             renderInput={(params) => (
-              <RHFTextField {...params} name={element.name} />
+              <RHFTextField
+                {...params}
+                name={element.name}
+                error={false}
+                inputProps={{
+                  ...params.inputProps,
+                  placeholder: t(`${element.label}`),
+                }}
+              />
             )}
           />
         </LocalizationProvider>
@@ -208,7 +218,15 @@ export const switchInput = (element, typeForm, status, statusDetail, t) => {
             value={element.value}
             onChange={element.change}
             renderInput={(params) => (
-              <RHFTextField {...params} name={element.name} />
+              <RHFTextField
+                {...params}
+                name={element.name}
+                error={false}
+                inputProps={{
+                  ...params.inputProps,
+                  placeholder: t(`${element.label}`),
+                }}
+              />
             )}
           />
         </LocalizationProvider>

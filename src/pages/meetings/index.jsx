@@ -26,6 +26,7 @@ import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { HeaderPage } from "../../components/headerPage";
 import { PaginationTable } from "../../components/pagination";
 import { Confirmation } from "../../components/confirmation";
+import noresult from "../interactions/noresult.png";
 
 export const Meetings = () => {
   const [deleteState, setDeleteState] = React.useState(false);
@@ -192,7 +193,7 @@ export const Meetings = () => {
             {status === "succeeded" &&
               (entities?.data?.total === 0 ||
                 entities?.data?.dada?.length === 0) && (
-                <Typography>{t("no data")}</Typography>
+                <img src={noresult}/>
               )}
           </Paper>
           <Paper>

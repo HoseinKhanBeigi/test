@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import ReactApexChart from "react-apexcharts";
+import { convertDigits } from "persian-helpers";
 
 export const LineChart = ({
   series,
@@ -89,23 +90,21 @@ export const LineChart = ({
           showForSingleSeries: false,
           showForNullSeries: true,
           showForZeroSeries: true,
-          position: 'bottom',
-          horizontalAlign: 'center', 
+          position: "bottom",
+          horizontalAlign: "center",
           floating: false,
-          fontSize: '14px',
-          fontFamily: 'Helvetica, Arial',
+          fontSize: "14px",
+          fontFamily: "Helvetica, Arial",
           fontWeight: 400,
-          formatter: (value)=>{
-            if(value === "series-1"){
-              return "مشتری"
+          formatter: (value) => {
+            if (value === "series-1") {
+              return "مشتری";
             }
-            if(value === "series-2"){
-              return "متوسط گروه"
+            if (value === "series-2") {
+              return "متوسط گروه";
+            } else {
+              return value;
             }
-            else{
-              return value
-            }
-         
           },
           inverseOrder: false,
           width: undefined,
@@ -115,11 +114,20 @@ export const LineChart = ({
           offsetX: 0,
           offsetY: 0,
           labels: {
-              colors: undefined,
-              useSeriesColors: false
+            colors: undefined,
+            useSeriesColors: false,
           },
-        
-      },    
+        },
+        tooltip: {
+          y: {
+            formatter: function (val) {
+              return convertDigits(val);
+            },
+          },
+          marker: {
+            show: false,
+        },
+        },
         grid: {
           show: true,
           xaxis: {

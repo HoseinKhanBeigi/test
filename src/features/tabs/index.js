@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   filterTabs: [
-    { checked: true, name: "all", background: "#E5FFF6", color: "#017874" },
+    { checked: false, name: "all", background: "#E5FFF6", color: "#017874" },
     {
       checked: false,
       name: "RM1",
@@ -100,9 +100,12 @@ const tabSlice = createSlice({
   
       const arr = [];
       state.filterTabs.filter((item) => {
-        if (item.name >= action.payload?.entitiesDashboard?.data?.user?.level) {
-          arr.push(item);
-          state.filterRMTabs = arr;
+        if (item.name >= action.payload?.level) {
+          if(action.payload.filterTab !== item.name){
+            arr.push(item);
+            state.filterRMTabs = arr;
+          }
+    
           // return arr;
         }
       });

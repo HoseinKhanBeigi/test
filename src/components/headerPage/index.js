@@ -38,6 +38,7 @@ import { CustomDateRangePickerDay } from "../dateRangePicker";
 import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import { TabButtons } from "../tabButton";
+import moment from "moment";
 
 export const HeaderPage = ({
   title,
@@ -45,8 +46,13 @@ export const HeaderPage = ({
   status,
   page,
   tab,
+  clienOwn,
   initialDrops,
+  paramsId,
+  width,
   filterRMTabs,
+  userDetails,
+  statusDetail,
   handleChange,
   defaultQuery,
   analysis,
@@ -77,7 +83,7 @@ export const HeaderPage = ({
     setAnchorEl(false);
   };
 
-  const [openin, setOpen] = React.useState(false);
+  const [openin, setOpen] = React.useState(true);
 
   const { filterList } = useSelector((state) => state.filterSlice);
 
@@ -87,7 +93,13 @@ export const HeaderPage = ({
 
   const handleCancel = () => {
     removeParams(["organization", "type", "bi_point", "gender"], navigate);
-    dispatch(action({ params: { ...getQueryParams() } }));
+    if (paramsId) {
+      const id = paramsId;
+      dispatch(action({ id, params: { ...getQueryParams() } }));
+    } else {
+      dispatch(action({ params: { ...getQueryParams() } }));
+    }
+
     dispatch(removeFilterUser());
     dispatch(removeFilterClient());
   };
@@ -114,7 +126,12 @@ export const HeaderPage = ({
     setSearchParams(
       appendSearchParams({ ...defaults, ...params }, searchParams)
     );
-    dispatch(action({ params: params }));
+    if (paramsId) {
+      const id = paramsId;
+      dispatch(action({ id, params: params }));
+    } else {
+      dispatch(action({ params: params }));
+    }
   };
 
   useEffect(() => {
@@ -122,21 +139,39 @@ export const HeaderPage = ({
     dispatch(removeFilterClient());
   }, [title]);
 
-  const [valueDate, setValue] = React.useState([null, null]);
-
-  const onAccept = (item) => {
-    const date1 = dayjs(item[0]).format("YYYY-MM-DD");
-    const date2 = dayjs(item[1]).format("YYYY-MM-DD");
-
+  const [startDate, setStartDate] = React.useState("");
+  const [endDate, setEndDate] = React.useState("");
+  const handleExecutionDate = (item1, item2) => {
+    const date1 = dayjs(new Date(item1)).format("YYYY-MM-DD");
+    const date2 = dayjs(new Date(item2)).format("YYYY-MM-DD");
     const params = {
       ...getQueryParams(),
-      from: date1 !== "InvalidDate" && date1,
-      to: date2 !== "InvalidDate" && date2,
+      from: date1,
+      to: date2,
     };
+
     navigate({
       search: `?${createSearchParams(params)}`,
     });
-    dispatch(action({ params: { ...getQueryParams() } }));
+    if (paramsId) {
+      const id = paramsId;
+      dispatch(action({ id, params: { ...getQueryParams() } }));
+    } else {
+      dispatch(action({ params: { ...getQueryParams() } }));
+    }
+  };
+
+  const handleCancelDate = () => {
+    removeParams(["from", "to"], navigate);
+    if (paramsId) {
+      const id = paramsId;
+      dispatch(action({ id, params: { ...getQueryParams() } }));
+    } else {
+      dispatch(action({ params: { ...getQueryParams() } }));
+    }
+    setEndDate("");
+    setStartDate("");
+    handleClose();
   };
 
   const { statusDashboard, entitiesDashboard, error } = useSelector(
@@ -186,9 +221,13 @@ export const HeaderPage = ({
         <Grid item>
           {dateFilter ? (
             <CustomDateRangePickerDay
-              valueDate={valueDate}
-              setValue={setValue}
-              onAccept={onAccept}
+              t={t}
+              handleCancelDate={handleCancelDate}
+              handleExecutionDate={handleExecutionDate}
+              startDate={startDate}
+              setStartDate={setStartDate}
+              setEndDate={setEndDate}
+              endDate={endDate}
             />
           ) : (
             <>
@@ -230,7 +269,7 @@ export const HeaderPage = ({
           mb={4}
           mt={2}
         >
-          <Grid item xl={3}>
+          <Grid item xl={page === "detail" || page === "form" ? 12 : 3}>
             <Grid container dir="rtl" gap={1}>
               <Typography className="title">{title}</Typography>
               {page === "table" && (
@@ -249,12 +288,13 @@ export const HeaderPage = ({
                 </>
               )}
 
-              {page === "detail" && (
+              {page === "detail" && status === "succeeded" && (
                 <>
-                 
                   <NavigationIcon />
                   <Typography>{entities?.name}</Typography>
-                  <Typography color={"gray"}>{`(${entities?.level})`}</Typography>
+                  <Typography color={"gray"}>{`(${
+                    entities?.level || entities?.type
+                  } )`}</Typography>
                   <Typography color="#FF2020">
                     <Link
                       onClick={() => navigate(-1)}
@@ -286,11 +326,14 @@ export const HeaderPage = ({
                 flexDirection="row-reverse"
               >
                 <Tabs
+                clienOwn={clienOwn}
                   actionFilter={action}
+                  paramsId={paramsId}
                   filterRMTabs={filterRMTabs}
                   entitiesDashboard={entitiesDashboard}
+                  userDetails={userDetails}
                   statusDashboard={statusDashboard}
-                  status={status}
+                  status={statusDetail}
                   clientList={clientList}
                 />
               </Grid>
@@ -318,6 +361,8 @@ export const HeaderPage = ({
                     <SearchInput
                       defaultQuery={defaultQuery?.search}
                       action={action}
+                      paramsId={paramsId}
+                      width={width}
                       removeParams={removeParams}
                       openin={openin}
                     />

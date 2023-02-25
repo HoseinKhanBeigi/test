@@ -9,7 +9,7 @@ export const CardBox = ({ children, title, value }) => {
       dir="rtl"
       p={1}
       alignItems="center"
-      justifyContent={"space-around"}
+
     >
       <Box
         sx={{
@@ -24,7 +24,7 @@ export const CardBox = ({ children, title, value }) => {
       >
         {children}
       </Box>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: "1rem" ,paddingLeft:"8px"}}>
         <Typography color={"#777777"} fontSize={"0.8rem"}>
           {title}
         </Typography>

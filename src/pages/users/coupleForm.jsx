@@ -55,6 +55,9 @@ export const CreateUserCouple = () => {
       setTextContent(t("exelFile"));
     }
   };
+  const handleClick = () => {
+    inputRef.current.click();
+  };
   const handleClickInput = (e) => {
     file.current = e.target.files[0];
     const fileExt = file.current.name.substring(
@@ -117,6 +120,7 @@ export const CreateUserCouple = () => {
                 onDragOver={handleonDragOver}
                 onDragLeave={handleonDragLeave}
                 onDrop={handleOnDrop}
+                onClick={handleClick}
                 container
                 className="drag-area"
                 justifyContent={"center"}
@@ -126,10 +130,12 @@ export const CreateUserCouple = () => {
                 mb={4}
               >
                 <Typography align="center">{textContent}</Typography>
+                <Button ></Button>
                 <input
                   name="name"
                   ref={inputRef}
                   type="file"
+                  hidden
                   onChange={handleClickInput}
                 />
               </Grid>
@@ -139,7 +145,7 @@ export const CreateUserCouple = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {t("Download sample excel")}
+              {t("Downloadsampleexcel")}
                 </a>
               </Grid>
 

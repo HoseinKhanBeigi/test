@@ -5,6 +5,7 @@ import ReactApexChart from "react-apexcharts";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import { convertDigits } from "persian-helpers";
 import {
   CountMeetinIcon,
   TimeClock,
@@ -26,7 +27,7 @@ import { CardDetail, CardButtom } from "./Card";
 import { AreaChart } from "../../../components/areaChart";
 import { LineChart } from "../../../components/lineChart";
 import { DonutChart } from "../../../components/donutChart";
-import { userDetail } from "../../../actions/users";
+import { userChildrenAction, userDetail } from "../../../actions/users";
 import { HeaderPage } from "../../../components/headerPage";
 
 const DecorationStyle = styled(Grid)(({ theme }) => ({
@@ -49,7 +50,7 @@ export const DetailReports = () => {
     lineChartValues,
     donatChartLabels,
     donatChartValues,
-    userDetails
+    userDetails,
   } = useSelector((state) => state.userDetailShow);
 
   useEffect(() => {
@@ -64,18 +65,33 @@ export const DetailReports = () => {
   }, [statusDetail, dispatch]);
   const categories = ["حقوقی", "حقیقی"];
 
-  const series= [
+  const series = [
     {
+      name: " ",
       data: lineChartValues,
     },
-  ]
+  ];
 
   const handleRoute = (value) => {
-    navigate(`/${value}`);
+    const id = params.id;
+    dispatch(
+      userChildrenAction({
+        id,
+        params: { level: userDetails?.data?.user.level },
+      })
+    ).then(() => {
+      navigate(value);
+    });
   };
+
   return (
     <>
-    <HeaderPage title={"گزارش ها"} page="detail" entities={userDetails.data.user}/>
+      <HeaderPage
+        title={"گزارش ها"}
+        page="detail"
+        entities={userDetails?.data?.user}
+        status={statusDetail}
+      />
       <Grid container gap={2}>
         <Grid container dir={"rtl"} spacing={2}>
           <Grid container item xs={12} sm={6} md={6}>
@@ -83,7 +99,7 @@ export const DetailReports = () => {
               <Grid item lg={6} sm={12} xs={12}>
                 <CardDetail
                   title={"تعداد تماس های تلفنی ثبت شده"}
-                  value={cards?.calls_count}
+                  value={convertDigits(cards?.calls_count)}
                 >
                   <Phone stroke="white" />
                 </CardDetail>
@@ -91,7 +107,7 @@ export const DetailReports = () => {
               <Grid item lg={6} sm={12} xs={12}>
                 <CardDetail
                   title={"میزان زمان صرف شده در سامانه"}
-                  value={cards?.calls_duration}
+                  value={convertDigits(cards?.calls_duration)}
                 >
                   <TimeClock stroke="white" />
                 </CardDetail>
@@ -99,15 +115,15 @@ export const DetailReports = () => {
               <Grid item lg={6} sm={12} xs={12}>
                 <CardDetail
                   title={"تعداد جلسات برگزار شده ثبت شده"}
-                  value={cards?.meetings_count}
+                  value={convertDigits(cards?.meetings_count)}
                 >
                   <CountMeetinIcon stroke="white" />
                 </CardDetail>
               </Grid>
               <Grid item lg={6} sm={12} xs={12}>
                 <CardDetail
-                  title={"مدت زمان جلسه"}
-                  value={cards?.meetings_duration}
+                  title={" مدت زمان جلسه (دقیقه)"}
+                  value={convertDigits(cards?.meetings_duration)}
                 >
                   <TimeClock stroke="white" />
                 </CardDetail>
@@ -169,7 +185,7 @@ export const DetailReports = () => {
                     title={"مدیران ارتباط"}
                     keyRoute="users"
                     background="#2563EB"
-                    handleRoute={handleRoute}
+                    handleRoute={() => handleRoute("children")}
                   >
                     <Users stroke={"#fff"} />
                   </CardButtom>
@@ -179,7 +195,7 @@ export const DetailReports = () => {
                     title={"جلسات"}
                     background="#5041BC"
                     keyRoute={"interactions/meetings"}
-                    handleRoute={handleRoute}
+                    handleRoute={() => handleRoute("meetings")}
                   >
                     <InteractionsLogo stroke={"#fff"} />
                   </CardButtom>
@@ -189,7 +205,7 @@ export const DetailReports = () => {
                     title={"مشتریان"}
                     background="#F6541E"
                     keyRoute={"clients"}
-                    handleRoute={handleRoute}
+                    handleRoute={() => handleRoute("clients")}
                   >
                     <Clients stroke={"#fff"} />
                   </CardButtom>
@@ -218,7 +234,7 @@ export const DetailReports = () => {
         <Grid container spacing={2} dir={"rtl"}>
           <Grid item xs={12} sm={4} md={4}>
             <CardDetail
-              title={"تعداد ورود به سامانه"}
+              title={"میزان زمان صرف شده در سامانه"}
               value={<CountOfEntry />}
               scroll
             >

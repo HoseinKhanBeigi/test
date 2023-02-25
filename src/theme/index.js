@@ -10,7 +10,7 @@ import {
 
 import CssModulesSlider from "../components/hook-form/RHAuto";
 //
-import palette from "./palette";
+import palette2 from "./palette";
 import typography from "./typography";
 import componentsOverride from "./overrides";
 import shadows, { customShadows } from "./shadows";
@@ -36,7 +36,19 @@ export default function ThemeProvider({ children }) {
   const MainColor = colors.find((e) => e.status === true);
   const themeOptions = useMemo(
     () => ({
-      palette: { primary: { main: MainColor.background } },
+      palette: {
+        primary: { main: MainColor.background },
+        secondary: {
+          main: "#5041BC",
+        },
+        yes_btn:{
+          main:"#FF2020"
+        },
+        no_btn:{
+          main:"#EFF3F3"
+        }
+      },
+
       shape: { borderRadius: 8 },
       typography,
       shadows,

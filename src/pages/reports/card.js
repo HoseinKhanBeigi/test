@@ -1,6 +1,7 @@
 import { Grid, Card, Typography } from "@mui/material";
 import { UserIcon2 } from "../../components/icons";
 import pic from "./pic.png";
+import { convertDigits } from "persian-helpers";
 
 export const CardBranch = ({ phone, address, name, level }) => {
   return (
@@ -44,7 +45,7 @@ export const CardBranch = ({ phone, address, name, level }) => {
               align="center"
               fontSize={"14px"}
             >
-              {phone}
+              {convertDigits(phone)}
             </Typography>
           </Grid>
           {/* <Grid container gap={2}>
@@ -87,7 +88,7 @@ export const UserCard = ({name,position,organization,mobile,handleClick,id}) => 
       >
         <Grid container item xs={6}>
           <Typography>{"تلفن :"}</Typography>
-          <Typography>{mobile}</Typography>
+          <Typography>{convertDigits(mobile)}</Typography>
         </Grid>
         <Grid item container xs={6} justifyContent="end">
           <Typography>{`${organization}`}</Typography>

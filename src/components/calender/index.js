@@ -8,6 +8,7 @@ import {
   setYear,
   subMonths,
 } from "date-fns-jalali";
+import { Box, Card, Link, Typography, Stack } from "@mui/material";
 import { convertDigits } from "persian-helpers";
 import React from "react";
 import { forwardRef, useEffect, useMemo, useState } from "react";
@@ -22,6 +23,9 @@ import YearsBody from "./yearsbody";
 import moment from "moment";
 import { useDispatch, useSelector } from "react-redux";
 import { interactions } from "../../actions/interactions";
+import Grid from "@mui/material/Grid";
+import IconButton from "@mui/material/IconButton";
+import { OptionIcone } from "../icons";
 
 const FadeTransition = ({ children, bodyTransition, ...rest }) => (
   <Transition {...rest}></Transition>
@@ -45,10 +49,12 @@ export const Calendar = forwardRef(
     {
       highlightToday = true,
       onChange,
+      handleGetMeeting,
       activeDate: propActiveDate,
       theme = "light",
       showGoToToday = true,
       defaultActiveDate,
+      entitiesDashboard,
       minDate,
       maxDate,
       showFooter = false,
@@ -155,6 +161,8 @@ export const Calendar = forwardRef(
       (state) => state.interactionSlice
     );
 
+    const colors = ["#F6541E", "#2563EB", "#FF2020", "#000000", "#5041BC"];
+
     const reducer = (state, action) => {
       switch (action.type) {
         case "DAYS":
@@ -167,6 +175,8 @@ export const Calendar = forwardRef(
           });
         case "COUNT":
           return state.map((item) => {
+            const colorsCount = [];
+
             const find =
               status === "succeeded" &&
               entities?.data?.calendar?.find((e) => {
@@ -180,14 +190,23 @@ export const Calendar = forwardRef(
                 }
               });
 
+            // if (status === "succeeded" && find) {
+            //   for (let i = 0; i < find.count; i++) {
+            //     colorsCount.push(colors[Math.floor(Math.random() * 5)]);
+            //   }
+            // }
+
             return {
               ...item,
               count: find ? find : 0,
+              // colors: find ? colorsCount : [],
             };
           });
 
         case "ALL":
           return (state = selectedDateDays.days).map((item) => {
+            const colorsCount = [];
+
             const find =
               status === "succeeded" &&
               entities?.data?.calendar?.find((e) => {
@@ -201,15 +220,23 @@ export const Calendar = forwardRef(
                 }
               });
 
+            if (status === "succeeded" && find) {
+              for (let i = 0; i < find.count; i++) {
+                colorsCount.push(colors[Math.floor(Math.random() * 5)]);
+              }
+            }
+
             return {
               ...item,
               count: find ? find : 0,
+              colors: find ? colorsCount : [],
             };
           });
         default:
           return state;
       }
     };
+
     const [items, dispatchAction] = useReducer(reducer, selectedDateDays.days);
 
     const dispatch = useDispatch();
@@ -221,10 +248,16 @@ export const Calendar = forwardRef(
       const result = {
         calendar_start_date: lastDayOfCalendar,
       };
-      dispatch(interactions(result)).then((e) => {
-        dispatchAction({ type: "COUNT" });
-        dispatchAction({ type: "ALL" });
-      });
+      const permissionInterAction =
+        entitiesDashboard?.data?.user.permissions.some(
+          (e) => e.name === "interaction"
+        );
+      if (permissionInterAction) {
+        dispatch(interactions(result)).then((e) => {
+          dispatchAction({ type: "COUNT" });
+          dispatchAction({ type: "ALL" });
+        });
+      }
     }, [selectedDateDays.endDate]);
 
     useEffect(() => {
@@ -249,6 +282,7 @@ export const Calendar = forwardRef(
           entities={entities?.data?.calendar}
           dispatchAction={dispatchAction}
           onActiveDayChange={activeDayChangeHandler}
+          handleGetMeeting={handleGetMeeting}
           choseDate={choseDate}
           selectedDate={selectedDate}
           showFridaysAsRed={showFridaysAsRed}
@@ -291,23 +325,42 @@ export const Calendar = forwardRef(
           months={months}
           
         /> */}
+        <Grid container justifyContent={"space-between"} alignItems="center" mb={2}>
+          <Typography color={"gray"}>{"تقویم"}</Typography>
+          <IconButton
+            aria-label="menu"
+            // onClick={(e) => handleFilterMenu(e, row.id)}
+          >
+            <OptionIcone />
+          </IconButton>
+        </Grid>
         <div>
-          <div style={{ display: "flex", justifyContent: "space-around" }}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom:"16px"
+            }}
+          >
             <button
               onClick={handlePre}
               style={{
+                display: "flex",
                 background: "rgb(255, 255, 255)",
                 border: "0.5px dashed rgb(255, 255, 255)",
               }}
             >
-              <IconChevronRight className="w-4 h-4" />
+              <IconChevronRight className="w-4 h-4" color="gray" />
             </button>
             <button
               className="text-base"
               onClick={cycleThroughBodies}
               style={{
+                color: "#F6541E",
                 background: "rgb(255, 255, 255)",
                 border: "0.5px dashed rgb(255, 255, 255)",
+            
               }}
             >
               {activeBody === "main" && months[getMonth(selectedDate)]}{" "}
@@ -316,24 +369,17 @@ export const Calendar = forwardRef(
             <button
               onClick={() => nextMonthHandler(selectedDateDays.endDate)}
               style={{
+                display: "flex",
                 background: "rgb(255, 255, 255)",
                 border: "0.5px dashed rgb(255, 255, 255)",
               }}
             >
-              <IconChevronLeft className="w-4 h-4" />
+              <IconChevronLeft className="w-4 h-4" color="gray" />
             </button>
           </div>
 
           <div className="relative">{Body}</div>
         </div>
-
-        {/* {showFooter && (
-          <Footer
-        
-            onConfirm={() => onConfirm?.(activeDate)}
-            onCancel={onCancel}
-          />
-        )} */}
       </div>
     );
   }

@@ -1033,7 +1033,7 @@ export const Karafaring = () => {
     </svg>
   );
 };
-export const PointCount = () => {
+export const PointCount = ({ fill }) => {
   return (
     <svg
       width="6"
@@ -1042,7 +1042,7 @@ export const PointCount = () => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <rect y="0.5" width="6" height="6" rx="3" fill="#2563EB" />
+      <rect y="0.5" width="6" height="6" rx="3" fill={fill} />
     </svg>
   );
 };
@@ -1402,7 +1402,7 @@ export const RemoveCalender = () => {
   );
 };
 
-export const SearchIcon = ({stroke="#3B3B3B"}) => {
+export const SearchIcon = ({ stroke = "#3B3B3B" }) => {
   return (
     <svg
       width="24"
@@ -2173,7 +2173,41 @@ export const TimeClock = () => {
   );
 };
 
-export const EnterIcone = () => {
+export const ExitIcon = ({ stroke = "white" }) => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_984_14672)">
+        <path
+          d="M14 8V6C14 5.46957 13.7893 4.96086 13.4142 4.58579C13.0391 4.21071 12.5304 4 12 4H5C4.46957 4 3.96086 4.21071 3.58579 4.58579C3.21071 4.96086 3 5.46957 3 6V18C3 18.5304 3.21071 19.0391 3.58579 19.4142C3.96086 19.7893 4.46957 20 5 20H12C12.5304 20 13.0391 19.7893 13.4142 19.4142C13.7893 19.0391 14 18.5304 14 18V16"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M7 12H21L18 9M18 15L21 12"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_984_14672">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const EnterIcone = ({ stroke = "white" }) => {
   return (
     <svg
       width="31"
@@ -2184,14 +2218,14 @@ export const EnterIcone = () => {
     >
       <path
         d="M17.9019 10.7762V8.31118C17.9019 7.65743 17.645 7.03045 17.1876 6.56817C16.7302 6.10589 16.1098 5.84619 15.4629 5.84619H6.92633C6.27946 5.84619 5.65908 6.10589 5.20168 6.56817C4.74427 7.03045 4.4873 7.65743 4.4873 8.31118V23.1011C4.4873 23.7549 4.74427 24.3819 5.20168 24.8441C5.65908 25.3064 6.27946 25.5661 6.92633 25.5661H15.4629C16.1098 25.5661 16.7302 25.3064 17.1876 24.8441C17.645 24.3819 17.9019 23.7549 17.9019 23.1011V20.6361"
-        stroke="white"
+        stroke={stroke}
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M25.2189 15.7058H9.36523L13.0238 12.0083M13.0238 19.4033L9.36523 15.7058"
-        stroke="white"
+        stroke={stroke}
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -2364,6 +2398,452 @@ export const NavigationIcon = () => {
         d="M15.41 7.91L14 6.5L8 12.5L14 18.5L15.41 17.09L10.83 12.5L15.41 7.91Z"
         fill="black"
       />
+    </svg>
+  );
+};
+
+export const ChangePasswordIcon = () => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_984_14692)">
+        <path
+          d="M12 10V14"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M10 13L14 11"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M10 11L14 13"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M5 10V14"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M3 13L7 11"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M3 11L7 13"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M19 10V14"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17 13L21 11"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M17 11L21 13"
+          stroke="black"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_984_14692">
+          <rect width="24" height="24" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const FlashUp = () => {
+  return (
+    <svg
+      width="25"
+      height="24"
+      viewBox="0 0 25 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_2469_5932)">
+        <path
+          d="M12.9219 5V19"
+          stroke="#017874"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M18.9219 11L12.9219 5"
+          stroke="#017874"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M6.92188 11L12.9219 5"
+          stroke="#017874"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2469_5932">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+            transform="translate(0.921875)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const FlashDown = () => {
+  return (
+    <svg
+      width="164"
+      height="24"
+      viewBox="0 0 164 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_2469_6117)">
+        <path
+          d="M81.9219 19V5"
+          stroke="#FF2020"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M75.9219 13L81.9219 19"
+          stroke="#FF2020"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M87.9219 13L81.9219 19"
+          stroke="#FF2020"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_2469_6117">
+          <rect
+            width="24"
+            height="24"
+            fill="white"
+            transform="matrix(-1 0 0 -1 93.9219 24)"
+          />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const PathIcone = () => {
+  return (
+    <svg
+      width="192"
+      height="3"
+      viewBox="0 0 192 3"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0 1.5H191.841"
+        stroke="url(#paint0_diamond_595_17744)"
+        stroke-width="3"
+      />
+      <defs>
+        <radialGradient
+          id="paint0_diamond_595_17744"
+          cx="0"
+          cy="0"
+          r="1"
+          gradientUnits="userSpaceOnUse"
+          gradientTransform="translate(95.9207 1.5) rotate(90) scale(0.5 95.9207)"
+        >
+          <stop stop-color="white" />
+          <stop offset="1" stop-color="white" stop-opacity="0" />
+        </radialGradient>
+      </defs>
+    </svg>
+  );
+};
+
+export const DropDownIcon = () => {
+  return (
+    <svg
+      width="14"
+      height="9"
+      viewBox="0 0 14 9"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M7.15501 8.97925L13.7437 1.71869L12.1935 0.0107422L7.15063 5.56699L2.11542 0.0107422L0.565282 1.71869L7.15501 8.97925Z"
+        fill="#017874"
+      />
+    </svg>
+  );
+};
+
+export const TotalyHappy = ({ stroke }) => {
+  return (
+    <svg
+      width="98"
+      height="98"
+      viewBox="0 0 98 98"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_1052_15697)">
+        <rect width="98" height="98" rx="49" fill="#51D674" />
+        <path
+          d="M49.0002 98C21.9819 98 0.000976562 76.0183 0.000976562 48.9992C0.000976563 21.9809 21.9819 0 49.0002 0C76.0184 0 97.9994 21.9809 97.9994 48.9992C97.9994 76.0183 76.0184 98 49.0002 98ZM49.0002 4.83274C24.6472 4.83274 4.83372 24.6462 4.83372 48.9992C4.83372 73.353 24.6472 93.1673 49.0002 93.1673C73.3532 93.1673 93.1666 73.353 93.1666 48.9992C93.1666 24.6462 73.3532 4.83274 49.0002 4.83274Z"
+          fill="white"
+        />
+        <path
+          d="M48.8399 80.8956C40.7523 80.8956 34.1733 75.0311 34.1733 67.8223H39.0061C39.0061 72.3667 43.4176 76.0629 48.8399 76.0629C54.2614 76.0629 58.6721 72.3659 58.6721 67.8223H63.5049C63.5049 75.0303 56.9259 80.8956 48.8399 80.8956Z"
+          fill="white"
+        />
+        <path
+          d="M37.3587 53.3361H32.5259C32.5259 48.9568 29.5481 45.3943 25.8873 45.3943C22.2265 45.3943 19.2488 48.9568 19.2488 53.3361H14.416C14.416 46.2915 19.5621 40.5615 25.8873 40.5615C32.2126 40.5615 37.3587 46.2915 37.3587 53.3361Z"
+          fill="white"
+        />
+        <path
+          d="M83.5833 53.3361H78.7505C78.7505 48.9568 75.7728 45.3943 72.1119 45.3943C68.4511 45.3943 65.4734 48.9568 65.4734 53.3361H60.6406C60.6406 46.2915 65.7867 40.5615 72.1119 40.5615C78.4372 40.5615 83.5833 46.2915 83.5833 53.3361Z"
+          fill="white"
+        />
+      </g>
+      <rect
+        x="2"
+        y="2"
+        width="94"
+        height="94"
+        rx="47"
+        stroke={stroke}
+        stroke-width="4"
+      />
+      <defs>
+        <clipPath id="clip0_1052_15697">
+          <rect width="98" height="98" rx="49" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const HappyFace = ({ stroke }) => {
+  return (
+    <svg
+      width="103"
+      height="103"
+      viewBox="0 0 103 103"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect x="2" y="2" width="99" height="99" rx="49.5" fill="#FFC368" />
+      <path
+        d="M51.5006 103C23.1036 103 0.000976562 79.8974 0.000976562 51.4996C0.000976563 23.1026 23.1036 0 51.5006 0C79.8975 0 103 23.1026 103 51.4996C103 79.8974 79.8975 103 51.5006 103ZM51.5006 5.07935C25.9048 5.07935 5.08033 25.9039 5.08033 51.4996C5.08033 77.0961 25.9048 97.9206 51.5006 97.9206C77.0963 97.9206 97.9208 77.0961 97.9208 51.4996C97.9208 25.9039 77.0971 5.07935 51.5006 5.07935Z"
+        fill="white"
+      />
+      <path
+        d="M22.7125 58.5812C26.623 58.5812 29.7931 55.4111 29.7931 51.5005C29.7931 47.59 26.623 44.4199 22.7125 44.4199C18.8019 44.4199 15.6318 47.59 15.6318 51.5005C15.6318 55.4111 18.8019 58.5812 22.7125 58.5812Z"
+        fill="white"
+      />
+      <path
+        d="M80.2891 58.5812C84.1996 58.5812 87.3697 55.4111 87.3697 51.5005C87.3697 47.59 84.1996 44.4199 80.2891 44.4199C76.3786 44.4199 73.2085 47.59 73.2085 51.5005C73.2085 55.4111 76.3786 58.5812 80.2891 58.5812Z"
+        fill="white"
+      />
+      <path
+        d="M51.3321 85.0247C42.8327 85.0247 35.918 78.8609 35.918 71.2842H40.9973C40.9973 76.0605 45.6339 79.9453 51.3321 79.9453C57.0303 79.9453 61.6669 76.0596 61.6669 71.2842H66.7463C66.7463 78.86 59.8316 85.0247 51.3321 85.0247Z"
+        fill="white"
+      />
+      <rect
+        x="2"
+        y="2"
+        width="99"
+        height="99"
+        rx="49.5"
+        stroke={stroke}
+        stroke-width="4"
+      />
+    </svg>
+  );
+};
+
+export const SilenceFace = ({ stroke }) => {
+  return (
+    <svg
+      width="103"
+      height="103"
+      viewBox="0 0 103 103"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_1052_15740)">
+        <rect width="103" height="103" rx="51.5" fill="#FF8E68" />
+        <path
+          d="M51.5006 103C23.1036 103 0.000976562 79.8974 0.000976562 51.4996C0.000976563 23.1026 23.1036 0 51.5006 0C79.8975 0 103 23.1026 103 51.4996C103 79.8974 79.8975 103 51.5006 103ZM51.5006 5.07935C25.9048 5.07935 5.08033 25.9039 5.08033 51.4996C5.08033 77.0961 25.9048 97.9206 51.5006 97.9206C77.0963 97.9206 97.9208 77.0961 97.9208 51.4996C97.9208 25.9039 77.0971 5.07935 51.5006 5.07935Z"
+          fill="white"
+        />
+        <path
+          d="M22.7125 58.5812C26.623 58.5812 29.7931 55.4111 29.7931 51.5005C29.7931 47.59 26.623 44.4199 22.7125 44.4199C18.8019 44.4199 15.6318 47.59 15.6318 51.5005C15.6318 55.4111 18.8019 58.5812 22.7125 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M80.2891 58.5812C84.1996 58.5812 87.3697 55.4111 87.3697 51.5005C87.3697 47.59 84.1996 44.4199 80.2891 44.4199C76.3786 44.4199 73.2085 47.59 73.2085 51.5005C73.2085 55.4111 76.3786 58.5812 80.2891 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M65.4688 74.3447H37.5332V79.4241H65.4688V74.3447Z"
+          fill="white"
+        />
+        <rect
+          x="2"
+          y="2"
+          width="99"
+          height="99"
+          rx="49.5"
+          stroke={stroke}
+          stroke-width="4"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_1052_15740">
+          <rect width="103" height="103" rx="51.5" fill="black" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const SadFace = ({ stroke }) => {
+  return (
+    <svg
+      width="103"
+      height="103"
+      viewBox="0 0 103 103"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_1052_15746)">
+        <rect width="103" height="103" rx="51.5" fill="#FF6370" />
+        <path
+          d="M51.4996 103C23.1034 103 0 79.8974 0 51.4996C0 23.1026 23.1034 0 51.4996 0C79.8957 0 102.999 23.1026 102.999 51.4996C103 79.8974 79.8966 103 51.4996 103ZM51.4996 5.07935C25.9047 5.07935 5.07935 25.9039 5.07935 51.4996C5.07935 77.0961 25.9047 97.9206 51.4996 97.9206C77.0944 97.9206 97.9198 77.0961 97.9198 51.4996C97.9198 25.903 77.0961 5.07935 51.4996 5.07935Z"
+          fill="white"
+        />
+        <path
+          d="M22.7115 58.5812C26.622 58.5812 29.7921 55.4111 29.7921 51.5005C29.7921 47.59 26.622 44.4199 22.7115 44.4199C18.801 44.4199 15.6309 47.59 15.6309 51.5005C15.6309 55.4111 18.801 58.5812 22.7115 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M80.2896 58.5812C84.2001 58.5812 87.3702 55.4111 87.3702 51.5005C87.3702 47.59 84.2001 44.4199 80.2896 44.4199C76.3791 44.4199 73.209 47.59 73.209 51.5005C73.209 55.4111 76.3791 58.5812 80.2896 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M38.0588 81.0604L37.0049 76.0919L64.9396 70.166L65.9936 75.1345L38.0588 81.0604Z"
+          fill="white"
+        />
+        <rect
+          x="2"
+          y="2"
+          width="99"
+          height="99"
+          rx="49.5"
+          stroke={stroke}
+          stroke-width="4"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_1052_15746">
+          <rect width="103" height="103" rx="51.5" fill="white" />
+        </clipPath>
+      </defs>
+    </svg>
+  );
+};
+
+export const TotalySad = ({ stroke }) => {
+  return (
+    <svg
+      width="103"
+      height="103"
+      viewBox="0 0 103 103"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g clip-path="url(#clip0_1052_15752)">
+        <rect width="103" height="103" rx="51.5" fill="#FF2020" />
+        <path
+          d="M51.5006 103C23.1036 103 0.000976562 79.8974 0.000976562 51.4996C0.000976563 23.1026 23.1036 0 51.5006 0C79.8975 0 103 23.1026 103 51.4996C103 79.8974 79.8975 103 51.5006 103ZM51.5006 5.07935C25.9048 5.07935 5.08033 25.9039 5.08033 51.4996C5.08033 77.0961 25.9048 97.9206 51.5006 97.9206C77.0963 97.9206 97.9208 77.0961 97.9208 51.4996C97.9208 25.9039 77.0971 5.07935 51.5006 5.07935Z"
+          fill="white"
+        />
+        <path
+          d="M22.7125 58.5812C26.623 58.5812 29.7931 55.4111 29.7931 51.5005C29.7931 47.59 26.623 44.4199 22.7125 44.4199C18.8019 44.4199 15.6318 47.59 15.6318 51.5005C15.6318 55.4111 18.8019 58.5812 22.7125 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M80.2891 58.5812C84.1996 58.5812 87.3697 55.4111 87.3697 51.5005C87.3697 47.59 84.1996 44.4199 80.2891 44.4199C76.3786 44.4199 73.2085 47.59 73.2085 51.5005C73.2085 55.4111 76.3786 58.5812 80.2891 58.5812Z"
+          fill="white"
+        />
+        <path
+          d="M66.7463 82.4866H61.6669C61.6669 77.7103 57.0303 73.8254 51.3321 73.8254C45.6339 73.8254 40.9973 77.7112 40.9973 82.4866H35.918C35.918 74.9099 42.8327 68.7461 51.3321 68.7461C59.8316 68.7461 66.7463 74.909 66.7463 82.4866Z"
+          fill="white"
+        />
+        <rect
+          x="2"
+          y="2"
+          width="99"
+          height="99"
+          rx="49.5"
+          stroke={stroke}
+          stroke-width="4"
+        />
+      </g>
+      <defs>
+        <clipPath id="clip0_1052_15752">
+          <rect width="103" height="103" rx="51.5" fill="white" />
+        </clipPath>
+      </defs>
     </svg>
   );
 };

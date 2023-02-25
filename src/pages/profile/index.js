@@ -88,6 +88,10 @@ export const Profile = () => {
 
             <Grid container alignItems={"center"} mt={2} item xs={6}>
               <Star />
+              <Star />
+              <Star />
+              <Star />
+              <Star />
             </Grid>
             <Grid item xs={6}>
               <Typography color={"white"} align="end">
@@ -130,7 +134,7 @@ export const Profile = () => {
           </Grid>
         </Grid>
       </Box>
-      <Grid container mt={4} mr={4}>
+      {/* <Grid container mt={4} mr={4}>
         <Box
           sx={{
             width: "100px",
@@ -146,7 +150,7 @@ export const Profile = () => {
         >
           <TargetIcon />
         </Box>
-      </Grid>
+      </Grid> */}
       {/* <Grid container sx={{ position: "relative" }} mt={3}>
         <Box
           sx={{

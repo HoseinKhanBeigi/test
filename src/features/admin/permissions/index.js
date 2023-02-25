@@ -4,7 +4,7 @@ import { PermissinsAction } from "../../../actions/admin";
 
 const initialState = {
   entities: [],
-  permissins: [
+  permissions: [
     { id: 1, name: "sms", label: "پیامک", status: false },
     { id: 2, name: "user_show", label: "لیست مدیران ارتباط" },
     { id: 3, name: "user_create", label: "درج مدیر ارتباط", status: false },
@@ -43,6 +43,14 @@ const initialState = {
     },
   ],
   permissionsList: [],
+  roles: [],
+  RM1: [],
+  RM2: [],
+  RM3: [],
+  RM4: [],
+  RM5: [],
+  RM6: [],
+  RM7: [],
   status: "idle",
   error: null,
 };
@@ -51,8 +59,35 @@ const permissionsSlice = createSlice({
   name: "permissionsList",
   initialState,
   reducers: {
-    getStatusOfPermissions() {
-        
+    getStatusOfPermissions(state, action) {
+      state.permissions = state.permissions.map((item) => {
+        if (item.id === action.payload.roles.id) {
+          return {
+            ...item,
+            roles: action.payload.roles.roles.map((e, i) => {
+              if (action.payload.value.key === e.key) {
+                if (e.key === action.payload.value.key) {
+                  const exist = state[action.payload.value.key].find((k) => k === item.id);
+                  if (exist) {
+                    state[action.payload.value.key] = state[action.payload.value.key].filter((k) => k !== exist);
+                  } else {
+                    state[action.payload.value.key].push(item.id);
+                  }
+                }
+
+                return {
+                  ...e,
+                  status: !e.status,
+                };
+              } else {
+                return e;
+              }
+            }),
+          };
+        } else {
+          return item;
+        }
+      });
     },
   },
   extraReducers(builder) {
@@ -64,14 +99,44 @@ const permissionsSlice = createSlice({
       .addCase(PermissinsAction.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.entities = action.payload;
-        state.permissionsList = [...action.payload.data.permissions].map(
-          (e) => {
-            return {
-              status: false,
-              ...e,
-            };
-          }
-        );
+
+        state.permissions = state.permissions.map((item) => {
+          return {
+            ...item,
+            roles: Object.entries(action.payload.data.roles).map(
+              ([key, value]) => {
+                if (value.includes(item.id)) {
+                  switch (key) {
+                    case "RM1":
+                      state.RM1 = value;
+                      break;
+                    case "RM2":
+                      state.RM2 = value;
+                      break;
+                    case "RM3":
+                      state.RM3 = value;
+                      break;
+                    case "RM4":
+                      state.RM4 = value;
+                      break;
+                    case "RM5":
+                      state.RM5 = value;
+                      break;
+                    case "RM6":
+                      state.RM6 = value;
+                      break;
+                    case "RM7":
+                      state.RM7 = value;
+                      break;
+                  }
+                  return { key, status: true };
+                } else {
+                  return { key, status: false };
+                }
+              }
+            ),
+          };
+        });
       })
       .addCase(PermissinsAction.rejected, (state, action) => {
         state.status = "failed";
@@ -79,5 +144,5 @@ const permissionsSlice = createSlice({
       });
   },
 });
-export const {} = permissionsSlice.actions;
+export const { getStatusOfPermissions } = permissionsSlice.actions;
 export default permissionsSlice.reducer;

@@ -35,7 +35,7 @@ export const clientForm = (
       typeInput: "RHRadioGroup",
       loading: statusDetail === "succeeded",
 
-      values: [{ name: "حقیقی" }, { name: "حقوقی" }],
+      values: [{ name: "حقيقي" }, { name: "حقوقي" }],
       change: handleChangeClient,
     },
     {
@@ -48,19 +48,19 @@ export const clientForm = (
     {
       name:
         valueRadio !== undefined
-          ? valueRadio === "حقیقی"
+          ? valueRadio === "حقيقي"
             ? "national_number"
             : "national_number"
-          : dataInput === "حقیقی"
+          : dataInput === "حقيقي"
           ? "national_number"
           : "national_number",
 
       label:
         valueRadio !== undefined
-          ? valueRadio === "حقیقی"
+          ? valueRadio === "حقيقي"
             ? "national_number"
             : "national_identifier"
-          : dataInput === "حقیقی"
+          : dataInput === "حقيقي"
           ? "national_number"
           : "national_identifier",
 
@@ -110,7 +110,7 @@ export const clientForm = (
       value: interstedName,
       propValue: "id",
       propTitle: "title",
-      show: valueRadio === "حقیقی" ? false : true,
+      show: valueRadio === "حقيقي" ? false : true,
     },
     {
       name: "user_id",

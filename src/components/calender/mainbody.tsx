@@ -21,12 +21,13 @@ interface IMainBodyProps {
   dispatchAction: any;
   onActiveDayChange: (newDay: Date) => void;
   previousMonthHandler: () => void;
-  entities:any,
+  entities: any;
   selectedDate: Date;
   choseDate: boolean;
   status: string;
   activeDate: Date;
   disabledDates?: Date[];
+  handleGetMeeting?: any;
   highlightToday?: boolean;
   showFridaysAsRed?: boolean;
 }
@@ -45,6 +46,7 @@ const MainBody = ({
   items,
   onActiveDayChange,
   dispatchAction,
+  handleGetMeeting,
   selectedDate,
   status,
 }: IMainBodyProps) => {
@@ -54,6 +56,7 @@ const MainBody = ({
   );
 
   const handleClick = (day: any) => {
+    handleGetMeeting(day);
     onActiveDayChange.bind(this, day.day);
     dispatchAction({ type: "DAYS", status: day });
   };
@@ -65,16 +68,18 @@ const MainBody = ({
           display: "flex",
           justifyContent: "space-around",
           background: "#EFF3F3",
+          color: "#017874",
+          padding: "6px",
         }}
       >
         {["ش", "ی", "د", "س", "چ", "پ", "ج"].map((day, index) => (
-          <h2
+          <h4
             key={day}
             aria-label={daysOfTheWeek[index]}
             title={daysOfTheWeek[index]}
           >
             {day}
-          </h2>
+          </h4>
         ))}
       </div>
       <div
@@ -83,9 +88,12 @@ const MainBody = ({
           gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr 1fr",
           justifyContent: "space-around",
           gridTemplateRows: "1fr 1fr 1fr 1fr 1fr",
+          justifyItems: "center",
+          padding: "6px",
         }}
       >
         {items.map((day: any, index: any) => {
+          console.log(day.colors.length > 0 && day.colors);
           return (
             <button
               // disabled={isDateInvalid}
@@ -120,7 +128,7 @@ const MainBody = ({
                       : "silver",
                 }}
               >
-                {getDate(day.day)}
+                {convertDigits(getDate(day.day))}
               </span>
 
               <div
@@ -129,11 +137,30 @@ const MainBody = ({
                   width: "100%",
                   gap: "2px",
                   justifyContent: "center",
+                  paddingBottom:
+                    day.count !== 0 && day?.colors.length > 0 ? 0 : "6px",
                 }}
               >
                 {day.count !== 0 &&
-                  new Array(day.count).fill(1).map((_, i) => {
-                    return <PointCount key={i} />;
+                  day?.colors.length > 0 &&
+                  day.colors?.map((e: any, i: any) => {
+                    return (
+                      <PointCount
+                        fill={
+                          format(
+                            new Date(selectedDateDays.startOfTheSelectedMonth),
+                            "yyyy/MM/dd"
+                          ) <= format(new Date(day.day), "yyyy/MM/dd") &&
+                          format(
+                            new Date(selectedDateDays.endOfTheSelectedMonth),
+                            "yyyy/MM/dd"
+                          ) >= format(new Date(day.day), "yyyy/MM/dd")
+                            ? e
+                            : "silver"
+                        }
+                        key={i}
+                      />
+                    );
                   })}
               </div>
             </button>

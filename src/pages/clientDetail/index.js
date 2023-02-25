@@ -1,6 +1,6 @@
 import { HeaderPage } from "../../components/headerPage";
 import { useTranslation } from "react-i18next";
-import { Grid, Typography, Card } from "@mui/material";
+import { Grid, Typography, Card, Box } from "@mui/material";
 import {
   ClientHeaderCard,
   ClientHeaderButton,
@@ -17,16 +17,24 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { LineChart } from "../../components/lineChart";
-import call from "./call.png";
-import delagations from "./delagations.png";
-import meeting from "./meeting.png";
-import { useEffect } from "react";
-import { clientDetail } from "../../actions/clients";
+import { convertDigits } from "persian-helpers";
+import delagations from "./delagations.gif";
+import meeting from "../../pages/interactions/meeting.gif";
+import call from "../../pages/interactions/call.gif";
+import { useEffect, useState } from "react";
+import {
+  clientAgentsAction,
+  clientDetail,
+  clientMeetingsAction,
+  clientCallsAction,
+} from "../../actions/clients";
+import { NoteForm } from "../../components/noteDialog";
 export const ClientDetail = () => {
   const { t, i18n } = useTranslation();
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const params = useParams();
   const {
     clientDetails,
@@ -62,11 +70,10 @@ export const ClientDetail = () => {
       chart: "rankClient",
       series: [
         {
+          name: "",
           data: rankValuesFirstLine,
         },
-        {
-          data: rankValuesSecondLine,
-        },
+        { name: "", data: rankValuesSecondLine },
       ],
       categories: rankCategories,
       title: "تغییر وضعیت متوسط رتبه مشتری",
@@ -76,9 +83,11 @@ export const ClientDetail = () => {
       chart: "services",
       series: [
         {
+          name: "",
           data: rankServiceValuesFirstLine,
         },
         {
+          name: "",
           data: rankServiceValuesSecondLine,
         },
       ],
@@ -90,9 +99,11 @@ export const ClientDetail = () => {
       chart: "allocation",
       series: [
         {
+          name: "",
           data: rankAssingmentValuesFirstLine,
         },
         {
+          name: "",
           data: rankAssingmentValuesSecondLine,
         },
       ],
@@ -104,23 +115,27 @@ export const ClientDetail = () => {
       chart: "equip",
       series: [
         {
+          name: "",
           data: rankEquipmentsFirstLine,
         },
         {
+          name: "",
           data: rankEquipmentsValuesSecondLine,
         },
       ],
       categories: rankEquipmentsCategories,
-      title: "تغییر وضعیت مشتری در حوزه خاص تجهیز",
+      title: "تغییر وضعیت مشتری در حوزه تجهیز",
       background: "#F7C3E0",
     },
     {
       chart: "totalScore",
       series: [
         {
+          name: "",
           data: rankTotalFirstLine,
         },
         {
+          name: "",
           data: rankTotalValuesSecondLine,
         },
       ],
@@ -129,9 +144,98 @@ export const ClientDetail = () => {
       background: "#A0CFF9",
     },
   ];
+
+  const { statusDashboard, entitiesDashboard } = useSelector(
+    (state) => state.dashboardAppSlice
+  );
+
+  const meetingForm = () => {
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "meeting_create"
+      )
+    ) {
+      navigate("/interactions/meetings/create");
+    }
+  };
+  const callForm = () => {
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "meeting_create"
+      )
+    ) {
+      navigate("/interactions/calls/create");
+    }
+  };
+  const noteList = () => {
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
+      entitiesDashboard?.data?.user.permissions.some((e) => e.name === "note")
+    ) {
+      navigate("/notes");
+    }
+  };
+  const AgantList = () => {
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "others_client_show"
+      )
+    ) {
+      navigate("agents");
+      dispatch(
+        clientAgentsAction({
+          id: params.id,
+        })
+      );
+    }
+  };
+  const meetingList = () => {
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "meeting_show"
+      )
+    ) {
+      navigate("meetings");
+      dispatch(
+        clientMeetingsAction({
+          id: params.id,
+        })
+      );
+    }
+  };
+
+  const callList = () => {
+    navigate("calls");
+    dispatch(
+      clientCallsAction({
+        id: params.id,
+      })
+    );
+  };
+
+  const [open, setOpen] = useState(false);
+  const [openDrop, setDrop] = useState(true);
+
+  const openNoteForm = () => {
+    setOpen(true);
+  };
+
+  const handleClickDropDown = () => {
+    setDrop((pre) => !pre);
+  };
   return (
     <>
-      <HeaderPage title={t("clientDetail")} page="dashboard" />
+      <NoteForm open={open} setOpen={setOpen} title="یادداشت جدید" />
+      <HeaderPage
+        title={t("clientDetail")}
+        page="detail"
+        entities={clientDetails?.data?.client}
+        status={statusDetail}
+      />
       <Grid container dir="rtl" columnSpacing={{ xs: 1, sm: 2, md: 2 }}>
         <Grid item xs={12} sx={4} md={4}>
           <Card sx={{ padding: "16px" }}>
@@ -143,22 +247,30 @@ export const ClientDetail = () => {
                 color="white"
               />
               <ClientHeaderCard
-                value={clientDetails?.data?.client?.client_number}
-                type={clientDetails?.data?.client?.bi_point}
+                value={convertDigits(
+                  clientDetails?.data?.client?.client_number
+                )}
+                type={clientDetails?.data?.client?.bi_point ?? "-"}
                 background="#C0DDC0"
                 color="#777777"
               />
               <Grid container>
-                <ClientHeaderButton name={"یادآوری"}>
+                {/* <ClientHeaderButton name={"یادآوری"} handleClick={ClientHeaderButton}>
+                  <NotifyIconProile stroke={"white"} />
+                </ClientHeaderButton> */}
+                <ClientHeaderButton
+                  name={"جلسه جدید"}
+                  handleClick={meetingForm}
+                >
                   <NotifyIconProile stroke={"white"} />
                 </ClientHeaderButton>
-                <ClientHeaderButton name={"جلسه"}>
-                  <NotifyIconProile stroke={"white"} />
-                </ClientHeaderButton>
-                <ClientHeaderButton name={"تماس"}>
+                <ClientHeaderButton name={"تماس جدید"} handleClick={callForm}>
                   <Phone stroke={"white"} />
                 </ClientHeaderButton>
-                <ClientHeaderButton name={"یادداشت"}>
+                <ClientHeaderButton
+                  name={"یادداشت جدید"}
+                  handleClick={openNoteForm}
+                >
                   <NoteIcon stroke={"white"} />
                 </ClientHeaderButton>
               </Grid>
@@ -166,55 +278,103 @@ export const ClientDetail = () => {
                 <ClientInfo infokey={"کد / شناسه ملی"}>
                   <Grid container justifyContent={"flex-end"}>
                     <Typography fontSize={14}>
-                      {clientDetails?.data?.client?.national_number}
+                      {convertDigits(
+                        clientDetails?.data?.client?.national_number
+                      )}
                     </Typography>
                   </Grid>
                 </ClientInfo>
-                {clientDetails?.data?.client?.agents.map((e, i) => (
-                  <ClientInfo key={i} infokey={"نماینده"}>
-                    <Grid
-                      container
-                      justifyContent={"space-between"}
-                      alignItems="center"
-                    >
-                      <Typography fontSize={14}>{e?.name}</Typography>
-                      <PositionInfo>
-                        <Typography fontSize={12}>{e?.position}</Typography>
-                      </PositionInfo>
-                    </Grid>
-                  </ClientInfo>
-                ))}
+                <Box sx={{ position: "relative" }}>
+                  {clientDetails?.data?.client?.agents.map((e, i) =>
+                    i === 0 ? (
+                      <ClientInfo
+                        key={i}
+                        infokey={"نماینده"}
+                        handleClick={handleClickDropDown}
+                      >
+                        <Grid
+                          container
+                          justifyContent={"space-between"}
+                          alignItems="center"
+                        >
+                          <Typography fontSize={14}>{e?.name}</Typography>
+                          <PositionInfo>
+                            <Typography fontSize={12}>{e?.position}</Typography>
+                          </PositionInfo>
+                        </Grid>
+                      </ClientInfo>
+                    ) : (
+                      <ClientInfo
+                        key={i}
+                        infokey={"نماینده"}
+                        dropDown={openDrop}
+                      >
+                        <Grid
+                          container
+                          justifyContent={"space-between"}
+                          alignItems="center"
+                        >
+                          <Typography fontSize={14}>{e?.name}</Typography>
+                          <PositionInfo>
+                            <Typography fontSize={12}>{e?.position}</Typography>
+                          </PositionInfo>
+                        </Grid>
+                      </ClientInfo>
+                    )
+                  )}
+                </Box>
 
                 <ClientInfo infokey={"شماره تماس"}>
                   <Grid container justifyContent={"flex-end"}>
-                    <Typography fontSize={14}>{clientDetails?.data?.client?.phone}</Typography>
+                    <Typography fontSize={14}>
+                      {convertDigits(clientDetails?.data?.client?.phone)}
+                    </Typography>
                   </Grid>
                 </ClientInfo>
                 <ClientInfo infokey={"جلسات"}>
                   <Grid container justifyContent={"flex-end"}>
-                    <Typography fontSize={14}>{clientDetails?.data?.cards?.meetings_count}</Typography>
+                    <Typography fontSize={14}>
+                      {convertDigits(
+                        clientDetails?.data?.cards?.meetings_count
+                      )}
+                    </Typography>
                   </Grid>
                 </ClientInfo>
                 <ClientInfo infokey={"تماس تلفنی"}>
                   <Grid container justifyContent={"flex-end"}>
-                    <Typography fontSize={14}>{clientDetails?.data?.cards?.calls_count}</Typography>
+                    <Typography fontSize={14}>
+                      {convertDigits(clientDetails?.data?.cards?.calls_count)}
+                    </Typography>
                   </Grid>
                 </ClientInfo>
 
                 <ClientInfo infokey={"مدت زمان جلسات (دقیقه)"}>
                   <Grid container justifyContent={"flex-end"}>
-                    <Typography fontSize={14}>{clientDetails?.data?.cards?.meetings_duration}</Typography>
+                    <Typography fontSize={14}>
+                      {convertDigits(
+                        clientDetails?.data?.cards?.meetings_duration
+                      )}
+                    </Typography>
                   </Grid>
                 </ClientInfo>
                 <ClientInfo infokey={"مدت زمان تماس تلفنی (دقیقه)"}>
                   <Grid container justifyContent={"flex-end"}>
-                    <Typography fontSize={14}>{clientDetails?.data?.cards?.calls_duration}</Typography>
+                    <Typography fontSize={14}>
+                      {convertDigits(
+                        clientDetails?.data?.cards?.calls_duration
+                      )}
+                    </Typography>
                   </Grid>
                 </ClientInfo>
                 <ClientInfo infokey={"علاقمندی ها"}>
                   <Grid container justifyContent={"flex-start"} gap={2}>
-                    <Typography fontSize={14}>{"ورزش"}</Typography>
-                    <Typography fontSize={14}>{"رستوران"}</Typography>
+                    {clientDetails?.data?.client?.interests.length === 0
+                      ? "-"
+                      : clientDetails?.data?.client?.interests?.map(
+                          (item, i) => (
+                            <Typography fontSize={14}>{item.title}</Typography>
+                          )
+                        )}
                   </Grid>
                 </ClientInfo>
               </Grid>
@@ -250,18 +410,30 @@ export const ClientDetail = () => {
 
           <Grid container>
             <Grid item xs={4}>
-              <BoxButton value="لیست نمایندگان" background="#F6541E">
-                <img src={delagations} />
+              <BoxButton
+                value="لیست نمایندگان"
+                background="#F6541E"
+                handleClick={AgantList}
+              >
+                <img src={delagations} height={120} width={310} />
               </BoxButton>
             </Grid>
             <Grid item xs={4}>
-              <BoxButton value="جلسات" background="#DB2777">
-                <img src={meeting} />
+              <BoxButton
+                value="لیست جلسات"
+                background="#DB2777"
+                handleClick={meetingList}
+              >
+                <img src={meeting} height={120} width={310} />
               </BoxButton>
             </Grid>
             <Grid item xs={4}>
-              <BoxButton value="تماس تلفنی" background="#2563EB">
-                <img src={call} />
+              <BoxButton
+                value="لیست تماس ها"
+                background="#2563EB"
+                handleClick={callList}
+              >
+                <img src={call} height={120} width={310} />
               </BoxButton>
             </Grid>
           </Grid>

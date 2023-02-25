@@ -10,8 +10,8 @@ export default function CssBaseline() {
           boxSizing: 'border-box',
         },
         html: {
-          width: '100%',
-          height: '100%',
+          // width: '100%',
+          // height: '100%',
           WebkitOverflowScrolling: 'touch',
         },
         body: {
@@ -20,7 +20,7 @@ export default function CssBaseline() {
         },
         '#root': {
           width: '100%',
-          height: '100%',
+          // height: '100%',
         },
         input: {
           '&[type=number]': {

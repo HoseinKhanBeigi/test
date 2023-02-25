@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef } from "react";
 import { FormProvider, RHFTextField } from "../../components/hook-form";
 import IconButton from "@mui/material/IconButton";
-import { UploadIcon } from "../../components/icons";
+import { TrashIcone, UploadIcon } from "../../components/icons";
 import { LoadingButton } from "@mui/lab";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Grid} from "@mui/material";
+import { Grid } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import { HeaderPage } from "../../components/headerPage";
@@ -18,7 +18,7 @@ import {
   MeetingsDepenAgent,
   meetingDetail,
   meetingUpdate,
-  meetingsList
+  meetingsList,
 } from "../../actions/meetings";
 import { meetingForm, meetingFormDate } from "./meetingForm";
 import { responseMessage } from "../../features/messageLog";
@@ -26,15 +26,15 @@ import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 import { meetingSchema } from "./meetingSchema";
 import { Typography } from "@mui/material";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
 export const FormMeeting = ({ typeForm }) => {
   const { t, i18n } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const inputRef = useRef(null);
-  const [datePickerValue, setDatePicker] = React.useState();
-  const [valueTime, setValueTime] = React.useState();
-
+  const [datePickerValue, setDatePicker] = React.useState("");
+  const [valueTime, setValueTime] = React.useState("");
 
   const { statusDetail, meetingDetails, errorDetial } = useSelector(
     (state) => state.meetingDetailShow
@@ -75,6 +75,8 @@ export const FormMeeting = ({ typeForm }) => {
     }
   }, [statusDetail, dispatch]);
 
+  useDispatchAction(meetingDependencies, statusMeetingEntities);
+
   const handleChangeDatePicker = (e) => {
     setDatePicker(dayjs(e).locale("en").format());
     methods.setValue(
@@ -102,6 +104,11 @@ export const FormMeeting = ({ typeForm }) => {
     methods.setValue("attach", chosenFiles);
     setFile(chosenFiles);
   };
+
+  const handleDeleteFile = (e)=>{
+    const result =file.filter((j)=>j.name !== e.name)
+    setFile(result);
+  }
 
   const handleChangeClientId = (e) => {
     const id = e.id;
@@ -210,8 +217,8 @@ export const FormMeeting = ({ typeForm }) => {
       user_id: "",
       description: "",
       location: "",
-      start:"",
-      end:"",
+      start: "",
+      end: "",
       attach: [],
     };
     if (typeForm === "create") {
@@ -231,7 +238,7 @@ export const FormMeeting = ({ typeForm }) => {
     statusDetail,
     meetingDetails,
     meetingEntities,
-    statusMeetingEntities,
+    statusMeetingEntities
   );
 
   const structFormDate = meetingFormDate(
@@ -278,24 +285,6 @@ export const FormMeeting = ({ typeForm }) => {
             alignItems={"center"}
           >
             <Typography>{t("Description")}</Typography>
-            <IconButton
-              sx={{ p: "10px" }}
-              aria-label="menu"
-              onClick={handleClick}
-            >
-              <UploadIcon />
-              <input
-                hidden
-                name="file"
-                ref={inputRef}
-                type="file"
-                onChange={handleClickInput}
-                multiple
-              />
-              {file?.map((e) => (
-                <Typography> {e?.name}</Typography>
-              ))}
-            </IconButton>
           </Grid>
           <Grid container>
             <RHFTextField
@@ -308,6 +297,36 @@ export const FormMeeting = ({ typeForm }) => {
               rows={5}
             />
           </Grid>
+          {typeForm === "create" && (
+            <Grid container flexDirection={"column"} alignItems="end">
+              <IconButton
+                sx={{ p: "10px" }}
+                aria-label="menu"
+                onClick={handleClick}
+              >
+                <UploadIcon />
+                <input
+                  hidden
+                  name="file"
+                  ref={inputRef}
+                  type="file"
+                  onChange={handleClickInput}
+                  multiple
+                />
+              </IconButton>
+              {file?.map((e) => (
+                <Grid container justifyContent={"end"} alignItems="center">
+                  <Typography> {e?.name}</Typography>
+                  <IconButton
+                    aria-label="menu"
+                    onClick={() => handleDeleteFile(e)}
+                  >
+                    <TrashIcone />
+                  </IconButton>
+                </Grid>
+              ))}
+            </Grid>
+          )}
           <Grid container justifyContent={"end"} item mt={2}>
             <LoadingButton
               size="small"

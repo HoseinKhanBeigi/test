@@ -5,6 +5,8 @@ import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 import { useDispatch, useSelector } from "react-redux";
 import {
   appendSearchParams,
@@ -12,12 +14,14 @@ import {
   getQueryParams,
   removeParams,
 } from "../../utils";
+import { PersianPagination } from "../paginationCompoent";
 
-export const PaginationTable = ({ status, entities, action }) => {
+export const PaginationTable = ({ status, entities, action, limit = 10 }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {t} = useTranslation()
   const defaultQuery = { ...getQueryParams() };
-  const [page, setPage] = React.useState(defaultQuery?.page);
+  const [page, setPage] = React.useState(defaultQuery?.page || 1);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -25,19 +29,26 @@ export const PaginationTable = ({ status, entities, action }) => {
     navigate({
       search: `?${createSearchParams(params)}`,
     });
-    dispatch(action({ params: { page: newPage, ...getQueryParams() } }));
+    dispatch(action({ params: { page: newPage, ...getQueryParams(), limit } }));
   };
+
   return (
     <>
-      {status === "succeeded" && entities?.data?.total !== 0 && (
+    {/* <PersianPagination /> */}
+      {status === "succeeded" && entities?.data?.data && (
         <Pagination
           dir="ltr"
-          count={Math.ceil(
-            status === "succeeded" && entities?.data?.total / 10
-          )}
-          page={page}
+          count={Math.ceil(entities?.data?.total / limit)}
+          labelDisplayedRows={(val)=>{
+              console.log(val)
+          }}
+          page={
+            defaultQuery?.page === undefined || defaultQuery?.user ||  defaultQuery?.level
+              ? entities?.data?.current_page
+              : Number(page)
+          }
           onChange={handleChangePage}
-          color="secondary"
+          color="primary"
           sx={{
             "& > *": {
               paddingTop: "72px !important",

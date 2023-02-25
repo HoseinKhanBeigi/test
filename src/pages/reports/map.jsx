@@ -51,7 +51,7 @@ export const MapIran = ({ handleDispatch }) => {
       <g clip-path="url(#clip0_1863_4883)">
         {items.map((element) => {
           return (
-            <svg onClick={() => handleClick(element)}>
+            <svg onClick={() => handleClick(element)} style={{cursor:"pointer"}}>
               <path
                 d={element.province.d}
                 fill="#F7541E"

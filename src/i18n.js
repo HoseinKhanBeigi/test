@@ -1,9 +1,19 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import { convertDigits } from "persian-helpers";
 
 // the translations
 // (tip move them in a JSON file and import them,
 // or even better, manage them separated from your code: https://react.i18next.com/guides/multiple-translation-files)
+
+// var objects = {};
+
+// for (var x = 0; x < 100; x++) {
+//   objects[x] = x;
+// }
+
+// console.log(objects);
+
 const resources = {
   en: {
     translation: {
@@ -17,6 +27,7 @@ const resources = {
       "enter type of data": "نوع ورود اطلاعات را انتخاب کنید",
       "insert client": "درج مشتری",
       single: "انفرادی",
+      loginpageTitle:"به سامانه مدیریت ارتباط بانک کارآفرین خوش آمدید",
       couple: "گروهی",
       "insert user": "درج مدیر ارتباط",
       position: "سمت",
@@ -34,6 +45,12 @@ const resources = {
       national_identifier: "کد حقوقی",
       usersList: "لیست مدیر ارتباط",
       manger: "مدیر عامل هولدینگ نگاه",
+      searchAgent: "جستجوی نماینده",
+      branchName: "نام شعبه",
+      branchCode: "کد شعبه",
+      degree: "درجه",
+      managerName: "نام رییس شعبه",
+      province: "استان",
       download: "دانلود",
       meeting: "جلسات",
       note: "یادداشت",
@@ -41,15 +58,32 @@ const resources = {
       intractions: "تعاملات",
       checkout: "استعلامات",
       typeofcheckout: "نوع استعلام",
+      insertNote: "درج یادداشت",
       accessiblity: "دسترسی ها",
+      typeSearch: "نوع جستجو",
       branches: "شعبه ها",
+      clientDetail: "مشتریان",
+      start_date: "تاریخ شروع",
+      end_date: "تاریخ پایان",
+      agents: "نمایندگان",
+      exit: "خروج",
+      insertGroupClient: "درج گروهی مشتری",
+      Downloadsampleexcel: "دانلود نمونه",
+      newpassword: "رمز جدید ",
+      "current_password must be at least 8 characters":
+        "رمز فعلی باید هشت حرف باشد",
+      backtoLoginPage: "بازگشت به صفحه ورود",
+      password_confirmation: "تایید رمز جدید ",
+      sendlink: "ارسال لینک",
+      changePassword: "تغییر رمز عبور",
       smsGate: "درگاه پیامک",
       usermanager: "مدیریت مدیر ارتباط",
+      entry: "ثبت",
       adminpanel: "مدیریت سامانه",
       clientList: "لیست مشتریان",
       birth_date: "تاریخ تولد",
       phone: "موبایل",
-      userD: "بازایاب مستقیم",
+      userD: "مدیر مستقیم",
       nameCompany: "نام شرکت",
       bussines: "bussines",
       intersted: "علاقه مندی ها",

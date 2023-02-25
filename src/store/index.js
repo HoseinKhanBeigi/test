@@ -37,18 +37,31 @@ import { branchesSlice } from "../features/admin/branches";
 import permissionsSlice from "../features/admin/permissions";
 import { clientNoteSlice } from "../features/notes/clientNote";
 import { instructionsSlice } from "../features/instructions";
-import {agentsSlice} from "../features/agents";
+import { agentsSlice } from "../features/agents";
+import permissionUserSlice from "../features/admin/userManager/permissions";
+import { clientCardSlice } from "../features/clientsCards";
+import { userChildrenSlice } from "../features/userChildren";
+import { clientOwnSlice } from "../features/clientOwn";
+import { userMeetingSlice } from "../features/userMeetings";
+import {ClientAgentsSlice} from "../features/clientAgents";
+import {clientMeetingSlice} from "../features/clientMeetings";
+import {clientCallsSlice} from "../features/clientCalls"
 
 const store = configureStore({
   reducer: {
     noteSlice,
     agentsSlice,
     interactionSlice,
+    clientOwnSlice,
     loginSlice,
+    ClientAgentsSlice,
+    clientMeetingSlice,
+    userMeetingSlice,
     userListSlice,
     dashboardAppSlice,
     userOrganizationType,
     clientOrganizationType,
+    clientCallsSlice,
     clientListSlice,
     messageLog,
     sampleFileusr,
@@ -78,6 +91,9 @@ const store = configureStore({
     permissionsSlice,
     clientNoteSlice,
     instructionsSlice,
+    permissionUserSlice,
+    clientCardSlice,
+    userChildrenSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

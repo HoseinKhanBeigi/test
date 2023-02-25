@@ -153,9 +153,7 @@ export default function RHFTextField({ name, ...other }) {
                 ? field.value
                 : ""
             }
-            error={
-              other.typeForm === "create" ? !!error : other.loading && !!error
-            }
+            error={!!error}
             onInput={other.farsi&& handleInput}
             helperText={error?.message}
             inputRef={refInput}

@@ -1,7 +1,8 @@
-import { Grid, Typography,Button,Card } from "@mui/material";
+import { Grid, Typography, Button, Card } from "@mui/material";
 import Box from "@mui/material/Box";
 import { styled } from "@mui/material/styles";
-import { NoteIcon } from "../../../components/icons";
+import { DropDownIcon, NoteIcon } from "../../../components/icons";
+import IconButton from "@mui/material/IconButton";
 
 const BoxType = styled(Box, {
   shouldForwardProp: (prop) => prop !== "background",
@@ -24,13 +25,16 @@ const BoxButtom = styled(Box)(({ theme }) => ({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+  cursor: "pointer",
 }));
 
-const BoxInfo = styled(Box)(({ theme }) => ({
+const BoxInfo = styled(Box)(({ theme, dropDown }) => ({
   background: "#F9F9F9",
   width: "100%",
   height: theme.spacing(8),
-  display: "flex",
+  display: dropDown ? "none" : "flex",
+  position: dropDown ? "absolute" : "relative",
+  top: 0,
   flexDirection: "column",
   justifyContent: "space-between",
   borderRadius: theme.spacing(2),
@@ -66,29 +70,34 @@ export const ClientHeaderCard = ({ value, type, background, color }) => {
   );
 };
 
-export const ClientHeaderButton = ({ children, name }) => {
+export const ClientHeaderButton = ({ children, name, handleClick }) => {
   return (
     <Grid container item xs alignItems={"center"} flexDirection="column">
-      <BoxButtom>{children}</BoxButtom>
+      <BoxButtom onClick={handleClick}>{children}</BoxButtom>
       <Typography color="#2563EB">{name}</Typography>
     </Grid>
   );
 };
 
-export const ClientInfo = ({ children, infokey }) => {
+export const ClientInfo = ({ children, infokey, dropDown, handleClick }) => {
   return (
-    <BoxInfo>
-      <Grid container>
+    <BoxInfo dropDown={dropDown}>
+      <Grid container justifyContent={"space-between"} alignItems="center">
         <Typography color={"#777777"} fontSize={13}>
           {infokey}
         </Typography>
+        {handleClick && (
+          <IconButton aria-label="menu" onClick={handleClick}>
+            <DropDownIcon />
+          </IconButton>
+        )}
       </Grid>
       {children}
     </BoxInfo>
   );
 };
 
-export const BoxButton = ({ children,value, handleClick,background }) => {
+export const BoxButton = ({ children, value, handleClick, background }) => {
   return (
     <Button variant="text" onClick={handleClick}>
       <Card
@@ -96,7 +105,7 @@ export const BoxButton = ({ children,value, handleClick,background }) => {
           background: background,
           color: "white",
           textAlign: "center",
-          padding:"4px"
+          padding: "4px",
         }}
       >
         {children}

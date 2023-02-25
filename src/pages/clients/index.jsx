@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
 import Checkbox from "@mui/material/Checkbox";
@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 import { PaginationTable } from "../../components/pagination";
 import { HeaderPage } from "../../components/headerPage";
 import { getQueryParams } from "../../utils";
+
 import {
   clientsList,
   deleteClient,
@@ -24,7 +25,7 @@ import {
   clientOrganization,
 } from "../../actions/clients";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, createSearchParams } from "react-router-dom";
 import { ClientCard } from "../../components/clientsCard";
 import { responseMessage } from "../../features/messageLog";
 import Notifier from "../../components/notify";
@@ -32,12 +33,15 @@ import Skeleton from "@mui/material/Skeleton";
 import { Confirmation } from "../../components/confirmation";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { useCheckBox } from "../../hooks/useCheckBox";
+import noresult from "../interactions/noresult.png";
 import {
   dropDownAction,
   filterAction,
   CheckBoxAction,
   filterList,
 } from "../../features/filter";
+import { SelectInput } from "../../components/selectInput";
+import { dashboardApp } from "../../actions/profile";
 
 export const Clients = () => {
   const { t, i18n } = useTranslation();
@@ -52,6 +56,35 @@ export const Clients = () => {
     (state) => state.clientListSlice
   );
   useDispatchAction(clientsList, statusClient);
+  const paramSearch = { ...getQueryParams() };
+
+  // console.log(paramSearch);
+
+  // useEffect(() => {
+  //   if (statusClient === "idle") {
+  //     dispatch(dashboardApp({})).then((e) => {
+  //       if (!paramSearch) {
+  //         dispatch(
+  //           clientsList({
+  //             params: { user: e.payload.data?.user?.level },
+  //           })
+  //         );
+  //         navigate({
+  //           search: `?${createSearchParams({
+  //             user: e.payload.data?.user?.level,
+  //           })}`,
+  //         });
+  //       } else {
+  //         dispatch(
+  //           clientsList({
+  //             params: paramSearch,
+  //           })
+  //         );
+  //       }
+  //     });
+  //   }
+  // }, [statusClient, dispatch]);
+
   const useCheckBoxSelector = useCheckBox(statusClient, clietList);
   const header = [
     t("name"),
@@ -62,9 +95,13 @@ export const Clients = () => {
     t("Service_rating"),
     t("cost_benefit"),
     t("Total_rank"),
-    t("بازاریاب مستقیم"),
+    t("مدیر ارتباط مستقیم"),
     "",
   ];
+
+  const { statusDashboard, entitiesDashboard, error } = useSelector(
+    (state) => state.dashboardAppSlice
+  );
 
   const handleNavigate = (id) => {
     navigate(`/clients/update/${id}`);
@@ -72,10 +109,19 @@ export const Clients = () => {
     dispatch(clientOrganization({}));
   };
 
-  const handleClick= (id)=>{
-    navigate(`/clients/${id}`);
-    dispatch(clientDetail({ id }));
-  }
+  const handleClick = (id) => {
+    if (entitiesDashboard?.data?.user?.super_admin === 1) {
+      navigate(`/clients/${id}`);
+      dispatch(clientDetail({ id }));
+    } else if (
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "client_create"
+      )
+    ) {
+      navigate(`/clients/${id}`);
+      dispatch(clientDetail({ id }));
+    }
+  };
 
   const handleDelete = (id) => {
     dispatch(deleteClient({ id })).then((res) => {
@@ -89,7 +135,7 @@ export const Clients = () => {
   };
 
   const handleChangeView = () => {
-    setView((state) => !state);
+    navigate("/clientsCard");
   };
 
   const handleClickConfirmation = (id) => {
@@ -106,6 +152,38 @@ export const Clients = () => {
 
   const { filterRMTabs } = useSelector((state) => state.tabSlice);
   const { initialDropsClient } = useSelector((state) => state.filterSlice);
+
+  useEffect(() => {
+    const item = initialDropsClient.map((items) =>
+      items.values.find((e) => e.title === paramSearch.type)
+    );
+
+    const itemGender = initialDropsClient.map((items) =>
+      items.values.find((e) => e.title === paramSearch.gender)
+    );
+
+    if (paramSearch?.type) {
+      dispatch(
+        filterAction({
+          type: "RADIO",
+          title: paramSearch.type,
+          name: "initialDropsClient",
+          item: item[0],
+        })
+      );
+    }
+    if (paramSearch?.gender) {
+      dispatch(
+        filterAction({
+          type: "RADIO",
+          title: paramSearch.gender,
+          name: "initialDropsClient",
+          item: itemGender[1],
+        })
+      );
+    }
+  }, [statusClient]);
+
   const handleChange = (item) => {
     dispatch(
       dropDownAction({
@@ -128,6 +206,7 @@ export const Clients = () => {
   };
 
   const handleChangeRadio = (item) => {
+    console.log(item, "radio");
     dispatch(
       filterAction({
         type: "RADIO",
@@ -136,6 +215,13 @@ export const Clients = () => {
         item,
       })
     );
+  };
+
+  const [typeSearch, setTypeSearch] = React.useState("");
+
+  const hanldeChangeTypeSearch = (event) => {
+    setTypeSearch(event.target.value);
+    navigate(`/${event.target.value}`);
   };
 
   return (
@@ -149,6 +235,7 @@ export const Clients = () => {
         download
         searchPage
         tab={true}
+        width={120}
         action={clientsList}
         filterRMTabs={filterRMTabs}
         initialDrops={initialDropsClient}
@@ -158,43 +245,52 @@ export const Clients = () => {
         handleChangeRadio={handleChangeRadio}
         defaultQuery={{ ...getQueryParams() }}
         clientList
-      />
+      >
+        <SelectInput
+          hanldeChangeTypeSearch={hanldeChangeTypeSearch}
+          setTypeSearch={setTypeSearch}
+          typeSearch={typeSearch}
+          t={t}
+        />
+      </HeaderPage>
       <Grid container>
-        <>
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            height: "80vh",
+            justifyContent: "space-between",
+            background: "#fff",
+            // overflowX: "scroll",
+          }}
+        >
           {view ? (
-            <Grid container rowSpacing={2} alignItems={"center"} dir="rtl">
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(5, 1fr)",
+                rowGap: 2,
+              }}
+              dir="rtl"
+            >
               {statusClient === "succeeded" &&
                 clietList?.data?.data.map((row, i) => {
                   return (
-                    <Grid item sm={3} key={i}>
-                      <ClientCard
-                        type={row.type}
-                        national_identifier={row.national_identifier}
-                        name={row.name}
-                        totalPoint={row.total_point}
-                        biPoint={row.bi_point}
-                      />
-                    </Grid>
+                    <ClientCard
+                      key={i}
+                      type={row.type}
+                      national_identifier={convertDigits(row.national_number)}
+                      name={row.name}
+                      totalPoint={row?.last_bi?.RANK}
+                      biPoint={row?.bi_point}
+                    />
                   );
                 })}
-            </Grid>
+            </Box>
           ) : (
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                height: "80vh",
-                justifyContent: "space-between",
-                background: "#fff",
-                overflowX: "scroll",
-              }}
-            >
-              <Paper
-                sx={{
-                  overflowX: "scroll",
-                }}
-              >
+            <>
+              <Paper>
                 <TableContainer component={Paper}>
                   <Table aria-label="simple table" dir="rtl">
                     <TableHead>
@@ -212,7 +308,7 @@ export const Clients = () => {
                     <TableBody>
                       {statusClient !== "succeeded"
                         ? [...Array(10)].map((_, i) => (
-                            <TableRow role="checkbox" key={i} >
+                            <TableRow role="checkbox" key={i}>
                               {[...Array(9)].map((_, k) => (
                                 <TableCell>
                                   <Box>
@@ -229,7 +325,7 @@ export const Clients = () => {
                           ))
                         : clietList?.data?.data.map((row, i) => {
                             return (
-                              <TableRow role="checkbox" key={i} onClick={()=>handleClick(row.id)}>
+                              <TableRow role="checkbox" key={i}>
                                 <TableCell padding="checkbox">
                                   <Checkbox
                                     color="primary"
@@ -240,8 +336,20 @@ export const Clients = () => {
                                   />
                                 </TableCell>
                                 <TableCell
+                                  onClick={() => handleClick(row.id)}
                                   align="left"
-                                  sx={{ color: "#2563EB" }}
+                                  sx={{
+                                    color: "#2563EB",
+                                    cursor:
+                                      entitiesDashboard?.data?.user
+                                        ?.super_admin === 1
+                                        ? "pointer"
+                                        : entitiesDashboard?.data?.user.permissions.some(
+                                            (e) => e.name !== "client_create"
+                                          )
+                                        ? "pointer"
+                                        : "auto",
+                                  }}
                                 >
                                   {row?.name}
                                 </TableCell>
@@ -252,21 +360,23 @@ export const Clients = () => {
                                   {convertDigits(row?.national_identifier) ||
                                     convertDigits(row?.national_number)}
                                 </TableCell>
-                                <TableCell align="left">{""}</TableCell>
                                 <TableCell align="left">
-                                  {row?.assignment_point}
+                                  {convertDigits(row?.last_bi?.RANK_B)}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row?.services_point}
+                                  {convertDigits(row?.last_bi?.RANK_C)}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row?.profit_loss}
+                                  {convertDigits(row?.last_bi?.RANK_I)}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row?.total_point}
+                                  {convertDigits(row?.last_bi?.RANK_P)}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row?.user.name}
+                                  {convertDigits(row?.last_bi?.RANK)}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row?.user?.name}
                                 </TableCell>
                                 <TableCell align="left">
                                   <Grid
@@ -307,21 +417,21 @@ export const Clients = () => {
               <Paper sx={{ display: "flex", justifyContent: "center" }}>
                 {statusClient === "succeeded" &&
                   (clietList?.data?.total === 0 ||
-                    clietList?.data?.dada?.length === 0) && (
-                    <Typography>{t("no data")}</Typography>
+                    clietList?.data?.data?.length === 0) && (
+                    <img src={noresult} />
                   )}
               </Paper>
-
-              <Paper>
-                <PaginationTable
-                  status={statusClient}
-                  entities={clietList}
-                  action={clientsList}
-                />
-              </Paper>
-            </Box>
+            </>
           )}
-        </>
+
+          <Paper>
+            <PaginationTable
+              status={statusClient}
+              entities={clietList}
+              action={clientsList}
+            />
+          </Paper>
+        </Box>
         <Confirmation
           statusConfirmation={openConfirmation}
           stateId={stateId}

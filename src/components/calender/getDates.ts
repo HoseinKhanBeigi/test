@@ -4,7 +4,7 @@ import {
   endOfWeek,
   startOfMonth,
   startOfWeek,
-  isToday
+  isToday,
 } from "date-fns-jalali";
 
 import { format } from "date-fns-jalali";
@@ -15,6 +15,8 @@ function getRandomInt(max: any) {
 }
 
 export const getDates = (activeDate: Date) => {
+  console.log(activeDate);
+
   const startOfTheSelectedMonth = startOfMonth(activeDate);
   const endOfTheSelectedMonth = endOfMonth(activeDate);
   const startDate = startOfWeek(startOfTheSelectedMonth);
@@ -30,7 +32,9 @@ export const getDates = (activeDate: Date) => {
       day: currentDate,
       status: isToday(currentDate) ? true : false,
       id: count,
+      colors: [],
     });
+
     currentDate = addDays(currentDate, 1);
   }
 

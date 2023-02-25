@@ -23,6 +23,7 @@ import { switchInput } from "../../components/switchInputs";
 import "dayjs/locale/fa";
 import { FormProvider } from "../../components/hook-form";
 import moment from "moment";
+import { useDispatchAction } from "../../hooks/useDispatchAction";
 
 export const CreateClientSingle = ({ typeForm }) => {
   const { t } = useTranslation();
@@ -53,6 +54,8 @@ export const CreateClientSingle = ({ typeForm }) => {
       });
     }
   }, [statusDetail, dispatch]);
+
+  useDispatchAction(clientOrganization,status)
 
   const defaultValues = {
     name: clientDetails?.data?.client?.name,

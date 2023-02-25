@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Line } from "../../components/charts";
 import { styled } from "@mui/material/styles";
 import Switch from "@mui/material/Switch";
@@ -8,6 +8,8 @@ import Paper from "@mui/material/Paper";
 import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
 import { Card, CardHeader, Divider } from "@mui/material";
+import { convertDigits } from "persian-helpers";
+
 import {
   CardNote,
   CountClients,
@@ -32,18 +34,43 @@ import "./index.css";
 import { DatePicker } from "../../components/datepicker";
 import { AreaChart } from "../../components/areaChart";
 import { StackBar } from "../../components/stackBar";
+import nodata from "./nodata.png";
 import moment from "moment";
 import dayjs from "dayjs";
 import { useDispatchAction } from "../../hooks/useDispatchAction";
+import { NoteForm } from "../../components/noteDialog";
 // import Card from "../../theme/overrides/Card";
 
 export const Home = () => {
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // React.useEffect(() => {
-  //   dispatch(dashboardApp({}));
-  // }, []);
+  const handleInsertMeeting = () => {
+    if (entitiesDashboard?.data?.user.super_admin === 1) {
+      navigate("/interactions/meetings/create");
+    } else if (
+      entitiesDashboard?.data?.user.permissions.some(
+        (e) => e.name === "meeting_create"
+      )
+    ) {
+      navigate("/interactions/meetings/create");
+    }
+  };
+
+  const handleToNote = () => {
+    if (entitiesDashboard?.data?.user.super_admin === 1) {
+      navigate("/notes");
+    } else if (
+      entitiesDashboard?.data?.user.permissions.some((e) => e.name === "note")
+    ) {
+      navigate("/notes");
+    }
+  };
+
+  const handleToIntraction = ()=>{
+    navigate("/interactions");
+  }
 
   const {
     statusDashboard,
@@ -56,8 +83,15 @@ export const Home = () => {
 
   const categories = ["حقیقی", "حقوقی"];
 
+  const [open, setOpen] = React.useState(false);
+
+  const openNoteForm = () => {
+    setOpen(true);
+  };
+
   return (
     <>
+      <NoteForm open={open} setOpen={setOpen} title="یادداشت جدید" page="home"/>
       <HeaderPage title={t("workOfTable")} page="dashboard" />
 
       <Grid
@@ -84,20 +118,27 @@ export const Home = () => {
           />
 
           <Grid container mb={2} mt={2} columnSpacing={2}>
-            <Grid item md={3} lg={3} sm={3} xs={12}>
+            <Grid item md={5} lg={5} sm={5} xs={12}>
               <CountClients
-                count={entitiesDashboard?.data?.client_count_chart?.clients_count}
-                percent={entitiesDashboard?.data?.client_count_chart?.clients_percent}
+                count={convertDigits(
+                  entitiesDashboard?.data?.client_count_chart?.clients_count
+                )}
+                percent={convertDigits(
+                  entitiesDashboard?.data?.client_count_chart?.clients_percent
+                )}
                 status={statusDashboard === "succeeded"}
               />
             </Grid>
-            <Grid item md={9} lg={9} sm={9} xs={12}>
-              <TargetCard />
+            <Grid item md={7} lg={7} sm={7} xs={12}>
+              <TargetCard nodata={nodata} />
             </Grid>
           </Grid>
           <Grid container spacing={2}>
             <Grid item md={7} lg={7} sm={6} xs={12}>
               <Card>
+                <Typography sx={{ paddingLeft: "16px", paddingTop: "12px" }}>
+                  {"سبد مشتریان"}
+                </Typography>
                 <StackBar
                   categories={categories}
                   series={basketClient}
@@ -106,15 +147,25 @@ export const Home = () => {
               </Card>
             </Grid>
             <Grid item md={5} lg={5} sm={6} xs={12}>
-              <CardNote notes={entitiesDashboard?.data?.notes}   status={statusDashboard === "succeeded"}/>
+              <CardNote
+              handleToPage={handleToNote}
+                notes={entitiesDashboard?.data?.notes}
+                status={statusDashboard === "succeeded"}
+                handleClick={openNoteForm}
+              />
             </Grid>
           </Grid>
         </Grid>
         <Grid item md={4} lg={4} sm={6} xs={12} order={{ xs: 1, sm: 1, md: 1 }}>
-          <Card sx={{ padding: "20px" }}>
-            <DatePicker />
+          <Card sx={{ padding: "20px", height: "100%" }}>
+            <DatePicker entitiesDashboard={entitiesDashboard} />
             <Divider />
-            <MeetingCard  meetings={entitiesDashboard?.data?.meetings} status={statusDashboard === "succeeded"}/>
+            <MeetingCard
+              handleClick={handleInsertMeeting}
+              handleToPage={handleToIntraction}
+              meetings={entitiesDashboard?.data?.meetings}
+              status={statusDashboard === "succeeded"}
+            />
           </Card>
         </Grid>
       </Grid>

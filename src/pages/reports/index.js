@@ -52,10 +52,8 @@ export const Reports = () => {
             newData.map((branch, i) => {
               data.push(branch);
             });
-      
+
             setBranch(data);
-          } else if (e.payload.data.length === 0) {
-            setBranch([]);
           }
         }
       });
@@ -88,14 +86,19 @@ export const Reports = () => {
         const data = [];
         if (e.payload.status === 200) {
           setLoading(false);
-          if (e.payload.data.length > 0) {
-            const newData = [{ branches: e.payload.data }];
+          if (
+            e.payload.data.branches.length > 0 ||
+            e.payload.data.users.length > 0
+          ) {
+            const newData = [
+              { branches: e.payload.data.branches },
+              { users: e.payload.data.users },
+            ];
             newData.map((branch, i) => {
               data.push(branch);
             });
+
             setBranch(data);
-          } else if (e.payload.data.length === 0) {
-            setBranch([]);
           }
         }
       });
@@ -133,32 +136,31 @@ export const Reports = () => {
             <Typography>{t("")}</Typography>
           ) : (
             branch?.map((k, j) => {
-              if (k?.branches) {
-                return k?.branches?.map((e, i) => (
-                  <Grid container mb={2}>
-                    <CardBranch
-                      key={i}
-                      name={e.name}
-                      phone={e.phone}
-                      address={e.address}
-                      level={e.level}
-                    />
-                  </Grid>
-                ));
-              } else if (k?.users) {
-                return k?.users?.map((e, i) => (
-                  <Grid container mb={2}>
-                    <UserCard
-                      name={e.name}
-                      id={e?.id}
-                      position={e.position}
-                      mobile={e.mobile}
-                      organization={e.organization}
-                      handleClick={handleClick}
-                    />
-                  </Grid>
-                ));
-              }
+
+              return k?.branches
+                ? k?.branches?.map((e, i) => (
+                    <Grid container mb={2}>
+                      <CardBranch
+                        key={i}
+                        name={e.name}
+                        phone={e.phone}
+                        address={e.address}
+                        level={e.level}
+                      />
+                    </Grid>
+                  ))
+                : k?.users?.map((e, i) => (
+                    <Grid container mb={2}>
+                      <UserCard
+                        name={e.name}
+                        id={e?.id}
+                        position={e.position}
+                        mobile={e.mobile}
+                        organization={e.organization}
+                        handleClick={handleClick}
+                      />
+                    </Grid>
+                  ));
             })
           )}
         </Grid>

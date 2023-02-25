@@ -1,7 +1,8 @@
 import { useDispatchAction } from "../../../hooks/useDispatchAction";
-import { UserManagerAction } from "../../../actions/admin";
+import { UserManagerAction,permissionsUser } from "../../../actions/admin";
+
 import Checkbox from "@mui/material/Checkbox";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableContainer from "@mui/material/TableContainer";
@@ -17,16 +18,19 @@ import Skeleton from "@mui/material/Skeleton";
 import { convertDigits } from "persian-helpers";
 import { useCheckBox } from "../../../hooks/useCheckBox";
 import { PaginationTable } from "../../../components/pagination";
+import { useNavigate } from "react-router-dom";
 
 export const UserManager = () => {
     const { t } = useTranslation();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const header = [
         t("fullName"),
         t("countClients"),
         t("placeAction"),
         t("Average_changes"),
         t("phonenumber"),
-        t("طبقه ی بازاریاب"),
+        t("طبقه ی مدیر ارتباط"),
       ];
 
   const { entities, status } = useSelector((state) => state.userManagerSlice);
@@ -38,6 +42,16 @@ export const UserManager = () => {
   const handleSelect = (i) => {
     useCheckBoxSelector.dispatchAction({ type: "SELECTITEM", id: i });
   };
+
+  const handleDetail = (id)=>{
+    dispatch(
+      permissionsUser({
+        user_id: id,
+      })
+    ).then(()=>{
+      navigate(`/admin/userManager/${id}`);
+    })
+  }
   return (
     <Box
       sx={{
@@ -96,7 +110,7 @@ export const UserManager = () => {
                             onClick={() => handleSelect(row.id)}
                           />
                         </TableCell>
-                        <TableCell align="left">{row.name}</TableCell>
+                        <TableCell align="left" sx={{cursor:"pointer"}} onClick={()=>handleDetail(row.id)}>{row.name}</TableCell>
                         <TableCell align="left">{""}</TableCell>
                         <TableCell align="left">{row.organization}</TableCell>
                         <TableCell align="left">{""}</TableCell>

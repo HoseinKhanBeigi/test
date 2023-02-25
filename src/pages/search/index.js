@@ -16,13 +16,16 @@ import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 
 import Skeleton from "@mui/material/Skeleton";
-import { convertDigits } from "persian-helpers";
 import { useCheckBox } from "../../hooks/useCheckBox";
 import { PaginationTable } from "../../components/pagination";
 import { HeaderPage } from "../../components/headerPage";
+import { SelectInput } from "../../components/selectInput";
+import { useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export const Search = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const header = [
     t("نام/نام خانوادگی"),
     t("تعداد مشتریان"),
@@ -40,15 +43,31 @@ export const Search = () => {
   const handleSelect = (i) => {
     useCheckBoxSelector.dispatchAction({ type: "SELECTITEM", id: i });
   };
+
+  const [typeSearch, setTypeSearch] = useState("");
+
+  const hanldeChangeTypeSearch = (event) => {
+    setTypeSearch(event.target.value);
+    navigate(`/${event.target.value}`);
+  };
+
   return (
     <>
       <HeaderPage
-        title={t("search")}
+        title={t("searchAgent")}
         searchPage
         action={AgentsAction}
         entities={entities}
+        width={252}
         status={status}
-      />
+      >
+        <SelectInput
+          typeSearch={typeSearch}
+          hanldeChangeTypeSearch={hanldeChangeTypeSearch}
+          setTypeSearch={setTypeSearch}
+          t={t}
+        />
+      </HeaderPage>
       <Box
         sx={{
           width: "100%",

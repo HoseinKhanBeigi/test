@@ -9,6 +9,7 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { convertDigits } from "persian-helpers";
+import { alpha, useTheme } from '@mui/material/styles';
 import { format } from "date-fns-jalali";
 
 import { PaginationTable } from "../../components/pagination";
@@ -33,8 +34,7 @@ export const Instructions = () => {
   const { t, i18n } = useTranslation();
   const { status, entities } = useSelector((state) => state.instructionsSlice);
   useDispatchAction(instructionsAction, status);
-
-
+  const theme = useTheme();
   const options = React.useMemo(() => {
     const res = {
       data: entities?.data?.instructions.data,
@@ -50,66 +50,79 @@ export const Instructions = () => {
   return (
     <>
       <HeaderPage title={t("instructions")} />
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          height: "80vh",
+          justifyContent: "space-between",
+          background: "#fff",
+        }}
+      >
+        <Grid container spacing={2} justifyContent="flex-end">
+          {options?.data?.map((e, i) => {
+            return (
+              <Grid item key={i} xs={6} sm={3} md={2}>
+                <Card sx={{ padding: "12px", width: "176px", height: "224px" }}>
+                  <Grid container mb={2}>
+                    <img src={doc} />
+                  </Grid>
 
-      <Grid container spacing={2} justifyContent="flex-end">
-        {options?.data?.map((e, i) => {
-          return (
-            <Grid item key={i} xs={6} sm={3} md={2}>
-              <Card sx={{ padding: "12px", width: "176px", height: "224px" }}>
-                <Grid container mb={2}>
-                  <img src={doc} />
-                </Grid>
-
-                <Grid container mb={2} justifyContent="center" dir="rtl">
-                  <Typography>
-                    {" "}
-                    {convertDigits(
-                      format(new Date(e?.created_at), "yyyy/MM/dd")
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid container justifyContent={"center"} textAlign="center">
-                  <Typography fontSize={"15px"}>{e.name}</Typography>
-                </Grid>
-                <Grid container justifyContent={"center"} textAlign="center">
-                  <Button
-                    fullWidth
-                    sx={{ background: "#5041BC", color: "white" }}
-                  >
-                    <DownloadIconInstruc />
-                    <a
-                      href={`http://10.154.65.29:9000/${e.path}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "23px",
-                        color: "white",
-                      }}
+                  <Grid container mb={2} justifyContent="center" dir="rtl">
+                    <Typography>
+                      {" "}
+                      {convertDigits(
+                        format(new Date(e?.created_at), "yyyy/MM/dd")
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid container justifyContent={"center"} textAlign="center">
+                    <Typography fontSize={"15px"}>{e.name}</Typography>
+                  </Grid>
+                  <Grid container justifyContent={"center"} textAlign="center">
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      // sx={{ background: "#5041BC", color: "white" }}
                     >
-                      <Typography
-                        fontSize={"12px"}
-                        sx={{ paddingRight: "2px" }}
+                   
+                      <a
+                        href={`http://10.154.65.29:9000/${e.path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          width: "23px",
+                          color: "white",textDecoration:"none"
+                        }}
                       >
-                        {t("download")}
-                      </Typography>
-                    </a>
-                  </Button>
-                </Grid>
-              </Card>
-            </Grid>
-          );
-        })}
-      </Grid>
-      <Paper>
-        <PaginationTable
-          status={status}
-          entities={options.entities}
-          action={instructionsAction}
-        />
-      </Paper>
+                        <Typography
+                          fontSize={"12px"}
+                          sx={{ paddingRight: "2px" }}
+                        >
+                          {t("download")}
+                        </Typography>
+                      </a>
+                      <DownloadIconInstruc />
+                    </Button>
+                  </Grid>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
+        <Paper>
+          <PaginationTable
+            status={status}
+            entities={options.entities}
+            action={instructionsAction}
+          />
+        </Paper>
+      </Box>
     </>
   );
 };

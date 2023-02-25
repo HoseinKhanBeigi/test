@@ -23,6 +23,7 @@ import {
   callsDepenAgent,
   callsDepen,
 } from "../../actions/calls";
+import noresult from "../interactions/noresult.png";
 import { TrashIcone, OptionIcone, EditIcon } from "../../components/icons";
 import { getQueryParams } from "../../utils";
 import { initialDrops } from "./filterItems";
@@ -190,7 +191,7 @@ export const Calls = () => {
           {status === "succeeded" &&
             (entities?.data?.total === 0 ||
               entities?.data?.dada?.length === 0) && (
-              <Typography>{t("no data")}</Typography>
+              <img src={noresult}/>
             )}
         </Paper>
         <Paper>

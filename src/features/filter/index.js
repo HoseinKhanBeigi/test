@@ -9,8 +9,8 @@ const initialState = {
       inputType: "RADIO",
 
       values: [
-        { title: "بازایاب", checked: false, key: "userType" },
-        { title: "بازاریاب ارشد", checked: false, key: "userType" },
+        { title: "مدیر ارتباط", checked: false, key: "userType" },
+        { title: "مدیر ارتباط ارشد", checked: false, key: "userType" },
       ],
     },
     {
@@ -34,8 +34,8 @@ const initialState = {
       title: "clientType",
       inputType: "RADIO",
       values: [
-        { title: "حقیقی", checked: false, key: "clientType" },
-        { title: "حقوقی", checked: false, key: "clientType" },
+        { title: "حقيقي", checked: false, key: "clientType" },
+        { title: "حقوقي", checked: false, key: "clientType" },
       ],
     },
 

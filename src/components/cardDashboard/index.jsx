@@ -10,6 +10,7 @@ import { format } from "date-fns-jalali";
 import moment from "moment";
 import Stack from "@mui/material/Stack";
 import IconButton from "@mui/material/IconButton";
+import { convertDigits } from "persian-helpers";
 import {
   Curve,
   ClientIcone,
@@ -27,7 +28,7 @@ import {
 import { Typography } from "@mui/material";
 import "./index.css";
 
-export const CardNote = ({ notes, status }) => {
+export const CardNote = ({ notes, status, handleClick, handleToPage }) => {
   const { t, i18n } = useTranslation();
   const options = React.useMemo(() => {
     const res = {
@@ -37,19 +38,15 @@ export const CardNote = ({ notes, status }) => {
   }, [status]);
 
   return (
-    <Card sx={{ padding: "16px" }}>
+    <Card sx={{ padding: "16px", height: "100%" }}>
       <Grid
         container
         justifyContent={"space-between"}
         alignItems="center"
         mb={1}
-        sx={{ paddingLeft: "12px", paddingRight: "12px" }}
       >
         <Typography>{t("note")}</Typography>
-        <IconButton
-          aria-label="menu"
-          //   onClick={() => handleDelete(row.id)}
-        >
+        <IconButton aria-label="menu" onClick={handleClick}>
           <PlusIcon />
         </IconButton>
       </Grid>
@@ -62,22 +59,10 @@ export const CardNote = ({ notes, status }) => {
             mt={2}
             alignItems="center"
             alignContent={"center"}
+            sx={{ cursor: "pointer" }}
+            onClick={handleToPage}
           >
-            <Typography>{e?.title}</Typography>
-            <Typography
-              sx={{
-                background: "#DBEAFE",
-                paddingTop: "4px",
-                paddingBottom: "4px",
-                height: "25px",
-                borderRadius: "4px",
-                width: "90px",
-              }}
-              color="#2563EB"
-              align="center"
-            >
-              {"12 - 2"}
-            </Typography>
+            <Typography>{e?.client.name}</Typography>
 
             <IconButton
               aria-label="menu"
@@ -98,7 +83,12 @@ export const CardNote = ({ notes, status }) => {
   );
 };
 
-export const MeetingCard = ({ meetings, status }) => {
+export const MeetingCard = ({
+  meetings,
+  status,
+  handleClick,
+  handleToPage,
+}) => {
   const { t, i18n } = useTranslation();
   const options = React.useMemo(() => {
     const res = {
@@ -115,13 +105,9 @@ export const MeetingCard = ({ meetings, status }) => {
         alignItems="center"
         mb={2}
         mt={2}
-        sx={{ paddingLeft: "12px", paddingRight: "12px" }}
       >
         <Typography>{t("meeting")}</Typography>
-        <IconButton
-          aria-label="menu"
-          //   onClick={() => handleDelete(row.id)}
-        >
+        <IconButton aria-label="menu" onClick={handleClick}>
           <PlusIcon />
         </IconButton>
       </Grid>
@@ -133,6 +119,8 @@ export const MeetingCard = ({ meetings, status }) => {
             alignItems="center"
             mb={2}
             mt={2}
+            sx={{ cursor: "pointer" }}
+            onClick={handleToPage}
           >
             <Typography>{e?.client?.name}</Typography>
             <IconButton
@@ -162,15 +150,15 @@ export const MeetingCard = ({ meetings, status }) => {
               }}
               color={"#017874"}
             >
-              {"12-2"}
+              {convertDigits(format(new Date(e?.start), "HH:mm"))}
             </Typography>
             <Grid item>
               <Grid container alignItems={"center"}>
                 <Typography fontSize={14}>
                   {moment(new Date(e?.start)).format("dddd")}{" "}
-                  {moment(new Date(e?.start)).format("d")}{"ام"}{" "}
-                  {format(new Date(e?.start), "MMMM")}{" "}
-                  {format(new Date(e?.start), "Y")}
+                  {convertDigits(format(new Date(e?.start), "dd"))}
+                  {"ام"} {format(new Date(e?.start), "MMMM")}{" "}
+                  {convertDigits(format(new Date(e?.start), "Y"))}
                 </Typography>
                 <IconButton
                   aria-label="menu"
@@ -226,39 +214,54 @@ export const CountClients = ({ count, percent, status }) => {
   );
 };
 
-export const TargetCard = () => {
+export const TargetCard = ({ nodata }) => {
   return (
     <Card sx={{ padding: "16px", height: "100%" }}>
-      <Grid container rowSpacing={6}>
+      <Grid container rowSpacing={6} justifyContent="end">
         <Grid item container justifyContent={"space-between"}>
           <Typography>{"فاصله شما نسبت به هدف"}</Typography>
-          <Box sx={{ position: "relative" }}>
-            <input
-              className="toggle"
-              type="checkbox"
-              role="switch"
-              name="toggle"
-              value="on"
-            ></input>
-            <Box
-              sx={{
-                position: "absolute",
-                top: 3,
-                display: "flex",
-                width: "253px",
-                paddingLeft: "12px",
-                paddingRight: "20px",
-                justifyContent: "space-between",
-              }}
-            >
-              <span>خود</span>
-              <span>هم گروه ها</span>
-            </Box>
+          {/* <Typography>{"در حال حاضر هدفی تعریف نشده است"}</Typography> */}
+          <>
+            <Box sx={{ position: "relative" }}>
+              {/* <input
+                className="toggle"
+                type="checkbox"
+                role="switch"
+                name="toggle"
+                value="on"
+              /> */}
+              {/* <Box
+                sx={{
+                  position: "absolute",
+                  top: 3,
+                  display: "flex",
+                  width: "253px",
+                  paddingLeft: "12px",
+                  paddingRight: "20px",
+                  justifyContent: "space-between",
+                }}
+              >
+                <span>خود</span>
+                <span>هم گروه ها</span>
+              </Box> */}
 
-            {/* <Typography>{"خود"}</Typography> */}
-          </Box>
+              {/* <Typography>{"خود"}</Typography> */}
+            </Box>
+          </>
         </Grid>
-        <Grid item container>
+
+        <Grid container alignItems={"center"}>
+          <Grid item xs={6}>
+            <Typography fontSize={12} color="gray">
+              {"در حال حاضر هدفی تعریف نشده است"}
+            </Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <img src={nodata} width="200" />
+          </Grid>
+        </Grid>
+
+        {/* <Grid item container>
           <RankBox background={"#F6541E"} val="رتبه شما" />
           <RankBox background={"#F6541E"} val="هدف" />
         </Grid>
@@ -284,7 +287,7 @@ export const TargetCard = () => {
               }}
             ></Box>
           </Box>
-        </Grid>
+        </Grid> */}
       </Grid>
     </Card>
   );

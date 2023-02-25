@@ -34,14 +34,14 @@ export function StackBar({ categories, series,  status}) {
         //   },
         // },
         dataLabels: {
-          enabled: true,
-          // textAnchor: "middle",
+          enabled: false,
+          textAnchor: "middle",
           position: "bottom",
-          distributed: true,
           formatter: function (val) {
+            
             return convertDigits(val);
           },
-          offsetY: 0,
+          // offsetY: 0,
         },
         grid: {
           show: true,
@@ -113,6 +113,19 @@ export function StackBar({ categories, series,  status}) {
             show: true,
           },
         },
+        grid: {
+          borderColor: "#535A6C",
+          yaxis: {
+              lines: {
+                  show: false
+              }
+          },
+          xaxis: {
+            lines: {
+                show: true
+            }
+        }
+      },
         yaxis: {
           min: 1,
           max: 600,
@@ -142,10 +155,10 @@ export function StackBar({ categories, series,  status}) {
               cssClass: "apexcharts-yaxis-label",
             },
             offsetX: 0,
-            offsetY: 0,
+            offsetY: 10,
             rotate: 0,
-            formatter: (value) => {
-              return value;
+            formatter: function (val) {
+              return convertDigits(val);
             },
           },
         },
