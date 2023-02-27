@@ -15,12 +15,13 @@ export default function CssBaseline() {
           WebkitOverflowScrolling: 'touch',
         },
         body: {
-          width: '100%',
-          height: '100%',
+          // width: '100%',
+          // height: '100vh',
+          
         },
         '#root': {
-          width: '100%',
-          // height: '100%',
+          // width: '100%',
+          // height: '100vh',
         },
         input: {
           '&[type=number]': {

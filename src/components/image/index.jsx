@@ -1,5 +1,17 @@
 import { useEffect, useState } from "react";
-const Image = ({ url, src, className }) => {
+import { styled } from "@mui/material/styles";
+
+export const Img = styled("img")(({ width, theme }) => ({
+  objectFit: "contain",
+  objectPosition:" top",
+  position: !width && "absolute",
+  left: "50%",
+  transform: !width && "translate(-50%)",
+  height: "100%",
+  width,
+}));
+
+const Image = ({ url, src, width }) => {
   const [image, setImage] = useState();
 
   useEffect(() => {
@@ -8,7 +20,7 @@ const Image = ({ url, src, className }) => {
     });
   }, [src]);
 
-  return image && <img src={image} className={className} />;
+  return image && <Img src={image} width={width} />;
 };
 
 export default Image;

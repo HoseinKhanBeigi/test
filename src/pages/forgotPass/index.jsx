@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import React, { useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 // form
 import { useForm } from "react-hook-form";
@@ -22,7 +22,6 @@ import {
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import "./login.css";
 // components
 import Iconify from "../../components/iconify";
 import { LoginIcon, Karafaring, LogoKarafarin } from "../../components/icons";
@@ -33,9 +32,9 @@ import {
   RHFTextField,
   RHFCheckbox,
 } from "../../components/hook-form";
-
-// import backG3 from "../../pages/login/backG3.png";
 import { responseMessage } from "../../features/messageLog";
+import { LoginCard, LoginLayout } from "../../components/details";
+const Image = React.lazy(async () => await import("../../components/image"));
 
 // ----------------------------------------------------------------------
 
@@ -50,7 +49,7 @@ export default function ForgotPass() {
     // password: Yup.string().required("Password is required"),
   });
 
-  const [loading,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const defaultValues = {
     username: "",
@@ -68,45 +67,29 @@ export default function ForgotPass() {
   } = methods;
 
   const onSubmit = (e) => {
-    setLoading(true)
+    setLoading(true);
     dispatch(sendLinkAction(e)).then((res) => {
       if (res.payload.status === 200) {
-        setLoading(false)
+        setLoading(false);
         dispatch(responseMessage(res.payload.message));
       }
     });
   };
 
-  const handleTologin = ()=>{
-    navigate("/login")
-  }
+  const handleTologin = () => {
+    navigate("/login");
+  };
 
   return (
     <>
-      <Grid
+      <LoginLayout
         container
         justifyContent={"center"}
         alignItems="center"
         dir="rtl"
-        sx={{
-          background:
-            " linear-gradient(242.73deg, rgba(154, 65, 188, 0.55) 5.53%, rgba(1, 120, 116, 0.55) 95.02%);",
-          // backgroundImage:`url(${backG})`,
-          // backgroundRepeat: "no-repeat",
-          // backgroundSize: "cover",
-          // height:'auto',
-          height: "100%",
-        }}
       >
-        {/* <img src={backG3} className="imglogin" /> */}
-        <Card
-          sx={{
-            padding: "24px",
-            backgroundColor: "rgb(255 255 255 / 60%)",
-            width: " 532px",
-            height: "742px",
-          }}
-        >
+       <Image src={"backgroundLayout"} />
+        <LoginCard>
           <Notifier />
           <Grid
             item
@@ -148,7 +131,6 @@ export default function ForgotPass() {
               />
             </Grid>
 
-     
             <Grid container>
               <LoadingButton
                 fullWidth
@@ -161,22 +143,20 @@ export default function ForgotPass() {
               </LoadingButton>
             </Grid>
             <Grid container mt={5} justifyContent="center">
-              <Stack
-                direction="row"
-                alignItems="center"
-                
-                sx={{ my: 2 }}
-              >
+              <Stack direction="row" alignItems="center" sx={{ my: 2 }}>
                 {/* <RHFCheckbox name="remember" label="Remember me" /> */}
-                <Link variant="subtitle2" underline="hover" onClick={handleTologin}>
+                <Link
+                  variant="subtitle2"
+                  underline="hover"
+                  onClick={handleTologin}
+                >
                   {t("backtoLoginPage")}
                 </Link>
               </Stack>
             </Grid>
           </FormProvider>
-        </Card>
-      </Grid>
-    
+        </LoginCard>
+      </LoginLayout>
     </>
   );
 }

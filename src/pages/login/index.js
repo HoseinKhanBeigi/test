@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userLogin } from "../../actions/login";
-
+import Box from "@mui/material/Box";
 import Notifier from "../../components/notify";
 import { dashboardApp } from "../../actions/profile";
 
@@ -22,13 +22,12 @@ import {
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { LoadingButton } from "@mui/lab";
-import "./login.css";
 // components
-import { LoginIcon, Karafaring, LogoKarafarin } from "../../components/icons";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { FormProvider, RHFTextField } from "../../components/hook-form";
-import { LoginLayout, CardLogin } from "../../components/details";
+import { LoginLayout, LoginCard, HeaderCard } from "../../components/details";
+
 const Image = React.lazy(async () => await import("../../components/image"));
 
 // ----------------------------------------------------------------------
@@ -79,20 +78,10 @@ export default function Login() {
       alignItems="center"
       dir="rtl"
     >
-      <Image src={"backgroundLayout"} className="imglogin" />
-
-      <CardLogin>
-        <Notifier />
+      <Image src={"backgroundLayout"} />
+      <LoginCard>
         <Grid item container alignItems="center" mb={8} flexDirection="column">
-          <Grid item>
-            <LoginIcon stroke={"#017874"} />
-          </Grid>
-          <Grid item>
-            <Karafaring />
-          </Grid>
-          <Grid item>
-            <LogoKarafarin />
-          </Grid>
+          <HeaderCard />
           <Grid item mt={4}>
             <Typography>{t("loginpageTitle")}</Typography>
           </Grid>
@@ -164,7 +153,8 @@ export default function Login() {
             </LoadingButton>
           </Grid>
         </FormProvider>
-      </CardLogin>
+      </LoginCard>
+      <Notifier />
     </LoginLayout>
   );
 }

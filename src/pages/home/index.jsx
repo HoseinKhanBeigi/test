@@ -1,55 +1,27 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Line } from "../../components/charts";
-import { styled } from "@mui/material/styles";
-import Switch from "@mui/material/Switch";
-import Box from "@mui/material/Box";
-import Paper from "@mui/material/Paper";
+import { useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import { useTranslation } from "react-i18next";
-import { Card, CardHeader, Divider } from "@mui/material";
+import { Card, Divider } from "@mui/material";
 import { convertDigits } from "persian-helpers";
-
-import {
-  CardNote,
-  CountClients,
-  TargetCard,
-  MeetingCard,
-} from "../../components/cardDashboard";
-
-import {
-  Curve,
-  Clients,
-  Flash,
-  Frame1325,
-  RectTangle1,
-  RectTangle2,
-} from "../../components/icons";
 import { Typography } from "@mui/material";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { HeaderPage } from "../../components/headerPage";
-
-import { dashboardApp } from "../../actions/profile";
-import "./index.css";
 import { DatePicker } from "../../components/datepicker";
 import { AreaChart } from "../../components/areaChart";
 import { StackBar } from "../../components/stackBar";
-import nodata from "./nodata.png";
-import moment from "moment";
-import dayjs from "dayjs";
-import { useDispatchAction } from "../../hooks/useDispatchAction";
 import { NoteForm } from "../../components/noteDialog";
-// import Card from "../../theme/overrides/Card";
+import { DirectClients } from "../../components/cardDashboard/DirectClient";
+import { TargetCard } from "../../components/cardDashboard/targetCard";
+import { MeetingCard } from "../../components/cardDashboard/meetingCard";
+import { NoteCard } from "../../components/cardDashboard/noteCard";
 
 export const Home = () => {
-  const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
+  const { t } = useTranslation();
   const navigate = useNavigate();
-
   const handleInsertMeeting = () => {
-    if (entitiesDashboard?.data?.user.super_admin === 1) {
-      navigate("/interactions/meetings/create");
-    } else if (
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
       entitiesDashboard?.data?.user.permissions.some(
         (e) => e.name === "meeting_create"
       )
@@ -59,18 +31,17 @@ export const Home = () => {
   };
 
   const handleToNote = () => {
-    if (entitiesDashboard?.data?.user.super_admin === 1) {
-      navigate("/notes");
-    } else if (
+    if (
+      entitiesDashboard?.data?.user.super_admin === 1 ||
       entitiesDashboard?.data?.user.permissions.some((e) => e.name === "note")
     ) {
       navigate("/notes");
     }
   };
 
-  const handleToIntraction = ()=>{
+  const handleToIntraction = () => {
     navigate("/interactions");
-  }
+  };
 
   const {
     statusDashboard,
@@ -91,9 +62,13 @@ export const Home = () => {
 
   return (
     <>
-      <NoteForm open={open} setOpen={setOpen} title="یادداشت جدید" page="home"/>
+      <NoteForm
+        open={open}
+        setOpen={setOpen}
+        title="یادداشت جدید"
+        page="home"
+      />
       <HeaderPage title={t("workOfTable")} page="dashboard" />
-
       <Grid
         container
         justifyContent="center"
@@ -104,7 +79,7 @@ export const Home = () => {
       >
         <Grid item md={8} lg={8} sm={6} xs={12}>
           <AreaChart
-            title="میزان تغییرات دسته مشتریان"
+            title={t("TheAmountOfClientsCategoryChanges")}
             status={statusDashboard === "succeeded"}
             areaChartCategories={areaChartCategories}
             chartData={[
@@ -119,7 +94,7 @@ export const Home = () => {
 
           <Grid container mb={2} mt={2} columnSpacing={2}>
             <Grid item md={5} lg={5} sm={5} xs={12}>
-              <CountClients
+              <DirectClients
                 count={convertDigits(
                   entitiesDashboard?.data?.client_count_chart?.clients_count
                 )}
@@ -130,14 +105,14 @@ export const Home = () => {
               />
             </Grid>
             <Grid item md={7} lg={7} sm={7} xs={12}>
-              <TargetCard nodata={nodata} />
+              <TargetCard />
             </Grid>
           </Grid>
           <Grid container spacing={2}>
             <Grid item md={7} lg={7} sm={6} xs={12}>
               <Card>
                 <Typography sx={{ paddingLeft: "16px", paddingTop: "12px" }}>
-                  {"سبد مشتریان"}
+                  {t("clinetsBasket")}
                 </Typography>
                 <StackBar
                   categories={categories}
@@ -147,8 +122,8 @@ export const Home = () => {
               </Card>
             </Grid>
             <Grid item md={5} lg={5} sm={6} xs={12}>
-              <CardNote
-              handleToPage={handleToNote}
+              <NoteCard
+                handleToPage={handleToNote}
                 notes={entitiesDashboard?.data?.notes}
                 status={statusDashboard === "succeeded"}
                 handleClick={openNoteForm}
