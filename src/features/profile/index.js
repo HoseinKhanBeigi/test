@@ -11,6 +11,7 @@ const initialState = {
   areaChartCategories: [],
   areaChartValues: [],
   basketClient: [],
+  categories:["حقیقی", "حقوقی"]
 };
 
 export const dashboardAppSlice = createSlice({

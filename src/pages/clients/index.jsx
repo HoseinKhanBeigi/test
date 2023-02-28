@@ -110,12 +110,10 @@ export const Clients = () => {
   };
 
   const handleClick = (id) => {
-    if (entitiesDashboard?.data?.user?.super_admin === 1) {
-      navigate(`/clients/${id}`);
-      dispatch(clientDetail({ id }));
-    } else if (
+    if (
+      entitiesDashboard?.data?.user?.super_admin === 1 ||
       entitiesDashboard?.data?.user.permissions.some(
-        (e) => e.name === "client_create"
+        (e) => e.name === "client_show"
       )
     ) {
       navigate(`/clients/${id}`);

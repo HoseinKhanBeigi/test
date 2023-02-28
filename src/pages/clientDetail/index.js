@@ -163,49 +163,27 @@ export const ClientDetail = () => {
     if (
       entitiesDashboard?.data?.user.super_admin === 1 ||
       entitiesDashboard?.data?.user.permissions.some(
-        (e) => e.name === "meeting_create"
+        (e) => e.name === "call_create"
       )
     ) {
       navigate("/interactions/calls/create");
     }
   };
-  const noteList = () => {
-    if (
-      entitiesDashboard?.data?.user.super_admin === 1 ||
-      entitiesDashboard?.data?.user.permissions.some((e) => e.name === "note")
-    ) {
-      navigate("/notes");
-    }
-  };
   const AgantList = () => {
-    if (
-      entitiesDashboard?.data?.user.super_admin === 1 ||
-      entitiesDashboard?.data?.user.permissions.some(
-        (e) => e.name === "others_client_show"
-      )
-    ) {
-      navigate("agents");
-      dispatch(
-        clientAgentsAction({
-          id: params.id,
-        })
-      );
-    }
+    navigate("agents");
+    dispatch(
+      clientAgentsAction({
+        id: params.id,
+      })
+    );
   };
   const meetingList = () => {
-    if (
-      entitiesDashboard?.data?.user.super_admin === 1 ||
-      entitiesDashboard?.data?.user.permissions.some(
-        (e) => e.name === "meeting_show"
-      )
-    ) {
-      navigate("meetings");
-      dispatch(
-        clientMeetingsAction({
-          id: params.id,
-        })
-      );
-    }
+    navigate("meetings");
+    dispatch(
+      clientMeetingsAction({
+        id: params.id,
+      })
+    );
   };
 
   const callList = () => {

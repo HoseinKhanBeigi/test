@@ -49,22 +49,22 @@ export const Home = () => {
     areaChartCategories,
     areaChartValues,
     basketClient,
+    categories,
     error,
   } = useSelector((state) => state.dashboardAppSlice);
 
-  const categories = ["حقیقی", "حقوقی"];
 
-  const [open, setOpen] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
-  const openNoteForm = () => {
-    setOpen(true);
+  const handleClick = () => {
+    setOpenDialog(true);
   };
 
   return (
     <>
       <NoteForm
-        open={open}
-        setOpen={setOpen}
+        open={openDialog}
+        setOpen={setOpenDialog}
         title="یادداشت جدید"
         page="home"
       />
@@ -126,7 +126,7 @@ export const Home = () => {
                 handleToPage={handleToNote}
                 notes={entitiesDashboard?.data?.notes}
                 status={statusDashboard === "succeeded"}
-                handleClick={openNoteForm}
+                handleClick={handleClick}
               />
             </Grid>
           </Grid>

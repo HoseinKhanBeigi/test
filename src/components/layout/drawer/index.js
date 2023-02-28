@@ -85,24 +85,15 @@ export const Drawer = ({ navbarList, handleClick, entitiesDashboard, t }) => {
       {navbarList.menuWidth && <PathIcone />}
 
       <BoxMenuItem height={!navbarList.menuWidth ? "76%" : "70%"}>
-        {navbarList.two.values.map((E, i) =>
-          entitiesDashboard?.data?.user?.super_admin === 0 &&
-          entitiesDashboard?.data?.user?.permissions.some((j) => {
-            if (E?.id === "home") {
-              return true;
-            }
-            return j.name === E?.name;
-          }) ? (
-            <BoxItemComponent
-              E={E}
-              navbarList={navbarList}
-              t={t}
-              handleClick={handleClick}
-              theme={theme}
-              key={i}
-            />
-          ) : (
-            entitiesDashboard?.data?.user?.super_admin === 1 && (
+        {navbarList.two.values.map(
+          (E, i) =>
+            (entitiesDashboard?.data?.user?.super_admin === 1 ||
+              entitiesDashboard?.data?.user?.permissions.some((j) => {
+                if (E?.id === "home") {
+                  return true;
+                }
+                return j.name === E?.name;
+              })) && (
               <BoxItemComponent
                 E={E}
                 navbarList={navbarList}
@@ -112,7 +103,6 @@ export const Drawer = ({ navbarList, handleClick, entitiesDashboard, t }) => {
                 key={i}
               />
             )
-          )
         )}
       </BoxMenuItem>
       <BoxMenuItem height={"12%"} justifyContent="space-evenly">

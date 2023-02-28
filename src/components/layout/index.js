@@ -262,7 +262,7 @@ export const Layout = () => {
 
   useEffect(() => {
     const str = path.pathname.slice(1, path.pathname.length);
-    const res =str.split('/');
+    const res = str.split("/");
     dispatch(
       changeMenuBar({
         status: res[0],
@@ -520,44 +520,25 @@ export const Layout = () => {
           <Typography dir="rtl" sx={{ padding: "12px", color: "silver" }}>
             {t("enter type of data")}
           </Typography>
-          {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+          {(entitiesDashboard?.data?.user?.super_admin === 1 ||
+            entitiesDashboard?.data?.user.permissions.some(
+              (e) => e.name === "meeting_create"
+            )) && (
             <MenuItem
               sx={{ justifyContent: "end" }}
               onClick={handleInsertMeeting}
             >
               <Typography color={"#017874"}> {t("insert meeting")}</Typography>
             </MenuItem>
-          ) : (
-            entitiesDashboard?.data?.user.permissions.some(
-              (e) => e.name === "meeting_create"
-            ) && (
-              <MenuItem
-                sx={{ justifyContent: "end" }}
-                onClick={handleInsertMeeting}
-              >
-                <Typography color={"#017874"}>
-                  {" "}
-                  {t("insert meeting")}
-                </Typography>
-              </MenuItem>
-            )
           )}
 
-          {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+          {(entitiesDashboard?.data?.user?.super_admin === 1 ||
+            entitiesDashboard?.data?.user.permissions.some(
+              (e) => e.name === "call_create"
+            )) && (
             <MenuItem sx={{ justifyContent: "end" }} onClick={handleInsertCall}>
               <Typography color={"#017874"}>{t("insert call")}</Typography>
             </MenuItem>
-          ) : (
-            entitiesDashboard?.data?.user.permissions.some(
-              (e) => e.name === "call_create"
-            ) && (
-              <MenuItem
-                sx={{ justifyContent: "end" }}
-                onClick={handleInsertCall}
-              >
-                <Typography color={"#017874"}>{t("insert call")}</Typography>
-              </MenuItem>
-            )
           )}
 
           <ListItemButton
@@ -570,24 +551,16 @@ export const Layout = () => {
           </ListItemButton>
           <Collapse in={open2} timeout="auto">
             <List component="div" disablePadding>
-              {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+              {(entitiesDashboard?.data?.user?.super_admin === 1 ||
+                entitiesDashboard?.data?.user.permissions.some(
+                  (e) => e.name === "user_create"
+                )) && (
                 <MenuItem
                   sx={{ justifyContent: "end" }}
                   onClick={handleInsertUserSingle}
                 >
                   <Typography color={"#017874"}> {t("single")}</Typography>
                 </MenuItem>
-              ) : (
-                entitiesDashboard?.data?.user.permissions.some(
-                  (e) => e.name === "user_create"
-                ) && (
-                  <MenuItem
-                    sx={{ justifyContent: "end" }}
-                    onClick={handleInsertUserSingle}
-                  >
-                    <Typography color={"#017874"}> {t("single")}</Typography>
-                  </MenuItem>
-                )
               )}
               <MenuItem
                 sx={{ justifyContent: "end" }}
@@ -608,24 +581,16 @@ export const Layout = () => {
           </ListItemButton>
           <Collapse in={open3} timeout="auto">
             <List component="div" disablePadding>
-              {entitiesDashboard?.data?.user?.super_admin === 1 ? (
+              {(entitiesDashboard?.data?.user?.super_admin === 1 ||
+                entitiesDashboard?.data?.user.permissions.some(
+                  (e) => e.name === "client_create"
+                )) && (
                 <MenuItem
                   sx={{ justifyContent: "end" }}
                   onClick={handleInsertClientSingle}
                 >
                   <Typography color={"#017874"}> {t("single")}</Typography>
                 </MenuItem>
-              ) : (
-                entitiesDashboard?.data?.user.permissions.some(
-                  (e) => e.name === "client_create"
-                ) && (
-                  <MenuItem
-                    sx={{ justifyContent: "end" }}
-                    onClick={handleInsertClientSingle}
-                  >
-                    <Typography color={"#017874"}> {t("single")}</Typography>
-                  </MenuItem>
-                )
               )}
               <MenuItem
                 sx={{ justifyContent: "end" }}

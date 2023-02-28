@@ -35,7 +35,6 @@ export const NoteForm = ({ open, title, setOpen,page }) => {
   });
 
   const onSubmit = (e) => {
-    console.log(e);
     dispatch(notesCreate(e)).then(()=>{
       setOpen(false);
       dispatch(notesAction({}));
