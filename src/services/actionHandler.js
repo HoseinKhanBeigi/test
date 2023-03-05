@@ -1,15 +1,20 @@
 import instance from "./http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-
-export const createAsyncAction = (url, type, method,secondUrl) => {
+const controller = new AbortController();
+export const createAsyncAction = (url, type, method, secondUrl) => {
   return createAsyncThunk(type, async ({ ...values }, thunkAPI) => {
-    let fd = new FormData();
     try {
       let response;
+
       const config = {
+        signal: AbortSignal.timeout(5000) ,
+
         headers: {
           "Content-Type":
-            values.file || values?.res?.attach || values?.attach || values?.avatar
+            values.file ||
+            values?.res?.attach ||
+            values?.attach ||
+            values?.avatar
               ? "multipart/form-data"
               : "application/json",
           "Access-Control-Allow-Credentials": true,
@@ -19,6 +24,7 @@ export const createAsyncAction = (url, type, method,secondUrl) => {
         params: {
           ...values.params,
         },
+        //
       };
 
       if (method === "post") {
@@ -50,19 +56,25 @@ export const createAsyncAction = (url, type, method,secondUrl) => {
         if (values?.id) {
           const ids = values.id;
           let urlvalue = `${url}/${ids}`;
-          if(secondUrl){
+          if (secondUrl) {
             urlvalue = `${url}/${ids}${secondUrl}`;
           }
           response = await instance[method](urlvalue, config);
-      
         } else {
           response = await instance[method](url, config);
         }
       }
+
       const data = JSON.parse(JSON.stringify(response?.data));
       return data;
     } catch (err) {
+      // if (axios.isCancel(err)) {
+      //   console.log("Request canceled", err.message);
+      // } else {
+      //   console.log(err);
+      // }
       return thunkAPI.rejectWithValue(err);
     }
   });
 };
+controller.abort();

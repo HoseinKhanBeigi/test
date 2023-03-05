@@ -45,11 +45,13 @@ import { clientOwnSlice } from "../features/clientOwn";
 import { userMeetingSlice } from "../features/userMeetings";
 import {ClientAgentsSlice} from "../features/clientAgents";
 import {clientMeetingSlice} from "../features/clientMeetings";
-import {clientCallsSlice} from "../features/clientCalls"
+import {clientCallsSlice} from "../features/clientCalls";
+import loadingSlice from "../features/loading"
 
 const store = configureStore({
   reducer: {
     noteSlice,
+    loadingSlice,
     agentsSlice,
     interactionSlice,
     clientOwnSlice,

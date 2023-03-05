@@ -10,7 +10,7 @@ import reportWebVitals from "./reportWebVitals";
 import ThemeProvider from "./theme";
 import store from "./store";
 import "./i18n";
-import { BaseOptionChartStyle } from "./components/chart";
+import LinearDeterminate from "./components/progressBar";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -18,14 +18,16 @@ const root = ReactDOM.createRoot(
 root.render(
   <Provider store={store}>
     <BrowserRouter>
-      <AxiosInterceptor>
-        <SnackbarProvider maxSnack={6} autoHideDuration={3000}>
-          <ThemeProvider>
-          {/* <BaseOptionChartStyle /> */}
-            <App />
-          </ThemeProvider>
-        </SnackbarProvider>
-      </AxiosInterceptor>
+      <LinearDeterminate>
+        <AxiosInterceptor>
+          <SnackbarProvider maxSnack={6} autoHideDuration={3000}>
+            <ThemeProvider>
+              {/* <BaseOptionChartStyle /> */}
+              <App />
+            </ThemeProvider>
+          </SnackbarProvider>
+        </AxiosInterceptor>
+      </LinearDeterminate>
     </BrowserRouter>
   </Provider>
 );

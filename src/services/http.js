@@ -16,7 +16,6 @@ const AxiosInterceptor = ({ children }) => {
     const resInterceptor = (response) => {
       return response;
     };
-
     const errInterceptor = (error) => {
       if (!error.response) {
         dispatch(messageHandling(error));

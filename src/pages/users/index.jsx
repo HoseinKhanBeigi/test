@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useReducer } from "react";
+import React, { useEffect, useState } from "react";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Grid from "@mui/material/Grid";
@@ -50,6 +49,7 @@ import {
   filterAction,
   filterList,
 } from "../../features/filter";
+import { handleLoading } from "../../features/loading";
 // import { useNavigate } from "react-router-dom";
 
 export const Users = () => {
@@ -62,7 +62,7 @@ export const Users = () => {
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [stateId, setStateId] = useState();
 
-  const handleFilterMenu = (event, id) => {
+  const handleOptionMenu = (event, id) => {
     setUserId(id);
     setAnchorEl(event.currentTarget);
   };
@@ -86,6 +86,11 @@ export const Users = () => {
   const { status, entities, error } = useSelector(
     (state) => state.userListSlice
   );
+
+  useEffect(() => {
+    dispatch(handleLoading({ status:status }));
+  }, [status]);
+
   const { filterRMTabs } = useSelector((state) => state.tabSlice);
 
   const handleClickOpen = () => {
@@ -337,7 +342,7 @@ export const Users = () => {
                                 </IconButton>
                                 <IconButton
                                   aria-label="menu"
-                                  onClick={(e) => handleFilterMenu(e, row.id)}
+                                  onClick={(e) => handleOptionMenu(e, row.id)}
                                 >
                                   <OptionIcone />
                                 </IconButton>

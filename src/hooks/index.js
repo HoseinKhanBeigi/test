@@ -1,4 +1,5 @@
-import { useCallback,useMemo } from "react";
+import { useCallback, useMemo } from "react";
+import { useReducer, useRef } from "react";
 
 import { createSearchParams, useNavigate } from "react-router-dom";
 export const useGetQueryParams = ({ ...values }) => {
@@ -15,3 +16,10 @@ export const useGetQueryParams = ({ ...values }) => {
   });
 };
 
+export const useGetStatus = (actionLoading) => {
+  () => {
+    return {
+      actionLoading: actionLoading,
+    };
+  };
+};

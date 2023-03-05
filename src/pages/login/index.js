@@ -27,6 +27,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { FormProvider, RHFTextField } from "../../components/hook-form";
 import { LoginLayout, LoginCard, HeaderCard } from "../../components/details";
+import { handleLoading } from "../../features/loading";
 
 const Image = React.lazy(async () => await import("../../components/image"));
 
@@ -59,12 +60,19 @@ export default function Login() {
   } = methods;
 
   const onSubmit = (e) => {
-    dispatch(userLogin(e)).then((res) => {
-      if (res.payload.status === 200) {
-        navigate("/home");
-        dispatch(dashboardApp({}));
+    dispatch(handleLoading({ status: "pending" }));
+    dispatch(userLogin(e)).then(
+      (res) => {
+        if (res.payload.status === 200) {
+          dispatch(handleLoading({ status: "succeeded" }));
+          navigate("/home");
+          dispatch(dashboardApp({}));
+        }
+      },
+      () => {
+        dispatch(handleLoading({ status: "failed" }));
       }
-    });
+    );
   };
 
   const handletoForgot = () => {
