@@ -42,6 +42,7 @@ import {
 } from "../../features/filter";
 import { SelectInput } from "../../components/selectInput";
 import { dashboardApp } from "../../actions/profile";
+import { handleLoading } from "../../features/loading";
 
 export const Clients = () => {
   const { t, i18n } = useTranslation();
@@ -57,6 +58,10 @@ export const Clients = () => {
   );
   useDispatchAction(clientsList, statusClient);
   const paramSearch = { ...getQueryParams() };
+
+  useEffect(() => {
+    dispatch(handleLoading({ status:statusClient }));
+  }, [statusClient]);
 
   // console.log(paramSearch);
 

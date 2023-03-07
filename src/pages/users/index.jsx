@@ -136,8 +136,6 @@ export const Users = () => {
   );
   const paramSearch = { ...getQueryParams() };
 
-  console.log(paramSearch);
-
   useEffect(() => {
     if (status === "idle") {
       dispatch(dashboardApp({})).then((e) => {

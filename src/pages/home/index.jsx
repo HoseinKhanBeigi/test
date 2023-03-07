@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Card, Divider } from "@mui/material";
 import { convertDigits } from "persian-helpers";
 import { Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { HeaderPage } from "../../components/headerPage";
 import { DatePicker } from "../../components/datepicker";
 import { AreaChart } from "../../components/areaChart";
@@ -15,10 +15,12 @@ import { DirectClients } from "../../components/cardDashboard/DirectClient";
 import { TargetCard } from "../../components/cardDashboard/targetCard";
 import { MeetingCard } from "../../components/cardDashboard/meetingCard";
 import { NoteCard } from "../../components/cardDashboard/noteCard";
+import { handleLoading } from "../../features/loading";
 
 export const Home = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleInsertMeeting = () => {
     if (
       entitiesDashboard?.data?.user.super_admin === 1 ||
@@ -52,6 +54,10 @@ export const Home = () => {
     categories,
     error,
   } = useSelector((state) => state.dashboardAppSlice);
+
+  React.useEffect(() => {
+    dispatch(handleLoading({ status:statusDashboard }));
+  }, [statusDashboard]);
 
 
   const [openDialog, setOpenDialog] = React.useState(false);

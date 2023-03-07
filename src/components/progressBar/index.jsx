@@ -9,12 +9,10 @@ export default function LinearDeterminate({ children }) {
   const { loading } = useSelector((state) => state.loadingSlice);
 
   React.useEffect(() => {
-    console.log(loading);
     if (loading === "succeeded" || loading === "failed") {
+      setProgress(0);
+    } else if (loading === "idle" || loading === "pending") {
       setProgress(100);
-    } else {
-      console.log(loading);
-      // setProgress(0);
     }
   }, [loading]);
 
@@ -40,12 +38,11 @@ export default function LinearDeterminate({ children }) {
 
   return (
     <>
-      {(loading === "pending" || loading === "idle") &&
-        loading !== false && (
-          <Box sx={{ width: "100%", position: "absolute" }}>
-            <LinearProgress variant="determinate" value={progress} />
-          </Box>
-        )}
+      {(loading === "pending" || loading === "idle") && loading !== false && (
+        <Box sx={{ width: "100%", position: "absolute" }}>
+          <LinearProgress variant="determinate" value={progress} />
+        </Box>
+      )}
 
       {children}
     </>
